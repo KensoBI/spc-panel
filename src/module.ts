@@ -7,7 +7,7 @@ export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setPanelOption
     .addTextInput({
       path: 'text',
       name: 'Simple text option',
-      description: 'Description of panel option',
+      description: 'Description of panel option.',
       defaultValue: 'Default value of text input option',
     })
     .addBooleanSwitch({
