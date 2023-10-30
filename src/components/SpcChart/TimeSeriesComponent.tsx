@@ -116,8 +116,8 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
           width={width}
           height={height}
           lineColor={lineColor}
-          showLegend={showLegend}
-          decimals={decimals}
+          showLegend={!!showLegend}
+          decimals={decimals ?? 3}
           onSeriesColorChange={onSeriesColorChange}
         />
       ) : (

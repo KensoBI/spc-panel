@@ -5,6 +5,7 @@ import { useStyles2 } from '@grafana/ui';
 import { parseData } from 'data/parseData';
 import { PanelPropsProvider } from './PanelPropsProvider';
 import { TimeSeriesComponent } from './SpcChart/TimeSeriesComponent';
+import { TimeseriesSettings, defaultTimeseriesSettings } from './SpcChart/types';
 
 export function ChartPanel(props: ChartPanelProps) {
   const { data, width, height } = props;
@@ -25,6 +26,33 @@ export function ChartPanel(props: ChartPanelProps) {
     return [selectedFeature, selectedCharacteristic];
   }, [features]);
 
+  const settings: TimeseriesSettings = React.useMemo(() => {
+    const settings = { ...defaultTimeseriesSettings };
+    settings.limitConfig = {
+      up: {
+        name: 'usl',
+        color: 'red',
+      },
+      down: {
+        name: 'lsl',
+        color: 'red',
+      },
+    };
+    settings.constantsConfig = [
+      {
+        name: 'usl',
+        title: 'USL',
+        color: 'red',
+      },
+      {
+        name: 'lsl',
+        title: 'LSL',
+        color: 'red',
+      },
+    ];
+    return settings;
+  }, []);
+
   return (
     <PanelPropsProvider panelProps={props}>
       <div
@@ -37,7 +65,7 @@ export function ChartPanel(props: ChartPanelProps) {
         )}
       >
         {selectedFeature && selectedCharacteristic && (
-          <TimeSeriesComponent feature={selectedFeature} characteristic={selectedCharacteristic} />
+          <TimeSeriesComponent feature={selectedFeature} characteristic={selectedCharacteristic} settings={settings} />
         )}
       </div>
     </PanelPropsProvider>

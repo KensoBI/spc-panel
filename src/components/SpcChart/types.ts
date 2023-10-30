@@ -25,7 +25,7 @@ export type TimeseriesSettings = {
 };
 
 export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
-export const defaultTimeseriesSettings = {
+export const defaultTimeseriesSettings: TimeseriesSettings = {
   controlName: '',
   fill: 0,
   lineWidth: 2,
