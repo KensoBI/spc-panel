@@ -1,14 +1,14 @@
 import React from 'react';
 import { ChartPanelProps } from 'types';
 import { css, cx } from '@emotion/css';
-import { useStyles2 } from '@grafana/ui';
+import { usePanelContext, useStyles2 } from '@grafana/ui';
 import { parseData } from 'data/parseData';
 import { PanelPropsProvider } from './PanelPropsProvider';
 import { TimeSeriesComponent } from './SpcChart/TimeSeriesComponent';
 import { TimeseriesSettings, defaultTimeseriesSettings } from './SpcChart/types';
 
 export function ChartPanel(props: ChartPanelProps) {
-  const { data, width, height } = props;
+  const { data, width, height, options } = props;
   const styles = useStyles2(getStyles);
 
   const { features } = React.useMemo(() => parseData(data.series), [data.series]);
@@ -26,32 +26,38 @@ export function ChartPanel(props: ChartPanelProps) {
     return [selectedFeature, selectedCharacteristic];
   }, [features]);
 
+  const context = usePanelContext();
+  const onInstanceStateChange = context.onInstanceStateChange;
+  React.useEffect(() => {
+    onInstanceStateChange?.({
+      selectedCharacteristic,
+      selectedFeature,
+    });
+  }, [onInstanceStateChange, selectedCharacteristic, selectedFeature]);
+
   const settings: TimeseriesSettings = React.useMemo(() => {
     const settings = { ...defaultTimeseriesSettings };
-    settings.limitConfig = {
-      up: {
-        name: 'usl',
-        color: 'red',
-      },
-      down: {
-        name: 'lsl',
-        color: 'red',
-      },
-    };
-    settings.constantsConfig = [
-      {
-        name: 'usl',
-        title: 'USL',
-        color: 'red',
-      },
-      {
-        name: 'lsl',
-        title: 'LSL',
-        color: 'red',
-      },
-    ];
+    settings.constantsConfig = [];
+    if (options?.limitConfig) {
+      settings.limitConfig = options.limitConfig;
+      if (options.limitConfig.up) {
+        settings.constantsConfig.push({
+          name: options.limitConfig.up.name,
+          title: options.limitConfig.up.name,
+          color: options.limitConfig.up.color,
+        });
+      }
+
+      if (options.limitConfig.down) {
+        settings.constantsConfig.push({
+          name: options.limitConfig.down.name,
+          title: options.limitConfig.down.name,
+          color: options.limitConfig.down.color,
+        });
+      }
+    }
     return settings;
-  }, []);
+  }, [options.limitConfig]);
 
   return (
     <PanelPropsProvider panelProps={props}>

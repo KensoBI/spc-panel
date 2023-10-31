@@ -1,11 +1,21 @@
 import { PanelProps } from '@grafana/data';
 
-type SeriesSize = 'sm' | 'md' | 'lg';
+export type LimitConfigItem = {
+  name: string;
+  color: string;
+};
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export type LimitConfig = {
+  up?: LimitConfigItem;
+  down?: LimitConfigItem;
+};
+
+export interface PanelOptions {
+  limitConfig?: LimitConfig;
 }
 
-export interface ChartPanelProps extends PanelProps<SimpleOptions> {}
+export const defaultPanelOptions: PanelOptions = {
+  limitConfig: undefined,
+};
+
+export interface ChartPanelProps extends PanelProps<PanelOptions> {}

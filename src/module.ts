@@ -1,40 +1,18 @@
 import { PanelPlugin } from '@grafana/data';
-import { SimpleOptions } from './types';
+import { PanelOptions, defaultPanelOptions } from './types';
 import { ChartPanel } from './components/ChartPanel';
+import { LimitsEditor } from './components/options/LimitsEditor';
 
-export const plugin = new PanelPlugin<SimpleOptions>(ChartPanel).setPanelOptions((builder) => {
-  return builder
-    .addTextInput({
-      path: 'text',
-      name: 'Simple text option',
-      description: 'Description of panel option.',
-      defaultValue: 'Default value of text input option',
-    })
-    .addBooleanSwitch({
-      path: 'showSeriesCount',
-      name: 'Show series counter',
-      defaultValue: false,
-    })
-    .addRadio({
-      path: 'seriesCountSize',
-      defaultValue: 'sm',
-      name: 'Series counter size',
-      settings: {
-        options: [
-          {
-            value: 'sm',
-            label: 'Small',
-          },
-          {
-            value: 'md',
-            label: 'Medium',
-          },
-          {
-            value: 'lg',
-            label: 'Large',
-          },
-        ],
-      },
-      showIf: (config) => config.showSeriesCount,
-    });
+export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions((builder) => {
+  builder.addCustomEditor({
+    id: 'limitConfig',
+    path: 'limitConfig',
+    name: 'Limits',
+    description: 'Upper and lower limits for the chart',
+    defaultValue: defaultPanelOptions.limitConfig,
+    editor: LimitsEditor,
+    category: ['Chart'],
+  });
+
+  return builder;
 });

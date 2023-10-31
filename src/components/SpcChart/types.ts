@@ -1,12 +1,4 @@
-export type LimitConfigItem = {
-  name: string;
-  color: string;
-};
-
-export type LimitConfig = {
-  up?: LimitConfigItem;
-  down?: LimitConfigItem;
-};
+import { LimitConfig } from 'types';
 
 export type TimeseriesSettings = {
   controlName: string;
