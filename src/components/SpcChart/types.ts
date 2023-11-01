@@ -1,13 +1,10 @@
-import { LimitConfig } from 'types';
+import { ConstantConfig, ConstantConfigItem, LimitConfig } from 'types';
 
 export type TimeseriesSettings = {
   controlName: string;
   limitConfig?: LimitConfig;
-  constantsConfig?: Array<{
-    name: string;
-    color: string;
-    title: string;
-  }>;
+  constantsConfig?: ConstantConfigItem[];
+  constantConfig?: ConstantConfig;
   fill: number;
   lineWidth: number;
   pointSize: number;

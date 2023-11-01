@@ -56,8 +56,18 @@ export function ChartPanel(props: ChartPanelProps) {
         });
       }
     }
+    if (options?.constantConfig) {
+      settings.constantConfig = options.constantConfig;
+      if (options.constantConfig) {
+        settings.constantsConfig.push({
+          name: options.constantConfig.item.name,
+          title: options.constantConfig.item.name,
+          color: options.constantConfig.item.color,
+        });
+      }
+    }
     return settings;
-  }, [options.limitConfig]);
+  }, [options.limitConfig, options.constantConfig]);
 
   return (
     <PanelPropsProvider panelProps={props}>
