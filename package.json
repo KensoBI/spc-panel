@@ -1,5 +1,5 @@
 {
-  "name": "time-series-kenso-bi",
+  "name": "kensobi-spc-panel",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -15,7 +15,7 @@
     "server": "docker-compose up --build",
     "sign": "npx --yes @grafana/sign-plugin@latest"
   },
-  "author": "Kensobi",
+  "author": "Kenso Software",
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.21.4",
