@@ -22,7 +22,6 @@ export type ConstantConfig = {
 export interface PanelOptions {
   limitConfig?: LimitConfig;
   constantConfig?: ConstantConfig;
-  //TODO constantsOptions , export constants option
 }
 
 export const defaultPanelOptions: PanelOptions = {

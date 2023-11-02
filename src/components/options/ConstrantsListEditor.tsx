@@ -17,6 +17,8 @@ type Props = StandardEditorProps<ConstantConfigItem, any, PanelOptions>;
 export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
   const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
+  const [selectedField, setSelectedField] = React.useState<ConstantConfigItem[]>([]);
+
   const options = React.useMemo(() => {
     if (selectedCharacteristic == null) {
       return [];
@@ -24,14 +26,37 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     return Object.keys(selectedCharacteristic.table).map((fieldName) => ({
       value: fieldName,
       label: fieldName,
-      title: fieldName,
-      color: fieldName,
     }));
   }, [selectedCharacteristic]);
 
-  //const notSelectedFields = React.useMemo(() => {
-  //  return difference(options, options?.map((conf) => conf.label) ?? []);
-  //}, [options]);
+  const setConstantConfig = (item: ConstantConfigItem | undefined) => {
+    onChange({
+      ...(value ?? {}),
+      color: value.color,
+      title: value.title,
+      name: value.name,
+    });
+  };
+
+  const setName = (name: string | undefined) => {
+    const item: ConstantConfigItem | undefined | any =
+      name != null
+        ? {
+            color: value?.color ?? defaultColor,
+            name,
+          }
+        : undefined;
+
+    setConstantConfig(item);
+  };
+
+  const setColor = (color: string) => {
+    const name = value?.name;
+    if (name != null) {
+      value.color = color;
+      setConstantConfig(value);
+    }
+  };
 
   const { popoverProps, triggerClick } = usePopoverTrigger();
 
@@ -42,17 +67,14 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           <MenuItem
             key={fieldName.value}
             onClick={() => {
-              //setSettings({
-              //  ...settings,
-              //  constantsConfig: [
-              //    ...(settings?. ?? []),
-              //    {
-              //      name: fieldName,
-              //      title: fieldName,
-              //      color: defaultColor,
-              //    },
-              //  ],
-              //});
+              setSelectedField([
+                ...selectedField,
+                {
+                  name: fieldName.label,
+                  color: defaultColor,
+                  title: fieldName.label,
+                },
+              ]);
               popoverProps.onClose();
             }}
           >
@@ -61,7 +83,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
         ))}
       </PopoverContainer>
     );
-  }, [options, popoverProps]); // [notSelectedFields, popoverProps, setSettings, settings]);
+  }, [options, popoverProps, setSelectedField, selectedField]); // [notSelectedFields, popoverProps, setSettings, settings]);
 
   return (
     <>
@@ -83,16 +105,17 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </Button>
         </div>
 
-        {/*constantsConfig?.map((el, index) => (*/}
-        {options?.map((el, index) => (
-          <div key={el.label} className={styles.row}>
-            <div className={styles.fieldName}>{el.label}</div>
+        {selectedField?.map((el, index) => (
+          <div key={el.title} className={styles.row}>
+            <div className={styles.fieldName}>{el.title}</div>
             <div>
               <input
                 className={styles.titleInput}
                 type="text"
-                value={el.title}
-                onChange={(e) => {
+                value={value?.title}
+                onChange={() => {
+                  setName(value.title);
+                  //(e) => {
                   //if (settings.constantsConfig) {
                   //  settings.constantsConfig[index].title = e.target.value;
                   //}
@@ -102,8 +125,10 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
             </div>
             <div className={styles.rightColumn}>
               <InlineColorField
-                color={el.color}
-                onChange={(newColor: any) => {
+                color={value?.color ?? defaultColor}
+                onChange={(color) => {
+                  setColor(color);
+                  //(newColor: any) => {
                   //if (settings.constantsConfig) {
                   //  settings.constantsConfig[index].color = newColor;
                   //}
@@ -112,6 +137,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
               />
               <Button
                 onClick={() => {
+                  setSelectedField((selectedField ?? []).filter((conf) => conf.name !== el.name));
                   //setSettings({
                   //  ...settings,
                   //  constantsConfig: (settings?.constantsConfig ?? []).filter((conf) => conf.name !== el.name),
