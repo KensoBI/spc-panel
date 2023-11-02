@@ -1,19 +1,29 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "panel",
-  "name": "KensoBI chart panel",
-  "id": "kensobi-chart-panel",
+  "name": "SPC Panel",
+  "id": "kensobi-spc-panel",
   "info": {
-    "keywords": ["panel"],
-    "description": "",
+    "keywords": ["panel", "spc", "chart", "kensobi"],
+    "description": "KensoBI SPC panel allows you to create common SPC charts like X-Bar chart or R-chart.",
     "author": {
-      "name": "Kensobi"
+      "name": "Kenso Software",
+      "url": "https://kensobi.com"
     },
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
-    "links": [],
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/KensoBI/SPC-panel"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/KensoBI/SPC-panel/blob/main/LICENSE"
+      }
+    ],
     "screenshots": [],
     "version": "%VERSION%",
     "updated": "%TODAY%"
