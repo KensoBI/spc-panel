@@ -69,7 +69,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </div>
 
           <Button
-            //disabled={notSelectedFields.length === 0}
+            disabled={notSelectedFields.length === 0}
             onClick={triggerClick}
             icon="plus-circle"
             variant="success"
