@@ -45,7 +45,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
   );
 
   const constants = React.useMemo(() => {
-    return constantsConfig
+    return constantsConfig?.items
       ?.map((config) => ({
         title: config.title,
         value: characteristic?.table?.[config.name],
@@ -89,7 +89,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
         setSettings({ ...settingsWithDefaults, lineColor: color });
       }
       if (settingsWithDefaults.constantsConfig != null) {
-        for (const constant of settingsWithDefaults.constantsConfig) {
+        for (const constant of settingsWithDefaults.constantsConfig.items) {
           if (constant.name === label) {
             constant.color = color;
             setSettings({ ...settingsWithDefaults });

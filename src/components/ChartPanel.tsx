@@ -37,11 +37,13 @@ export function ChartPanel(props: ChartPanelProps) {
 
   const settings: TimeseriesSettings = React.useMemo(() => {
     const settings = { ...defaultTimeseriesSettings };
-    settings.constantsConfig = [];
+    settings.constantsConfig = {
+      items: [],
+    };
     if (options?.limitConfig) {
       settings.limitConfig = options.limitConfig;
       if (options.limitConfig.up) {
-        settings.constantsConfig.push({
+        settings.constantsConfig.items.push({
           name: options.limitConfig.up.name,
           title: options.limitConfig.up.name,
           color: options.limitConfig.up.color,
@@ -49,25 +51,18 @@ export function ChartPanel(props: ChartPanelProps) {
       }
 
       if (options.limitConfig.down) {
-        settings.constantsConfig.push({
+        settings.constantsConfig.items.push({
           name: options.limitConfig.down.name,
           title: options.limitConfig.down.name,
           color: options.limitConfig.down.color,
         });
       }
     }
-    if (options?.constantConfig) {
-      settings.constantConfig = options.constantConfig;
-      if (options.constantConfig) {
-        settings.constantsConfig.push({
-          name: options.constantConfig.item.name,
-          title: options.constantConfig.item.name,
-          color: options.constantConfig.item.color,
-        });
-      }
+    if (options?.constantsConfig && options.constantsConfig.items.length > 0) {
+      settings.constantsConfig.items.push(...options.constantsConfig.items);
     }
     return settings;
-  }, [options.limitConfig, options.constantConfig]);
+  }, [options.limitConfig, options.constantsConfig]);
 
   return (
     <PanelPropsProvider panelProps={props}>

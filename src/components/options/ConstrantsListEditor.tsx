@@ -6,91 +6,66 @@ import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { Popover, usePopoverTrigger } from 'components/popover/Popover';
 import { CloseButton } from 'components/popover/CloseButton';
 import { MenuItem } from 'components/popover/MenuItem';
-import { ConstantConfigItem, PanelOptions } from 'types';
+import { ConstantsConfig, PanelOptions } from 'types';
 import { Characteristic } from 'data/types';
 import { InlineColorField } from 'components/InlineColorField';
+import { difference } from 'lodash';
 
-const defaultColor = 'rgb(196, 22, 42)';
+const defaultColor = '#37872d';
 
-type Props = StandardEditorProps<ConstantConfigItem, any, PanelOptions>;
+type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
 export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
   const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
-  const [selectedField, setSelectedField] = React.useState<ConstantConfigItem[]>([]);
 
-  const options = React.useMemo(() => {
+  const availableFields = React.useMemo(() => {
     if (selectedCharacteristic == null) {
       return [];
     }
-    return Object.keys(selectedCharacteristic.table).map((fieldName) => ({
-      value: fieldName,
-      label: fieldName,
-    }));
+    return Object.keys(selectedCharacteristic.table);
   }, [selectedCharacteristic]);
 
-  const setConstantConfig = (item: ConstantConfigItem | undefined) => {
-    onChange({
-      ...(value ?? {}),
-      color: value.color,
-      title: value.title,
-      name: value.name,
-    });
-  };
-
-  const setName = (name: string | undefined) => {
-    const item: ConstantConfigItem | undefined | any =
-      name != null
-        ? {
-            color: value?.color ?? defaultColor,
-            name,
-          }
-        : undefined;
-
-    setConstantConfig(item);
-  };
-
-  const setColor = (color: string) => {
-    const name = value?.name;
-    if (name != null) {
-      value.color = color;
-      setConstantConfig(value);
-    }
-  };
+  const notSelectedFields = React.useMemo(() => {
+    return difference(availableFields, value?.items?.map((conf) => conf.name) ?? []);
+  }, [availableFields, value?.items]);
 
   const { popoverProps, triggerClick } = usePopoverTrigger();
 
   const menu = React.useMemo(() => {
     return (
       <PopoverContainer>
-        {options?.map((fieldName) => (
+        {notSelectedFields?.map((fieldName) => (
           <MenuItem
-            key={fieldName.value}
+            key={fieldName}
             onClick={() => {
-              setSelectedField([
-                ...selectedField,
-                {
-                  name: fieldName.label,
-                  color: defaultColor,
-                  title: fieldName.label,
-                },
-              ]);
+              onChange({
+                ...value,
+                items: [
+                  ...(value?.items ?? []),
+                  {
+                    name: fieldName,
+                    title: fieldName,
+                    color: defaultColor,
+                  },
+                ],
+              });
               popoverProps.onClose();
             }}
           >
-            {fieldName.value}
+            {fieldName}
           </MenuItem>
         ))}
       </PopoverContainer>
     );
-  }, [options, popoverProps, setSelectedField, selectedField]); // [notSelectedFields, popoverProps, setSettings, settings]);
+  }, [notSelectedFields, onChange, popoverProps, value]);
 
   return (
     <>
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.headerTitle}>
-            <h5>{!options?.length ? <i>Empty</i> : <></>}</h5>
+            <h5>{!value?.items?.length ? <i>Empty</i> : <></>}</h5>
           </div>
 
           <Button
@@ -105,43 +80,38 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </Button>
         </div>
 
-        {selectedField?.map((el, index) => (
+        {value?.items?.map((el, index) => (
           <div key={el.title} className={styles.row}>
             <div className={styles.fieldName}>{el.title}</div>
             <div>
               <input
                 className={styles.titleInput}
                 type="text"
-                value={value?.title}
-                onChange={() => {
-                  setName(value.title);
-                  //(e) => {
-                  //if (settings.constantsConfig) {
-                  //  settings.constantsConfig[index].title = e.target.value;
-                  //}
-                  //setSettings({ ...settings });
+                value={el?.title}
+                onChange={(e) => {
+                  if (value.items) {
+                    value.items[index].title = e.target.value;
+                  }
+                  onChange({ ...value });
                 }}
               />
             </div>
             <div className={styles.rightColumn}>
               <InlineColorField
-                color={value?.color ?? defaultColor}
-                onChange={(color) => {
-                  setColor(color);
-                  //(newColor: any) => {
-                  //if (settings.constantsConfig) {
-                  //  settings.constantsConfig[index].color = newColor;
-                  //}
-                  //setSettings({ ...settings });
+                color={el?.color ?? defaultColor}
+                onChange={(newColor) => {
+                  if (value.items) {
+                    value.items[index].color = newColor;
+                  }
+                  onChange({ ...value });
                 }}
               />
               <Button
                 onClick={() => {
-                  setSelectedField((selectedField ?? []).filter((conf) => conf.name !== el.name));
-                  //setSettings({
-                  //  ...settings,
-                  //  constantsConfig: (settings?.constantsConfig ?? []).filter((conf) => conf.name !== el.name),
-                  //});
+                  onChange({
+                    ...value,
+                    items: (value?.items ?? []).filter((conf) => conf.name !== el.name),
+                  });
                 }}
                 icon="trash-alt"
                 variant="destructive"

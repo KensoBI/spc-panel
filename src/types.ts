@@ -15,18 +15,18 @@ export type LimitConfig = {
   up?: LimitConfigItem;
   down?: LimitConfigItem;
 };
-export type ConstantConfig = {
- item: ConstantConfigItem;
-}
+export type ConstantsConfig = {
+  items: ConstantConfigItem[];
+};
 
 export interface PanelOptions {
   limitConfig?: LimitConfig;
-  constantConfig?: ConstantConfig;
+  constantsConfig?: ConstantsConfig;
 }
 
 export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
-  constantConfig: undefined,
+  constantsConfig: undefined,
 };
 
 export interface ChartPanelProps extends PanelProps<PanelOptions> {}

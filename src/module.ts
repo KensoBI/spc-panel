@@ -6,11 +6,11 @@ import { ConstantsListEditor } from 'components/options/ConstrantsListEditor';
 
 export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions((builder) => {
   builder.addCustomEditor({
-    id: 'constants',
-    path: 'constants',
+    id: 'constantsConfig',
+    path: 'constantsConfig',
     name: 'Constants',
     description: 'Add constants for the chart',
-    defaultValue: defaultPanelOptions.constantConfig,
+    defaultValue: defaultPanelOptions.constantsConfig,
     editor: ConstantsListEditor,
     category: ['Chart'],
   });
