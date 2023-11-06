@@ -36,7 +36,7 @@ export function ChartPanel(props: ChartPanelProps) {
   }, [onInstanceStateChange, selectedCharacteristic, selectedFeature]);
 
   const settings: TimeseriesSettings = React.useMemo(() => {
-    const settings = { ...defaultTimeseriesSettings };
+    const settings = { ...defaultTimeseriesSettings, ...options.timeseriesParams };
     settings.constantsConfig = {
       items: [],
     };
@@ -62,7 +62,7 @@ export function ChartPanel(props: ChartPanelProps) {
       settings.constantsConfig.items.push(...options.constantsConfig.items);
     }
     return settings;
-  }, [options.limitConfig, options.constantsConfig]);
+  }, [options.timeseriesParams, options.limitConfig, options.constantsConfig]);
 
   return (
     <PanelPropsProvider panelProps={props}>

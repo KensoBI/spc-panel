@@ -1,18 +1,11 @@
-import { ConstantsConfig, LimitConfig } from 'types';
+import { ConstantsConfig, LimitConfig, TimeSeriesParams, defaultTimeseriesSettingsColor } from 'types';
 
-export type TimeseriesSettings = {
+export type TimeseriesSettings = TimeSeriesParams & {
   controlName: string;
   limitConfig?: LimitConfig;
   constantsConfig?: ConstantsConfig;
-  fill: number;
-  lineWidth: number;
-  pointSize: number;
-  lineColor?: string;
-  showLegend?: boolean;
-  decimals?: number;
 };
 
-export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
 export const defaultTimeseriesSettings: TimeseriesSettings = {
   controlName: '',
   fill: 0,
