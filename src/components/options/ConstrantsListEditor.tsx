@@ -9,7 +9,7 @@ import { MenuItem } from 'components/popover/MenuItem';
 import { ConstantsConfig, PanelOptions } from 'types';
 import { Characteristic } from 'data/types';
 import { InlineColorField } from 'components/InlineColorField';
-import { difference } from 'lodash';
+import { difference, uniqBy } from 'lodash';
 
 const defaultColor = '#37872d';
 
@@ -19,12 +19,45 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
   const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
 
+  const prevAvailableFields = React.useRef<string[] | null>(null);
+
   const availableFields = React.useMemo(() => {
     if (selectedCharacteristic == null) {
       return [];
     }
     return Object.keys(selectedCharacteristic.table);
   }, [selectedCharacteristic]);
+
+  React.useEffect(() => {
+    if (availableFields.length === 0) {
+      return;
+    }
+    if (prevAvailableFields.current != null) {
+      const newFields = difference(availableFields, prevAvailableFields.current);
+
+      if (newFields.length > 0) {
+        const items = uniqBy(
+          [
+            ...(value?.items ?? []),
+            ...newFields.map((fieldName) => ({
+              name: fieldName,
+              title: fieldName,
+              color: defaultColor,
+            })),
+          ],
+          'name'
+        );
+
+        onChange({
+          ...value,
+          items,
+        });
+      }
+    }
+
+    prevAvailableFields.current = [...availableFields];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableFields]);
 
   const notSelectedFields = React.useMemo(() => {
     return difference(availableFields, value?.items?.map((conf) => conf.name) ?? []);
