@@ -23,9 +23,9 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
   const controlName = settingsWithDefaults.controlName;
   const constantsConfig = settingsWithDefaults.constantsConfig;
   const limitConfig = settingsWithDefaults.limitConfig;
-  const lineWidth = settingsWithDefaults.lineWidth;
-  const pointSize = settingsWithDefaults.pointSize;
-  const fill = settingsWithDefaults.fill;
+  const lineWidth = settingsWithDefaults.lineWidth!;
+  const pointSize = settingsWithDefaults.pointSize!;
+  const fill = settingsWithDefaults.fill!;
   const lineColor = settingsWithDefaults.lineColor as string;
   const showLegend = settingsWithDefaults.showLegend;
   const decimals = settingsWithDefaults.decimals;
