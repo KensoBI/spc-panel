@@ -4,8 +4,18 @@ import { ChartPanel } from './components/ChartPanel';
 import { LimitsEditor } from './components/options/LimitsEditor';
 import { ConstantsListEditor } from 'components/options/ConstrantsListEditor';
 import { SimpleParamsEditor } from 'components/options/SimpleParamsEditor';
+import { SpcOptionEditor } from 'components/options/SpcOptionEditor';
 
 export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions((builder) => {
+  builder.addCustomEditor({
+    id: 'spcOptions',
+    path: 'spcOptions',
+    name: 'SPC options',
+    description: 'Select options for SPC chart',
+    defaultValue: defaultPanelOptions.spcOptions,
+    editor: SpcOptionEditor,
+    category: ['Chart'],
+  });
   builder.addCustomEditor({
     id: 'constantsConfig',
     path: 'constantsConfig',
