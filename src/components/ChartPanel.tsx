@@ -47,6 +47,7 @@ export function ChartPanel(props: ChartPanelProps) {
           name: options.limitConfig.up.name,
           title: options.limitConfig.up.name,
           color: options.limitConfig.up.color,
+          lineWidth: 2,
         });
       }
 
@@ -55,6 +56,7 @@ export function ChartPanel(props: ChartPanelProps) {
           name: options.limitConfig.down.name,
           title: options.limitConfig.down.name,
           color: options.limitConfig.down.color,
+          lineWidth: 2,
         });
       }
     }

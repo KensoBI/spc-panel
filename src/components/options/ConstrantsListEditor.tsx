@@ -1,4 +1,4 @@
-import { Button, useStyles2 } from '@grafana/ui';
+import { Button, InlineField, Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { PopoverContainer } from 'components/popover/PopoverContainer';
 import { css } from '@emotion/css';
@@ -6,12 +6,11 @@ import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { Popover, usePopoverTrigger } from 'components/popover/Popover';
 import { CloseButton } from 'components/popover/CloseButton';
 import { MenuItem } from 'components/popover/MenuItem';
-import { ConstantsConfig, PanelOptions } from 'types';
+import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
 import { Characteristic } from 'data/types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
-
-const defaultColor = '#37872d';
+import { options_0 } from './types';
 
 type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
@@ -42,7 +41,8 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
             ...newFields.map((fieldName) => ({
               name: fieldName,
               title: fieldName,
-              color: defaultColor,
+              color: defaultConstantColor,
+              lineWidth: 2,
             })),
           ],
           'name'
@@ -79,7 +79,8 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   {
                     name: fieldName,
                     title: fieldName,
-                    color: defaultColor,
+                    color: defaultConstantColor,
+                    lineWidth: 2,
                   },
                 ],
               });
@@ -130,8 +131,21 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
               />
             </div>
             <div className={styles.rightColumn}>
+              <InlineField label={'Line Width'} className={styles.noMargin}>
+                <Select
+                  width={8}
+                  options={options_0}
+                  value={el.lineWidth}
+                  onChange={(selected) => {
+                    if (selected?.value != null) {
+                      value.items[index].lineWidth = selected.value;
+                      onChange({ ...value });
+                    }
+                  }}
+                />
+              </InlineField>
               <InlineColorField
-                color={el?.color ?? defaultColor}
+                color={el?.color ?? defaultConstantColor}
                 onChange={(newColor) => {
                   if (value.items) {
                     value.items[index].color = newColor;
@@ -187,6 +201,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: block;
       -webkit-appearance: none;
       height: 100%;
+      width: 100%;
 
       &:focus {
         background-color: ${theme.colors.background.canvas};
@@ -207,12 +222,16 @@ const getStyles = (theme: GrafanaTheme2) => {
       margin-bottom: auto;
     `,
     rightColumn: css`
+      min-width: 260px;
       display: flex;
-      gap: ${theme.spacing(2)};
+      gap: ${theme.spacing(1)};
     `,
     addButtonContainer: css`
       display: flex;
       justify-content: center;
+    `,
+    noMargin: css`
+      margin: 0;
     `,
   };
 };

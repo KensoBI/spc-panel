@@ -50,6 +50,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
         title: config.title,
         value: characteristic?.table?.[config.name],
         color: config.color,
+        lineWidth: config.lineWidth,
       }))
       ?.filter((c) => c.value != null);
   }, [characteristic?.table, constantsConfig]);

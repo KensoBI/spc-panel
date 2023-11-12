@@ -73,27 +73,27 @@ export function SpcOptionEditor({ value, onChange, context }: Props) {
       <InlineField label={'LSL'}>
         <Input
           type={'number'}
-          placeholder={'LSL value'}
+          placeholder={'Enter LSL value'}
           value={value?.lsl}
           onChange={(selected) => {
             const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
             onChange({ ...value, lsl: newLsl });
             console.log({ ...value, lsl: newLsl });
           }}
-          width={15}
+          width={16}
         />
       </InlineField>
       <InlineField label={'USL'}>
         <Input
           type={'number'}
-          placeholder={'USL value'}
+          placeholder={'Enter USL value'}
           value={value?.usl}
           onChange={(selected) => {
             const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
             onChange({ ...value, usl: newUsl });
             console.log({ ...value, usl: newUsl });
           }}
-          width={15}
+          width={16}
         />
       </InlineField>
     </>

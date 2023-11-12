@@ -5,18 +5,9 @@ import { css } from '@emotion/css';
 import { InlineField, InlineSwitch, Input, Select, useStyles2 } from '@grafana/ui';
 import { InlineColorField } from 'components/InlineColorField';
 import { toNumber } from 'lodash';
+import { options_0, options_05 } from './types';
 
 type Props = StandardEditorProps<TimeSeriesParams, any, PanelOptions>;
-
-const selectableValues = <T extends string | number>(vector: T[]) =>
-  vector.map((el) => ({
-    value: el,
-    label: `${el}`,
-  }));
-
-const base = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const options_0 = selectableValues([0, ...base]);
-const options_05 = selectableValues([0.5, ...base]);
 
 export function SimpleParamsEditor({ value, onChange }: Props) {
   const styles = useStyles2(getStyles);

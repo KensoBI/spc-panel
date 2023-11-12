@@ -5,6 +5,7 @@ export type ConstantConfigItem = {
   name: string;
   color: string;
   title: string;
+  lineWidth: number;
 };
 
 export type LimitConfigItem = {
@@ -63,7 +64,7 @@ export const defaultTimeseriesParams = {
   decimals: 2,
 };
 
-export const defaultSpcOptons= {
+export const defaultSpcOptons = {
   sampleSize: 1,
   aggregation: "mean",
   nominal: undefined,
@@ -75,6 +76,16 @@ export const defaultSpcOptons= {
   max: undefined,
   ucl: undefined,
   lcl: undefined,
+}
+export const defaultConstantColor = '#37872d';
+
+export const defaultConstantOptions: ConstantsConfig = {
+  items: [{
+    name: '',
+  color: defaultConstantColor,
+  title: '',
+  lineWidth: 2,
+  }]
 }
 
 export const defaultPanelOptions: PanelOptions = {

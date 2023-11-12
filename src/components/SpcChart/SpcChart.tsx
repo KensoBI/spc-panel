@@ -53,6 +53,7 @@ type Props = {
     value: number;
     color: string;
     title: string;
+    lineWidth: number;
   }>;
   lineWidth: number;
   pointSize: number;
@@ -93,7 +94,7 @@ export function SpcChart(props: Props) {
     const valField = cloneDeep(valueField);
     const fields = [cloneDeep(timeField)];
 
-    const addConstantField = (value: number, name: string, color: string) => {
+    const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
       fields.push({
         name: name,
         values: new ArrayVector<number>(valField.values.toArray().map(() => value)),
@@ -109,7 +110,7 @@ export function SpcChart(props: Props) {
 
     if (constants) {
       for (const c of constants) {
-        addConstantField(c.value, c.title, c.color);
+        addConstantField(c.value, c.title, c.color, c.lineWidth);
       }
     }
 
