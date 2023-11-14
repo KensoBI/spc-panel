@@ -65,37 +65,53 @@ export function SpcOptionEditor({ value, onChange, context }: Props) {
                 onChange({ ...value, aggregation: newAggregation });
                 console.log({ ...value, aggregation: newAggregation });
               }}
-              width={25}
+              width={22}
             />
           </InlineField>
         )}
       </div>
-      <InlineField label={'LSL'}>
-        <Input
-          type={'number'}
-          placeholder={'Enter LSL value'}
-          value={value?.lsl}
-          onChange={(selected) => {
-            const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-            onChange({ ...value, lsl: newLsl });
-            console.log({ ...value, lsl: newLsl });
-          }}
-          width={16}
-        />
-      </InlineField>
-      <InlineField label={'USL'}>
-        <Input
-          type={'number'}
-          placeholder={'Enter USL value'}
-          value={value?.usl}
-          onChange={(selected) => {
-            const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-            onChange({ ...value, usl: newUsl });
-            console.log({ ...value, usl: newUsl });
-          }}
-          width={16}
-        />
-      </InlineField>
+      <div className={styles.row}>
+        <InlineField label={'Nominal'}>
+          <Input
+            type={'number'}
+            placeholder={'Enter value'}
+            value={value?.nominal}
+            onChange={(selected) => {
+              //TODO Does it require debounce >> ?
+              const newNominal = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+              onChange({ ...value, nominal: newNominal });
+              console.log({ ...value, nominal: newNominal });
+            }}
+            width={12}
+          />
+        </InlineField>
+        <InlineField label={'LSL'}>
+          <Input
+            type={'number'}
+            placeholder={'Enter value'}
+            value={value?.lsl}
+            onChange={(selected) => {
+              const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+              onChange({ ...value, lsl: newLsl });
+              console.log({ ...value, lsl: newLsl });
+            }}
+            width={12}
+          />
+        </InlineField>
+        <InlineField label={'USL'}>
+          <Input
+            type={'number'}
+            placeholder={'Enter value'}
+            value={value?.usl}
+            onChange={(selected) => {
+              const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+              onChange({ ...value, usl: newUsl });
+              console.log({ ...value, usl: newUsl });
+            }}
+            width={12}
+          />
+        </InlineField>
+      </div>
     </>
   );
 }
@@ -109,7 +125,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     `,
     row: css`
       display: flex;
-      gap: ${theme.spacing(1)};
+      gap: ${theme.spacing(0)};
     `,
   };
 };
