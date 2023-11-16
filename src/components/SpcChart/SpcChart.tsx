@@ -33,7 +33,7 @@ import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
-import { calcLcl, calcMax, calcMean, calcMin, calcRange, calcUcl, stdDev } from 'data/Calculation';
+import { calcMin, calcMax, calcMean, calcRange, stdDev, calcUcl, calcLcl } from 'data/Calculation';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -97,7 +97,7 @@ export function SpcChart(props: Props) {
     const fields = [cloneDeep(timeField)];
 
     const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
-      console.log('value to calculations ', valField.values);
+      console.log('value to calculations ', valField);
       let minVal = calcMin(valField);
       console.log('Frontend: min value ', minVal);
       let maxVal = calcMax(valField);
@@ -112,9 +112,9 @@ export function SpcChart(props: Props) {
       let usl = 11;
       console.log('constant test usl and lsl value: ', lsl, usl);
       if (lsl != null && usl != null) {
-        let uclVal = calcUcl(valField);
+        let uclVal = calcUcl(valField, 'mean', 2);
         console.log('Frontend: Ucl value ', uclVal);
-        let lclVal = calcLcl(valField);
+        let lclVal = calcLcl(valField, 'mean', 2);
         console.log('Frontend: Lcl value ', lclVal);
       }
 
