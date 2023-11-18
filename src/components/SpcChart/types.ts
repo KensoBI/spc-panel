@@ -1,9 +1,10 @@
-import { ConstantsConfig, LimitConfig, TimeSeriesParams, defaultTimeseriesSettingsColor } from 'types';
+import { ConstantsConfig, LimitConfig, SpcOptions, TimeSeriesParams, defaultTimeseriesSettingsColor } from 'types';
 
 export type TimeseriesSettings = TimeSeriesParams & {
   controlName: string;
   limitConfig?: LimitConfig;
   constantsConfig?: ConstantsConfig;
+  spcOptions?: SpcOptions;
 };
 
 export const defaultTimeseriesSettings: TimeseriesSettings = {

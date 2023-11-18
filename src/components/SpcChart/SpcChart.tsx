@@ -33,7 +33,7 @@ import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
-import { calcMin, calcMax, calcMean, calcRange, stdDev, calcUcl, calcLcl } from 'data/Calculation';
+import { calcMin, calcMax, calcMean, calcRange, stdDev, calcUcl, calcLcl, calcValueSampleSize } from 'data/Calculation';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -98,6 +98,9 @@ export function SpcChart(props: Props) {
 
     const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
       console.log('value to calculations ', valField);
+      console.log('value with sampleSize 3 mean', calcValueSampleSize(valField, 3, 'mean'));
+      console.log('value with sampleSize 3 range', calcValueSampleSize(valField, 3, 'range'));
+      console.log('value with sampleSize 3 standardDeviation', calcValueSampleSize(valField, 3, 'standardDeviation'));
       let minVal = calcMin(valField);
       console.log('Frontend: min value ', minVal);
       let maxVal = calcMax(valField);

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
-import { useStyles2, InlineField, Select, Input } from '@grafana/ui';
+import { useStyles2, InlineField, Select, Input, InlineSwitch } from '@grafana/ui';
 import React from 'react';
 import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
 
@@ -8,8 +8,6 @@ type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
 export function SpcOptionEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
 
-  //const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
-  //let sampleSize = 1;
   const sampleSizeOptions = [...Array(10)]
     .map((_, i) => i + 1)
     .map((i) => ({
@@ -29,89 +27,96 @@ export function SpcOptionEditor({ value, onChange, context }: Props) {
 
   return (
     <>
-      <div className={styles.row}>
-        <InlineField label="Sample size" disabled={false}>
-          <Select
-            options={sampleSizeOptions}
-            value={value.sampleSize}
-            onChange={(e) => {
-              const newSampleSize = e.value ?? 1;
-              const newSpc: SpcOptions = { ...value, sampleSize: newSampleSize };
-              if (newSampleSize === 1) {
-                newSpc.aggregation = 'mean';
-              }
-              onChange({ ...value, sampleSize: newSampleSize });
-              console.log({ ...value, sample: newSampleSize });
-            }}
-            width={10}
-          />
-        </InlineField>
-        {value.sampleSize !== 1 && (
-          <InlineField label="Aggregation type" disabled={false}>
-            <Select
-              placeholder={defaultAggregationType?.label}
-              options={aggregationTypeOptions}
-              value={value.aggregation}
-              onChange={(e) => {
-                if (!isCalculationType(e.value)) {
-                  return;
-                }
-                const newAggregation = e.value;
-                //const newSpc: SpcOptions = { ...value, aggregation: newAggregation };
-                if (newAggregation !== 'mean') {
-                  //remove options that are not available for this calculation type
-                  //value.filter((option) => !notMeanAggOptions.has(option));
-                }
-                onChange({ ...value, aggregation: newAggregation });
-                console.log({ ...value, aggregation: newAggregation });
-              }}
-              width={22}
-            />
-          </InlineField>
-        )}
-      </div>
-      <div className={styles.row}>
-        <InlineField label={'Nominal'}>
-          <Input
-            type={'number'}
-            placeholder={'Enter value'}
-            value={value?.nominal}
-            onChange={(selected) => {
-              //TODO Does it require debounce >> ?
-              const newNominal = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, nominal: newNominal });
-              console.log({ ...value, nominal: newNominal });
-            }}
-            width={12}
-          />
-        </InlineField>
-        <InlineField label={'LSL'}>
-          <Input
-            type={'number'}
-            placeholder={'Enter value'}
-            value={value?.lsl}
-            onChange={(selected) => {
-              const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, lsl: newLsl });
-              console.log({ ...value, lsl: newLsl });
-            }}
-            width={12}
-          />
-        </InlineField>
-        <InlineField label={'USL'}>
-          <Input
-            type={'number'}
-            placeholder={'Enter value'}
-            value={value?.usl}
-            onChange={(selected) => {
-              const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, usl: newUsl });
-              console.log({ ...value, usl: newUsl });
-            }}
-            width={12}
-          />
-        </InlineField>
-      </div>
+      <InlineSwitch
+        label="Enable database constants"
+        showLabel={true}
+        value={value.enableDatabase}
+        onChange={(e) => onChange({ ...value, enableDatabase: e.currentTarget.checked })}
+      />
+      {value.enableDatabase ? (
+        <></>
+      ) : (
+        <>
+          <div className={styles.row}>
+            <InlineField label="Sample size" disabled={false}>
+              <Select
+                options={sampleSizeOptions}
+                value={value.sampleSize}
+                onChange={(e) => {
+                  const newSampleSize = e.value ?? 1;
+                  const newSpc: SpcOptions = { ...value, sampleSize: newSampleSize };
+                  if (newSampleSize === 1) {
+                    newSpc.aggregation = 'mean';
+                  }
+                  onChange({ ...value, sampleSize: newSampleSize });
+                }}
+                width={10}
+              />
+            </InlineField>
+            {value.sampleSize !== 1 && (
+              <InlineField label="Aggregation type" disabled={false}>
+                <Select
+                  placeholder={defaultAggregationType?.label}
+                  options={aggregationTypeOptions}
+                  value={value.aggregation}
+                  onChange={(e) => {
+                    if (!isCalculationType(e.value)) {
+                      return;
+                    }
+                    const newAggregation = e.value;
+                    //const newSpc: SpcOptions = { ...value, aggregation: newAggregation };
+                    if (newAggregation !== 'mean') {
+                      //remove options that are not available for this calculation type
+                      //value.filter((option) => !notMeanAggOptions.has(option));
+                    }
+                    onChange({ ...value, aggregation: newAggregation });
+                  }}
+                  width={22}
+                />
+              </InlineField>
+            )}
+          </div>
+          <div className={styles.row}>
+            <InlineField label={'Nominal'}>
+              <Input
+                type={'number'}
+                placeholder={'Enter value'}
+                value={value?.nominal}
+                onChange={(selected) => {
+                  //TODO Does it require debounce >> ?
+                  const newNominal = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+                  onChange({ ...value, nominal: newNominal });
+                }}
+                width={12}
+              />
+            </InlineField>
+            <InlineField label={'LSL'}>
+              <Input
+                type={'number'}
+                placeholder={'Enter value'}
+                value={value?.lsl}
+                onChange={(selected) => {
+                  const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+                  onChange({ ...value, lsl: newLsl });
+                }}
+                width={12}
+              />
+            </InlineField>
+            <InlineField label={'USL'}>
+              <Input
+                type={'number'}
+                placeholder={'Enter value'}
+                value={value?.usl}
+                onChange={(selected) => {
+                  const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
+                  onChange({ ...value, usl: newUsl });
+                }}
+                width={12}
+              />
+            </InlineField>
+          </div>
+        </>
+      )}
     </>
   );
 }

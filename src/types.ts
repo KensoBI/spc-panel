@@ -16,6 +16,7 @@ export type LimitConfigItem = {
 export type AggregationType = "mean" | "range" | "standardDeviation";
 
 export type SpcOptions = {
+  enableDatabase: boolean;
   sampleSize: number;
   aggregation?: string ;
   nominal?: number;
@@ -65,6 +66,7 @@ export const defaultTimeseriesParams = {
 };
 
 export const defaultSpcOptons = {
+  enableDatabase: true,
   sampleSize: 1,
   aggregation: "mean",
   nominal: undefined,
