@@ -53,10 +53,18 @@ function groupDataFrames(data: DataFrame[]) {
 
 export type ParsedData = {
   features: Feature[];
+  hasTableData: boolean;
 };
 
 export function parseData(data: DataFrame[]): ParsedData {
   const { tables, timeseries } = groupDataFrames(data);
+
+  if (tables.length === 0 && timeseries.length > 0) {
+    return {
+      features: [],
+      hasTableData: false,
+    };
+  }
 
   const mappedFeatures = new MappedFeatures();
   for (const df of tables) {
@@ -70,5 +78,6 @@ export function parseData(data: DataFrame[]): ParsedData {
 
   return {
     features,
+    hasTableData: tables.length > 0,
   };
 }

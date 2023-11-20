@@ -1,41 +1,35 @@
 import { css } from '@emotion/css';
 import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
-import { useStyles2, InlineField, Select, Input, InlineSwitch } from '@grafana/ui';
+import { useStyles2, InlineField, Select, Input } from '@grafana/ui';
 import React from 'react';
 import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
+
+const sampleSizeOptions = [...Array(10)]
+  .map((_, i) => i + 1)
+  .map((i) => ({
+    label: `${i}`,
+    value: i,
+  }));
+const aggregationTypeOptions: Array<{ label: string; value: AggregationType }> = [
+  { label: 'Mean', value: 'mean' }, //default
+  { label: 'Range', value: 'range' },
+  { label: 'Standard deviation', value: 'standardDeviation' },
+];
+const defaultAggregationType = aggregationTypeOptions.find((option) => option.value === defaultSpcOptons.aggregation);
+
+const isCalculationType = (value: unknown): value is AggregationType => {
+  return typeof value === 'string' && aggregationTypeOptions.some((option) => option.value === value);
+};
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
 export function SpcOptionEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
 
-  const sampleSizeOptions = [...Array(10)]
-    .map((_, i) => i + 1)
-    .map((i) => ({
-      label: `${i}`,
-      value: i,
-    }));
-  const aggregationTypeOptions: Array<{ label: string; value: AggregationType }> = [
-    { label: 'Mean', value: 'mean' }, //default
-    { label: 'Range', value: 'range' },
-    { label: 'Standard deviation', value: 'standardDeviation' },
-  ];
-  const defaultAggregationType = aggregationTypeOptions.find((option) => option.value === defaultSpcOptons.aggregation);
-
-  const isCalculationType = (value: unknown): value is AggregationType => {
-    return typeof value === 'string' && aggregationTypeOptions.some((option) => option.value === value);
-  };
+  const hasTableData = context.instanceState?.hasTableData as boolean | null | undefined;
 
   return (
     <>
-      <InlineSwitch
-        label="Enable database constants"
-        showLabel={true}
-        value={value.enableDatabase}
-        onChange={(e) => onChange({ ...value, enableDatabase: e.currentTarget.checked })}
-      />
-      {value.enableDatabase ? (
-        <></>
-      ) : (
+      {hasTableData === false && (
         <>
           <div className={styles.row}>
             <InlineField label="Sample size" disabled={false}>

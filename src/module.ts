@@ -5,6 +5,7 @@ import { LimitsEditor } from './components/options/LimitsEditor';
 import { ConstantsListEditor } from 'components/options/ConstrantsListEditor';
 import { SimpleParamsEditor } from 'components/options/SimpleParamsEditor';
 import { SpcOptionEditor } from 'components/options/SpcOptionEditor';
+import { parseData } from 'data/parseData';
 
 export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions((builder) => {
   builder.addCustomEditor({
@@ -15,6 +16,7 @@ export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions(
     defaultValue: defaultPanelOptions.spcOptions,
     editor: SpcOptionEditor,
     category: ['Chart'],
+    showIf: (_, data) => parseData(data ?? []).hasTableData === false,
   });
   builder.addCustomEditor({
     id: 'constantsConfig',

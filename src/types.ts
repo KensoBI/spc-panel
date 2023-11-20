@@ -1,6 +1,5 @@
 import { PanelProps } from '@grafana/data';
 
-
 export type ConstantConfigItem = {
   name: string;
   color: string;
@@ -13,12 +12,11 @@ export type LimitConfigItem = {
   color: string;
 };
 
-export type AggregationType = "mean" | "range" | "standardDeviation";
+export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
 export type SpcOptions = {
-  enableDatabase: boolean;
   sampleSize: number;
-  aggregation?: string ;
+  aggregation?: string;
   nominal?: number;
   lsl?: number;
   usl?: number;
@@ -28,8 +26,7 @@ export type SpcOptions = {
   max?: number;
   ucl?: number;
   lcl?: number;
-
-}
+};
 
 export type LimitConfig = {
   up?: LimitConfigItem;
@@ -66,9 +63,8 @@ export const defaultTimeseriesParams = {
 };
 
 export const defaultSpcOptons = {
-  enableDatabase: true,
   sampleSize: 1,
-  aggregation: "mean",
+  aggregation: 'mean',
   nominal: undefined,
   lsl: undefined,
   usl: undefined,
@@ -78,24 +74,25 @@ export const defaultSpcOptons = {
   max: undefined,
   ucl: undefined,
   lcl: undefined,
-}
+};
 export const defaultConstantColor = '#37872d';
 
 export const defaultConstantOptions: ConstantsConfig = {
-  items: [{
-    name: '',
-  color: defaultConstantColor,
-  title: '',
-  lineWidth: 2,
-  }]
-}
+  items: [
+    {
+      name: '',
+      color: defaultConstantColor,
+      title: '',
+      lineWidth: 2,
+    },
+  ],
+};
 
 export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
   constantsConfig: undefined,
   timeseriesParams: defaultTimeseriesParams,
   spcOptions: defaultSpcOptons,
-
 };
 
 export interface ChartPanelProps extends PanelProps<PanelOptions> {}
