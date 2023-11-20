@@ -1,5 +1,5 @@
 import { DataFrame, FieldType } from '@grafana/data';
-import { loadFeaturesByControl, loadTimeseries, MappedFeatures } from './loadDataFrames';
+import { loadFeaturesByControl, loadSingleTimeseries, loadTimeseries, MappedFeatures } from './loadDataFrames';
 import { Feature } from './types';
 
 function isTimeseries(df: DataFrame) {
@@ -60,8 +60,9 @@ export function parseData(data: DataFrame[]): ParsedData {
   const { tables, timeseries } = groupDataFrames(data);
 
   if (tables.length === 0 && timeseries.length > 0) {
+    const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
     return {
-      features: [],
+      features: singleTimeseries ? [singleTimeseries] : [],
       hasTableData: false,
     };
   }

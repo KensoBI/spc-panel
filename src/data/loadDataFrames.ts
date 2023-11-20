@@ -18,20 +18,23 @@ type DataFrameRecord = {
 
 const metaColumns = ['feature', 'control', 'partid', 'featuretype'];
 
+const defaultFeature = (key: string, partId: string, refId: string): Feature => ({
+  uid: '',
+  id: key,
+  partId: partId,
+  refId: refId,
+  name: '',
+  characteristics: {},
+});
+
 export class MappedFeatures extends Map<string, Feature> {
   getOrDefault = (record: DataFrameRecord, refId: string) => {
     const key = record.feature;
     if (this.has(key)) {
       return this.get(key) as Feature;
     }
-    const newFeature: Feature = {
-      uid: '',
-      id: key,
-      partId: record.partid?.toString() ?? '',
-      refId: refId,
-      name: '',
-      characteristics: {},
-    };
+
+    const newFeature = defaultFeature(key, record.partid?.toString() ?? '', refId);
     this.set(key, newFeature);
     return newFeature;
   };
@@ -117,4 +120,41 @@ export function loadTimeseries(
       feature.meta = { ...(feature.meta ?? {}), ...meta };
     }
   }
+}
+
+export function loadSingleTimeseries(fields: Array<Field<string, Vector<any>>>, refId: string): Feature | undefined {
+  const timeVector = fields?.[0];
+  if (timeVector == null || timeVector.name !== 'Time') {
+    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
+    return;
+  }
+
+  const firstValueField = () => {
+    for (let i = 1; i < fields.length; i++) {
+      if (fields[i].type === 'number') {
+        return fields[i];
+      }
+    }
+    return undefined;
+  };
+
+  const valueVector = firstValueField();
+  if (valueVector == null) {
+    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
+    return;
+  }
+
+  const newFeature = defaultFeature('value', '', refId);
+
+  const { t, v } = noNulls(timeVector.values, valueVector.values);
+  const timeseries = {
+    time: { ...timeVector, values: t },
+    values: { ...valueVector, values: v },
+  };
+  newFeature.characteristics['timeseries'] = {
+    table: {},
+    timeseries,
+  };
+
+  return newFeature;
 }
