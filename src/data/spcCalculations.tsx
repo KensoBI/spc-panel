@@ -108,6 +108,17 @@ export function calcValueSampleSize(
   }
 }
 
+export function calcTimeSampleSize(time: Field<string, Vector<number>>, sampleSize: number) {
+  if (sampleSize === 1) {
+    return time;
+  }
+  const calcTime: Field<string, Vector<number>> = {
+    ...time,
+    values: calculateGroupedAverage(time, sampleSize),
+  };
+  return calcTime;
+}
+
 export function calcMax(value: Field<string, Vector<any>>) {
   let maxValue: number | undefined;
   const maxInField = Math.max(...value.values);

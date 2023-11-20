@@ -1,7 +1,7 @@
 import { ConstantsConfig, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
-import { calcLcl, calcMax, calcMean, calcMin, calcUcl, calcValueSampleSize } from './spcCalculations';
+import { calcLcl, calcMax, calcMean, calcMin, calcTimeSampleSize, calcUcl, calcValueSampleSize } from './spcCalculations';
 
 export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConfig?: ConstantsConfig) {
   const f = cloneDeep(feature);
@@ -17,6 +17,10 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions?.sampleSize ?? 1,
     spcOptions?.aggregation ?? 'mean'
   );
+  characteristic.timeseries.time = calcTimeSampleSize(
+    characteristic.timeseries.time,
+    spcOptions?.sampleSize ?? 1,
+  )
 
   if (spcOptions?.nominal != null) {
     characteristic.table.nominal = spcOptions.nominal;
@@ -52,15 +56,16 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     characteristic.table.mean = calcMean(characteristic.timeseries.values);
   }
 
-  //TODO: add LCL and UCL
-  if (selected.has('lcl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null) {
+  //TODO: add LCL and UCL 
+  // Calculate LCL and UCL only when you enter lsl and usl values!
+  if (selected.has('lcl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.lsl != null && spcOptions.usl != null) {
     characteristic.table.lcl = calcLcl(
       characteristic.timeseries.values,
       characteristic.table.range,
       spcOptions.sampleSize
     );
   }
-  if (selected.has('ucl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null) {
+  if (selected.has('ucl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.lsl != null && spcOptions.usl != null) {
     characteristic.table.ucl = calcUcl(
       characteristic.timeseries.values,
       characteristic.table.range,
