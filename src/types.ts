@@ -16,16 +16,10 @@ export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
 export type SpcOptions = {
   sampleSize: number;
-  aggregation?: string;
+  aggregation?: AggregationType;
   nominal?: number;
   lsl?: number;
   usl?: number;
-  mean?: number;
-  range?: number;
-  min?: number;
-  max?: number;
-  ucl?: number;
-  lcl?: number;
 };
 
 export type LimitConfig = {
@@ -62,18 +56,12 @@ export const defaultTimeseriesParams = {
   decimals: 2,
 };
 
-export const defaultSpcOptons = {
+export const defaultSpcOptons: SpcOptions = {
   sampleSize: 1,
   aggregation: 'mean',
   nominal: undefined,
   lsl: undefined,
   usl: undefined,
-  mean: undefined,
-  range: undefined,
-  min: undefined,
-  max: undefined,
-  ucl: undefined,
-  lcl: undefined,
 };
 export const defaultConstantColor = '#37872d';
 

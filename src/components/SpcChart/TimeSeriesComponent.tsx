@@ -81,7 +81,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
 
   const setSettings = React.useCallback((newSettings: TimeseriesSettings) => {
     //TODO: Implement
-    console.log('setSettings', newSettings);
+    // console.log('setSettings', newSettings);
   }, []);
 
   const onSeriesColorChange = React.useCallback(

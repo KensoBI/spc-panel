@@ -33,7 +33,6 @@ import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
-import { calcMin, calcMax, calcMean, calcRange, stdDev, calcUcl, calcLcl, calcValueSampleSize } from 'data/Calculation';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -97,30 +96,6 @@ export function SpcChart(props: Props) {
     const fields = [cloneDeep(timeField)];
 
     const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
-      console.log('value to calculations ', valField);
-      console.log('value with sampleSize 3 mean', calcValueSampleSize(valField, 3, 'mean'));
-      console.log('value with sampleSize 3 range', calcValueSampleSize(valField, 3, 'range'));
-      console.log('value with sampleSize 3 standardDeviation', calcValueSampleSize(valField, 3, 'standardDeviation'));
-      let minVal = calcMin(valField);
-      console.log('Frontend: min value ', minVal);
-      let maxVal = calcMax(valField);
-      console.log('Frontend: max value ', maxVal);
-      let meanVal = calcMean(valField);
-      console.log('Frontend: mean value ', meanVal);
-      let rangeVal = calcRange(valField);
-      console.log('Frontend: range value ', rangeVal);
-      let stddev = stdDev(valField, meanVal);
-      console.log('Frontend: stdDev value ', stddev);
-      let lsl = 9;
-      let usl = 11;
-      console.log('constant test usl and lsl value: ', lsl, usl);
-      if (lsl != null && usl != null) {
-        let uclVal = calcUcl(valField, 'mean', 2);
-        console.log('Frontend: Ucl value ', uclVal);
-        let lclVal = calcLcl(valField, 'mean', 2);
-        console.log('Frontend: Lcl value ', lclVal);
-      }
-
       fields.push({
         name: name,
         values: new ArrayVector<number>(valField.values.toArray().map(() => value)),
@@ -133,7 +108,6 @@ export function SpcChart(props: Props) {
 
         type: FieldType.number,
       });
-      console.log('field', fields);
     };
 
     if (constants) {

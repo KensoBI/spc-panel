@@ -17,18 +17,22 @@ type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>
 export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
   const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
-
+  const hasTableData = context.instanceState?.hasTableData as boolean | null | undefined;
   const prevAvailableFields = React.useRef<string[] | null>(null);
 
   const availableFields = React.useMemo(() => {
     if (selectedCharacteristic == null) {
       return [];
     }
+    if (!hasTableData) {
+      const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
+      return ['nominal', 'lsl', 'usl', 'min', 'max', 'mean', 'range', ...(sampleSize > 1 ? ['lcl', 'ucl'] : [])];
+    }
     return Object.keys(selectedCharacteristic.table);
-  }, [selectedCharacteristic]);
+  }, [context.options?.spcOptions?.sampleSize, hasTableData, selectedCharacteristic]);
 
   React.useEffect(() => {
-    if (availableFields.length === 0) {
+    if (availableFields.length === 0 || !hasTableData) {
       return;
     }
     if (prevAvailableFields.current != null) {

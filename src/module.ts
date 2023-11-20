@@ -2,7 +2,7 @@ import { PanelPlugin } from '@grafana/data';
 import { PanelOptions, defaultPanelOptions } from './types';
 import { ChartPanel } from './components/ChartPanel';
 import { LimitsEditor } from './components/options/LimitsEditor';
-import { ConstantsListEditor } from 'components/options/ConstrantsListEditor';
+import { ConstantsListEditor } from 'components/options/ConstantsListEditor';
 import { SimpleParamsEditor } from 'components/options/SimpleParamsEditor';
 import { SpcOptionEditor } from 'components/options/SpcOptionEditor';
 import { parseData } from 'data/parseData';
