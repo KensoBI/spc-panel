@@ -56,21 +56,53 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     characteristic.table.mean = calcMean(characteristic.timeseries.values);
   }
 
-  //TODO: add LCL and UCL 
-  // Calculate LCL and UCL only when you enter lsl and usl values!
-  if (selected.has('lcl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.lsl != null && spcOptions.usl != null) {
-    characteristic.table.lcl = calcLcl(
+  if (selected.has('lcl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.aggregation !== 'mean') {
+    let resultLcl = calcLcl(
       characteristic.timeseries.values,
-      characteristic.table.range,
+      spcOptions.aggregation,
       spcOptions.sampleSize
     );
+    characteristic.table.lcl = resultLcl ? resultLcl[0] : undefined;
   }
-  if (selected.has('ucl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.lsl != null && spcOptions.usl != null) {
-    characteristic.table.ucl = calcUcl(
+  if(selected.has('lcl_Rbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
+    let resultLcl = calcLcl(
       characteristic.timeseries.values,
-      characteristic.table.range,
+      spcOptions.aggregation,
       spcOptions.sampleSize
     );
+    characteristic.table.lcl_Rbar = resultLcl ? resultLcl[0] : undefined;
+  }
+  if(selected.has('lcl_Sbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
+    let resultLcl = calcLcl(
+      characteristic.timeseries.values,
+      spcOptions.aggregation,
+      spcOptions.sampleSize
+    );
+    characteristic.table.lcl_Sbar = resultLcl ? resultLcl[1] : undefined;
+  }
+  if (selected.has('ucl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.aggregation !=='mean') {
+    let resultUcl = calcUcl(
+      characteristic.timeseries.values,
+      spcOptions.aggregation,
+      spcOptions.sampleSize
+    );
+    characteristic.table.ucl = resultUcl ? resultUcl[0] : undefined;
+  } 
+  if(selected.has('ucl_Rbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
+    let resultUcl = calcUcl(
+      characteristic.timeseries.values,
+      spcOptions.aggregation,
+      spcOptions.sampleSize
+    );
+    characteristic.table.ucl_Rbar = resultUcl ? resultUcl[0] : undefined;
+  }
+  if(selected.has('ucl_Sbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
+    let resultUcl = calcUcl(
+      characteristic.timeseries.values,
+      spcOptions.aggregation,
+      spcOptions.sampleSize
+    );
+    characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
   }
 
   return f;

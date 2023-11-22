@@ -161,7 +161,7 @@ export function calcUcl(value: Field<string, Vector<any>>, aggType: AggregationT
       case 'range':
         const colD4 = 8;
         const D4 = row[colD4];
-        const Ucl_range = D4 * stdDev(value, calcMean(value));
+        const Ucl_range = D4 * calcRange(value);
         return [Ucl_range];
       case 'standardDeviation':
         const colB3 = 5;
@@ -184,7 +184,7 @@ export function calcUcl(value: Field<string, Vector<any>>, aggType: AggregationT
         return [Ucl_Rbar, Ucl_Sbar];
     }
   }
-  return undefined;
+  return;
 }
 
 export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationType, sample: number) {
@@ -195,7 +195,7 @@ export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationT
         const colD3 = 7;
         const D3 = row[colD3];
 
-        const Lcl_range = D3 * stdDev(value, calcMean(value));
+        const Lcl_range = D3 * calcRange(value);
 
         return [Lcl_range];
       case 'standardDeviation':

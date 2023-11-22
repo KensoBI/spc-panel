@@ -26,10 +26,29 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     }
     if (!hasTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
-      return ['nominal', 'lsl', 'usl', 'min', 'max', 'mean', 'range', ...(sampleSize > 1 ? ['lcl', 'ucl'] : [])];
+      const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
+      return [
+        'nominal',
+        'lsl',
+        'usl',
+        'min',
+        'max',
+        'mean',
+        'range',
+        ...(sampleSize > 1
+          ? aggregationType === 'mean'
+            ? ['lcl_Rbar', 'ucl_Rbar', 'lcl_Sbar', 'ucl_Sbar']
+            : ['lcl', 'ucl']
+          : []),
+      ];
     }
     return Object.keys(selectedCharacteristic.table);
-  }, [context.options?.spcOptions?.sampleSize, hasTableData, selectedCharacteristic]);
+  }, [
+    context.options?.spcOptions?.aggregation,
+    context.options?.spcOptions?.sampleSize,
+    hasTableData,
+    selectedCharacteristic,
+  ]);
 
   React.useEffect(() => {
     if (availableFields.length === 0 || !hasTableData) {
