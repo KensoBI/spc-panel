@@ -53,13 +53,7 @@ export function SpcOptionEditor({ value, onChange, context }: Props) {
                 if (!isCalculationType(e.value)) {
                   return;
                 }
-                const newAggregation = e.value;
-                //const newSpc: SpcOptions = { ...value, aggregation: newAggregation };
-                if (newAggregation !== 'mean') {
-                  //remove options that are not available for this calculation type
-                  //value.filter((option) => !notMeanAggOptions.has(option));
-                }
-                onChange({ ...value, aggregation: newAggregation });
+                onChange({ ...value, aggregation: e.value });
               }}
               width={22}
             />
@@ -73,7 +67,6 @@ export function SpcOptionEditor({ value, onChange, context }: Props) {
             placeholder={'Enter value'}
             value={value?.nominal}
             onChange={(selected) => {
-              //TODO Does it require debounce >> ?
               const newNominal = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
               onChange({ ...value, nominal: newNominal });
             }}

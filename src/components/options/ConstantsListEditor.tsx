@@ -1,4 +1,4 @@
-import { Button, InlineField, Select, useStyles2 } from '@grafana/ui';
+import { Button, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { PopoverContainer } from 'components/popover/PopoverContainer';
 import { css } from '@emotion/css';
@@ -10,7 +10,6 @@ import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
 import { Characteristic } from 'data/types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
-import { options_0 } from './types';
 
 type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
@@ -154,7 +153,9 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
               />
             </div>
             <div className={styles.rightColumn}>
-              <InlineField label={'Line Width'} className={styles.noMargin}>
+              {
+                //TODO not working now
+                /*<InlineField label={'Line Width'} className={styles.noMargin}>
                 <Select
                   width={8}
                   options={options_0}
@@ -166,7 +167,8 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                     }
                   }}
                 />
-              </InlineField>
+                </InlineField>*/
+              }
               <InlineColorField
                 color={el?.color ?? defaultConstantColor}
                 onChange={(newColor) => {
