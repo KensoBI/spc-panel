@@ -31,11 +31,15 @@ Welcome to KensoBI SPC panel for Grafana. This plugin provides various customiza
 
 - **Line color:**  Customize the color of your graph lines to match your desired visual style.
 
-## Data Source Compatibility:
+## Data Source Compatibility
 
 This plugin is designed to work seamlessly with all available data sources in Grafana. Whether you are using InfluxDB, Prometheus, Elasticsearch, or any other supported data source, you can utilize the full potential of this plugin to enhance your data visualization.
 
 Feel free to modify and customize these settings to suit your specific needs and preferences. 
+
+## Functions documentation
+
+The SPC Panel plug-in uses various functions to analyze data and calculate constants. For detailed information about these mathematical formulas, please refer to the section [Functions Documentation](./src/README.md).
 
 ## Installation
 
