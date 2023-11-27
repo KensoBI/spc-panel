@@ -221,8 +221,8 @@ export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationT
   return;
 }
 
-export function stdDev(value: Field<string, Vector<any>>, mean: number) {
-  const squaredDifferences = value.values.map((val) => Math.pow(val - mean, 2));
+export function stdDev(value: Field<string, Vector<number>>, mean: number) {
+  const squaredDifferences = value.values.map((val) => Math.pow((val as number) - mean, 2));
   const meanSquaredDifferences = squaredDifferences.reduce((acc, val) => acc + val, 0) / value.values.length;
   const standardDeviation = Math.sqrt(meanSquaredDifferences);
 
