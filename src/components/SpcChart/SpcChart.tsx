@@ -1,6 +1,5 @@
 /* eslint-disable deprecation/deprecation */
 import {
-  ArrayVector,
   dateTime,
   Field,
   FieldColorModeId,
@@ -11,7 +10,6 @@ import {
   TimeRange,
   toDataFrame,
   toFixed,
-  Vector,
 } from '@grafana/data';
 import {
   Alert,
@@ -38,8 +36,8 @@ const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
 type Props = {
   dataFrameName: string;
-  timeField?: Field<string, Vector<number>>;
-  valueField?: Field<string, Vector<any>>;
+  timeField?: Field<string, number[]>;
+  valueField?: Field<string, number[]>;
   limits?: {
     up?: {
       value: number;
@@ -98,7 +96,7 @@ export function SpcChart(props: Props) {
     const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
       fields.push({
         name: name,
-        values: new ArrayVector<number>(valField.values.toArray().map(() => value)),
+        values: valField.values.map(() => value),
         config: {
           color: {
             mode: FieldColorModeId.Fixed,

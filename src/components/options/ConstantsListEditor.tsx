@@ -7,7 +7,6 @@ import { Popover, usePopoverTrigger } from 'components/popover/Popover';
 import { CloseButton } from 'components/popover/CloseButton';
 import { MenuItem } from 'components/popover/MenuItem';
 import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
-import { Characteristic } from 'data/types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
 
@@ -15,12 +14,12 @@ type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>
 
 export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
-  const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
+  const characteristicKeys = context.instanceState?.characteristicKeys as string[] | null | undefined;
   const hasTableData = context.instanceState?.hasTableData as boolean | null | undefined;
   const prevAvailableFields = React.useRef<string[] | null>(null);
 
   const availableFields = React.useMemo(() => {
-    if (selectedCharacteristic == null) {
+    if (characteristicKeys == null) {
       return [];
     }
     if (!hasTableData) {
@@ -41,12 +40,12 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           : []),
       ];
     }
-    return Object.keys(selectedCharacteristic.table);
+    return characteristicKeys;
   }, [
+    characteristicKeys,
     context.options?.spcOptions?.aggregation,
     context.options?.spcOptions?.sampleSize,
     hasTableData,
-    selectedCharacteristic,
   ]);
 
   React.useEffect(() => {

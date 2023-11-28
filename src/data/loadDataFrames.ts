@@ -1,8 +1,8 @@
-import { ArrayVector, Field, Vector } from '@grafana/data';
+import { Field } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
 
-type VectorField = Field<string, Vector<any>>;
+type VectorField = Field<string, number[]>;
 type ColumnsDict = {
   feature?: VectorField;
   control?: VectorField;
@@ -42,13 +42,13 @@ export class MappedFeatures extends Map<string, Feature> {
 
 function getRecord(columns: ColumnsDict, i: number) {
   return Object.keys(columns).reduce((acc, key) => {
-    acc[key] = columns[key].values.get(i);
+    acc[key] = columns[key].values[i];
     return acc;
   }, {} as DataFrameRecord);
 }
 
 export function loadFeaturesByControl(
-  fields: Array<Field<string, Vector<any>>>,
+  fields: Array<Field<string, number[]>>,
   refId: string,
   mappedFeatures: MappedFeatures
 ) {
@@ -73,20 +73,20 @@ export function loadFeaturesByControl(
   }
 }
 
-function noNulls(timeVector: Vector<any>, valuesVector: Vector<any>) {
-  const t = new ArrayVector<number>();
-  const v = new ArrayVector<any>();
+function noNulls(timeVector: number[], valuesVector: number[]) {
+  const t = [] as number[];
+  const v = [] as number[];
   for (let i = 0; i < timeVector.length; i++) {
-    if (timeVector.get(i) != null && valuesVector.get(i) != null) {
-      t.add(timeVector.get(i));
-      v.add(valuesVector.get(i));
+    if (timeVector[i] != null && valuesVector[i] != null) {
+      t.push(timeVector[i]);
+      v.push(valuesVector[i]);
     }
   }
   return { t, v };
 }
 
 export function loadTimeseries(
-  fields: Array<Field<string, Vector<any>>>,
+  fields: Array<Field<string, number[]>>,
   refId: string,
   mappedFeatures: MappedFeatures,
   meta?: Dictionary<any>
@@ -107,7 +107,7 @@ export function loadTimeseries(
     if (feature == null) {
       continue;
     }
-    const { t, v } = noNulls(timeVector.values, fields[i].values);
+    const { t, v } = noNulls(timeVector.values as number[], fields[i].values as number[]);
     const timeseries = {
       time: { ...timeVector, values: t },
       values: { ...fields[i], values: v },
@@ -122,7 +122,7 @@ export function loadTimeseries(
   }
 }
 
-export function loadSingleTimeseries(fields: Array<Field<string, Vector<any>>>, refId: string): Feature | undefined {
+export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
   const timeVector = fields?.[0];
   if (timeVector == null || timeVector.name !== 'Time') {
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
@@ -146,7 +146,7 @@ export function loadSingleTimeseries(fields: Array<Field<string, Vector<any>>>, 
 
   const newFeature = defaultFeature('value', '', refId);
 
-  const { t, v } = noNulls(timeVector.values, valueVector.values);
+  const { t, v } = noNulls(timeVector.values as number[], valueVector.values as number[]);
   const timeseries = {
     time: { ...timeVector, values: t },
     values: { ...valueVector, values: v },

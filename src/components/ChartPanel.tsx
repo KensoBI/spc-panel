@@ -34,8 +34,7 @@ export function ChartPanel(props: ChartPanelProps) {
   const onInstanceStateChange = context.onInstanceStateChange;
   React.useEffect(() => {
     onInstanceStateChange?.({
-      selectedCharacteristic,
-      selectedFeature,
+      characteristicKeys: selectedCharacteristic?.table ? Object.keys(selectedCharacteristic.table) : null,
       hasTableData,
     });
   }, [hasTableData, onInstanceStateChange, selectedCharacteristic, selectedFeature]);

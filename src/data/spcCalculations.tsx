@@ -1,12 +1,11 @@
-import { ArrayVector, Field, Vector } from '@grafana/data';
 import { AggregationType } from 'types';
 import { calcConst } from './calcConst';
 
-function calculateGroupedAverage(value: Field<string, Vector<any>>, sampleSize: number): ArrayVector<number> {
-  const reversedValues = [...value.values].reverse();
+function calculateGroupedAverage(values: number[], sampleSize: number) {
+  const reversedValues = [...values].reverse();
   const result: number[] = [];
 
-  for (let i = 0; i < value.values.length; i += sampleSize) {
+  for (let i = 0; i < values.length; i += sampleSize) {
     const sum = reversedValues
       .slice(i, i + sampleSize)
       .reduce(
@@ -14,20 +13,19 @@ function calculateGroupedAverage(value: Field<string, Vector<any>>, sampleSize: 
         0
       );
 
-    const count = Math.min(sampleSize, value.values.length - i);
+    const count = Math.min(sampleSize, values.length - i);
     const average = sum / count;
 
     result.push(average);
   }
 
-  const arrayVector = new ArrayVector<number>(result.reverse());
-  return arrayVector;
+  return result.reverse();
 }
-function calculateGroupedDifference(value: Field<string, Vector<any>>, sampleSize: number): ArrayVector<number> {
-  const reversedValues = [...value.values].reverse();
+function calculateGroupedDifference(values: number[], sampleSize: number) {
+  const reversedValues = [...values].reverse();
   const result: number[] = [];
 
-  for (let i = 0; i < value.values.length; i += sampleSize) {
+  for (let i = 0; i < values.length; i += sampleSize) {
     const valuesInInterval = reversedValues.slice(i, i + sampleSize);
 
     const isValidNumber = (val: any) => typeof val === 'number' && !isNaN(val);
@@ -40,15 +38,14 @@ function calculateGroupedDifference(value: Field<string, Vector<any>>, sampleSiz
     result.push(difference);
   }
 
-  const arrayVector = new ArrayVector<number>(result.reverse());
-  return arrayVector;
+  return result.reverse();
 }
 
-function calculateGroupedStdDev(value: Field<string, Vector<any>>, sampleSize: number): ArrayVector<number> {
-  const reversedValues = [...value.values].reverse();
+function calculateGroupedStdDev(values: number[], sampleSize: number) {
+  const reversedValues = [...values].reverse();
   const result: number[] = [];
 
-  for (let i = 0; i < value.values.length; i += sampleSize) {
+  for (let i = 0; i < values.length; i += sampleSize) {
     const valuesInInterval = reversedValues.slice(i, i + sampleSize);
 
     const isValidNumber = (val: any) => typeof val === 'number' && !isNaN(val);
@@ -71,57 +68,34 @@ function calculateGroupedStdDev(value: Field<string, Vector<any>>, sampleSize: n
     result.push(standardDeviation);
   }
 
-  const arrayVector = new ArrayVector<number>(result.reverse());
-  return arrayVector;
+  return result.reverse();
 }
 
-export function calcValueSampleSize(
-  value: Field<string, Vector<any>>,
-  sampleSize: number,
-  aggType: AggregationType
-): Field<string, Vector<number>> {
+export function calcValueSampleSize(values: number[], sampleSize: number, aggType: AggregationType) {
   if (sampleSize === 1) {
-    return value;
+    return values;
   }
   switch (aggType) {
     case 'range':
-      const valueRange: Field<string, Vector<number>> = {
-        ...value,
-        values: calculateGroupedDifference(value, sampleSize),
-      };
-
-      return valueRange;
+      return calculateGroupedDifference(values, sampleSize);
     case 'standardDeviation':
-      const valueStdDev: Field<string, Vector<number>> = {
-        ...value,
-        values: calculateGroupedStdDev(value, sampleSize),
-      };
-
-      return valueStdDev;
+      return calculateGroupedStdDev(values, sampleSize);
     default:
     case 'mean':
-      const valueMean: Field<string, Vector<number>> = {
-        ...value,
-        values: calculateGroupedAverage(value, sampleSize),
-      };
-      return valueMean;
+      return calculateGroupedAverage(values, sampleSize);
   }
 }
 
-export function calcTimeSampleSize(time: Field<string, Vector<number>>, sampleSize: number) {
+export function calcTimeSampleSize(time: number[], sampleSize: number) {
   if (sampleSize === 1) {
     return time;
   }
-  const calcTime: Field<string, Vector<number>> = {
-    ...time,
-    values: calculateGroupedAverage(time, sampleSize),
-  };
-  return calcTime;
+  return calculateGroupedAverage(time, sampleSize);
 }
 
-export function calcMax(value: Field<string, Vector<any>>) {
+export function calcMax(values: number[]) {
   let maxValue: number | undefined;
-  const maxInField = Math.max(...value.values);
+  const maxInField = Math.max(...values);
 
   if (maxValue === undefined || maxInField > maxValue) {
     maxValue = maxInField;
@@ -130,9 +104,9 @@ export function calcMax(value: Field<string, Vector<any>>) {
   return maxValue;
 }
 
-export function calcMin(value: Field<string, Vector<any>>) {
+export function calcMin(values: number[]) {
   let minValue: number | undefined;
-  const minInField = Math.min(...value.values);
+  const minInField = Math.min(...values);
 
   if (minValue === undefined || minInField < minValue) {
     minValue = minInField;
@@ -141,32 +115,32 @@ export function calcMin(value: Field<string, Vector<any>>) {
   return minValue;
 }
 
-export function calcMean(value: Field<string, Vector<any>>) {
+export function calcMean(values: number[]) {
   let sum = 0;
-  for (const val of value.values) {
+  for (const val of values) {
     sum += val;
   }
-  const count = value.values.length;
+  const count = values.length;
   return sum / count;
 }
 
-export function calcRange(value: Field<string, Vector<any>>) {
-  return calcMax(value) - calcMin(value);
+export function calcRange(values: number[]) {
+  return calcMax(values) - calcMin(values);
 }
 
-export function calcUcl(value: Field<string, Vector<any>>, aggType: AggregationType, sample: number) {
+export function calcUcl(values: number[], aggType: AggregationType, sample: number) {
   if (sample > 1) {
     let row = calcConst[sample];
     switch (aggType) {
       case 'range':
         const colD4 = 8;
         const D4 = row[colD4];
-        const Ucl_range = D4 * calcRange(value);
+        const Ucl_range = D4 * calcRange(values);
         return [Ucl_range];
       case 'standardDeviation':
         const colB3 = 5;
         const B3 = row[colB3];
-        const Ucl_stdDev = B3 * stdDev(value, calcMean(value));
+        const Ucl_stdDev = B3 * stdDev(values, calcMean(values));
         return [Ucl_stdDev];
       default:
       case 'mean':
@@ -176,10 +150,10 @@ export function calcUcl(value: Field<string, Vector<any>>, aggType: AggregationT
         const A2 = row[colA2];
         const A3 = row[colA3];
 
-        const mean = calcMean(value);
+        const mean = calcMean(values);
 
-        const Ucl_Rbar = mean + A2 * calcRange(value);
-        const Ucl_Sbar = mean + A3 * stdDev(value, mean);
+        const Ucl_Rbar = mean + A2 * calcRange(values);
+        const Ucl_Sbar = mean + A3 * stdDev(values, mean);
 
         return [Ucl_Rbar, Ucl_Sbar];
     }
@@ -187,7 +161,7 @@ export function calcUcl(value: Field<string, Vector<any>>, aggType: AggregationT
   return;
 }
 
-export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationType, sample: number) {
+export function calcLcl(values: number[], aggType: AggregationType, sample: number) {
   if (sample) {
     let row = calcConst[sample];
     switch (aggType) {
@@ -195,13 +169,13 @@ export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationT
         const colD3 = 7;
         const D3 = row[colD3];
 
-        const Lcl_range = D3 * calcRange(value);
+        const Lcl_range = D3 * calcRange(values);
 
         return [Lcl_range];
       case 'standardDeviation':
         const colB4 = 6;
         const B4 = row[colB4];
-        const Lcl_stdDev = B4 * stdDev(value, calcMean(value));
+        const Lcl_stdDev = B4 * stdDev(values, calcMean(values));
 
         return [Lcl_stdDev];
       default:
@@ -210,10 +184,10 @@ export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationT
         const colA3 = 4;
         const A2 = row[colA2];
         const A3 = row[colA3];
-        const mean = calcMean(value);
+        const mean = calcMean(values);
 
-        const Lcl_Rbar = mean - A2 * calcRange(value);
-        const Lcl_Sbar = mean - A3 * stdDev(value, mean);
+        const Lcl_Rbar = mean - A2 * calcRange(values);
+        const Lcl_Sbar = mean - A3 * stdDev(values, mean);
 
         return [Lcl_Rbar, Lcl_Sbar];
     }
@@ -221,9 +195,9 @@ export function calcLcl(value: Field<string, Vector<any>>, aggType: AggregationT
   return;
 }
 
-export function stdDev(value: Field<string, Vector<number>>, mean: number) {
-  const squaredDifferences = value.values.map((val) => Math.pow((val as number) - mean, 2));
-  const meanSquaredDifferences = squaredDifferences.reduce((acc, val) => acc + val, 0) / value.values.length;
+export function stdDev(values: number[], mean: number) {
+  const squaredDifferences = values.map((val) => Math.pow((val as number) - mean, 2));
+  const meanSquaredDifferences = squaredDifferences.reduce((acc, val) => acc + val, 0) / values.length;
   const standardDeviation = Math.sqrt(meanSquaredDifferences);
 
   return standardDeviation;

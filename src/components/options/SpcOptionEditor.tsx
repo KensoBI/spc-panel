@@ -22,7 +22,7 @@ const isCalculationType = (value: unknown): value is AggregationType => {
 };
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
-export function SpcOptionEditor({ value, onChange, context }: Props) {
+export function SpcOptionEditor({ value, onChange }: Props) {
   const styles = useStyles2(getStyles);
 
   return (

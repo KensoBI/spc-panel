@@ -1,46 +1,36 @@
 import { calcMin, calcMax, calcRange, calcMean, stdDev, calcLcl } from './spcCalculations';
-import { ArrayVector, FieldType } from '@grafana/data';
-
-const makeField = (values: number[]) => {
-  return {
-    name: 'text',
-    type: FieldType.number,
-    config: {},
-    values: new ArrayVector<number>(values),
-  };
-};
 
 describe('calcMin', () => {
   it('should return the minimum value in the array', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcMin(field)).toBe(1);
   });
 });
 
 describe('calcMax', () => {
   it('should return the maximum value in the array', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcMax(field)).toBe(5);
   });
 });
 
 describe('calcRange', () => {
   it('should return the range of the array', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcRange(field)).toBe(4);
   });
 });
 
 describe('calcMean', () => {
   it('should return the mean of the array', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcMean(field)).toBe(3);
   });
 });
 
 describe('stdDev', () => {
   it('should return the standard deviation of the array', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(stdDev(field, calcMean(field))).toBe(1.4142135623730951);
   });
 });
@@ -49,7 +39,7 @@ describe('stdDev', () => {
 
 describe('calcLcl-range', () => {
   it('should return the lower control limit of the array (range aggregation)', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     //range LCL should be 0 up to sampleSize 6
     expect(calcLcl(field, 'range', 2)?.[0]).toBe(0.0);
     expect(calcLcl(field, 'range', 3)?.[0]).toBe(0.0);
@@ -62,14 +52,14 @@ describe('calcLcl-range', () => {
 
 describe('calcLcl-mean', () => {
   it('should return the lower control limit of the array (mean aggregation)', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcLcl(field, 'mean', 2)).toStrictEqual([-4.52, -0.7603938623500599]);
   });
 });
 
 describe('calcLcl-mean', () => {
   it('should return the lower control limit of the array (standardDeviation aggregation)', () => {
-    const field = makeField([1, 2, 3, 4, 5]);
+    const field = [1, 2, 3, 4, 5];
     expect(calcLcl(field, 'standardDeviation', 2)?.[0]).toBe(4.620235708272902);
   });
 });

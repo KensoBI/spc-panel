@@ -1,7 +1,15 @@
 import { ConstantsConfig, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
-import { calcLcl, calcMax, calcMean, calcMin, calcTimeSampleSize, calcUcl, calcValueSampleSize } from './spcCalculations';
+import {
+  calcLcl,
+  calcMax,
+  calcMean,
+  calcMin,
+  calcTimeSampleSize,
+  calcUcl,
+  calcValueSampleSize,
+} from './spcCalculations';
 
 export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConfig?: ConstantsConfig) {
   const f = cloneDeep(feature);
@@ -12,15 +20,18 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     return f;
   }
 
-  characteristic.timeseries.values = calcValueSampleSize(
-    characteristic.timeseries.values,
+  const values = characteristic.timeseries.values.values;
+  const times = characteristic.timeseries.time.values;
+  if (!isNumberArray(values) || !isNumberArray(times)) {
+    return f;
+  }
+
+  characteristic.timeseries.values.values = calcValueSampleSize(
+    values,
     spcOptions?.sampleSize ?? 1,
     spcOptions?.aggregation ?? 'mean'
   );
-  characteristic.timeseries.time = calcTimeSampleSize(
-    characteristic.timeseries.time,
-    spcOptions?.sampleSize ?? 1,
-  )
+  characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);
 
   if (spcOptions?.nominal != null) {
     characteristic.table.nominal = spcOptions.nominal;
@@ -39,71 +50,82 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   const selected = new Set(constantsConfig.items.map((item) => item.name));
 
   if (selected.has('min')) {
-    characteristic.table.min = calcMin(characteristic.timeseries.values);
+    characteristic.table.min = calcMin(values);
   }
 
   if (selected.has('max')) {
-    characteristic.table.max = calcMax(characteristic.timeseries.values);
+    characteristic.table.max = calcMax(values);
   }
 
   if (selected.has('range')) {
     characteristic.table.range =
-      (characteristic.table.max ?? calcMax(characteristic.timeseries.values)) -
-      (characteristic.table.min ?? calcMin(characteristic.timeseries.values));
+      (characteristic.table.max ?? calcMax(values)) - (characteristic.table.min ?? calcMin(values));
   }
 
   if (selected.has('mean')) {
-    characteristic.table.mean = calcMean(characteristic.timeseries.values);
+    characteristic.table.mean = calcMean(values);
   }
 
-  if (selected.has('lcl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.aggregation !== 'mean') {
-    let resultLcl = calcLcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  if (
+    selected.has('lcl') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation != null &&
+    spcOptions.aggregation !== 'mean'
+  ) {
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl = resultLcl ? resultLcl[0] : undefined;
   }
-  if(selected.has('lcl_Rbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
-    let resultLcl = calcLcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  if (
+    selected.has('lcl_Rbar') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation === 'mean'
+  ) {
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl_Rbar = resultLcl ? resultLcl[0] : undefined;
   }
-  if(selected.has('lcl_Sbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
-    let resultLcl = calcLcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  if (
+    selected.has('lcl_Sbar') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation === 'mean'
+  ) {
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl_Sbar = resultLcl ? resultLcl[1] : undefined;
   }
-  if (selected.has('ucl') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation != null && spcOptions.aggregation !=='mean') {
-    let resultUcl = calcUcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  if (
+    selected.has('ucl') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation != null &&
+    spcOptions.aggregation !== 'mean'
+  ) {
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl = resultUcl ? resultUcl[0] : undefined;
-  } 
-  if(selected.has('ucl_Rbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
-    let resultUcl = calcUcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  }
+  if (
+    selected.has('ucl_Rbar') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation === 'mean'
+  ) {
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl_Rbar = resultUcl ? resultUcl[0] : undefined;
   }
-  if(selected.has('ucl_Sbar') && spcOptions != null && spcOptions.sampleSize > 1 && spcOptions.aggregation ==='mean') {
-    let resultUcl = calcUcl(
-      characteristic.timeseries.values,
-      spcOptions.aggregation,
-      spcOptions.sampleSize
-    );
+  if (
+    selected.has('ucl_Sbar') &&
+    spcOptions != null &&
+    spcOptions.sampleSize > 1 &&
+    spcOptions.aggregation === 'mean'
+  ) {
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
   }
 
   return f;
+}
+
+function isNumberArray(arr: any[]): arr is number[] {
+  return arr.every((item) => typeof item === 'number');
 }
