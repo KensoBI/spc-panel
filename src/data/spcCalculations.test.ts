@@ -1,4 +1,13 @@
-import { calcMin, calcMax, calcRange, calcMean, stdDev, calcLcl } from './spcCalculations';
+import {
+  calcMin,
+  calcMax,
+  calcRange,
+  calcMean,
+  stdDev,
+  calcLcl,
+  calculateGroupedAverage,
+  calculateGroupedDifference,
+} from './spcCalculations';
 
 describe('calcMin', () => {
   it('should return the minimum value in the array', () => {
@@ -61,5 +70,29 @@ describe('calcLcl-mean', () => {
   it('should return the lower control limit of the array (standardDeviation aggregation)', () => {
     const field = [1, 2, 3, 4, 5];
     expect(calcLcl(field, 'standardDeviation', 2)?.[0]).toBe(4.620235708272902);
+  });
+});
+
+describe('calculateGroupedAverage', () => {
+  it('should return the average of the grouped array', () => {
+    expect(calculateGroupedAverage([1, 2, 3, 4, 5], 2)).toStrictEqual([1, 2.5, 4.5]);
+    expect(calculateGroupedAverage([1, 2], 2)).toStrictEqual([1.5]);
+    expect(calculateGroupedAverage([1], 2)).toStrictEqual([1]);
+    expect(calculateGroupedAverage([], 2)).toStrictEqual([]);
+
+    expect(calculateGroupedAverage([1, 2, 2, 2, 3, 3, 3, 4, 4, 4], 3)).toStrictEqual([1, 2, 3, 4]);
+    expect(calculateGroupedAverage([1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4], 4)).toStrictEqual([1, 2, 3, 4]);
+  });
+});
+
+describe('calculateGroupedDifference', () => {
+  it('should return the difference of the grouped array', () => {
+    expect(calculateGroupedDifference([1, 2, 3, 4, 5], 2)).toStrictEqual([0, 1, 1]);
+    expect(calculateGroupedDifference([1, 2], 2)).toStrictEqual([1]);
+    expect(calculateGroupedDifference([1], 2)).toStrictEqual([0]);
+    expect(calculateGroupedDifference([], 2)).toStrictEqual([]);
+
+    expect(calculateGroupedDifference([1, 2, 2, 2, 3, 3, 3, 4, 4, 4], 3)).toStrictEqual([0, 0, 0, 0]);
+    expect(calculateGroupedDifference([1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4], 4)).toStrictEqual([0, 0, 0, 0]);
   });
 });

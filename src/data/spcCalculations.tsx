@@ -1,47 +1,67 @@
 import { AggregationType } from 'types';
 import { calcConst } from './calcConst';
 
-function calculateGroupedAverage(values: number[], sampleSize: number) {
-  const reversedValues = [...values].reverse();
-  const result: number[] = [];
+function notNanArray(values: number[]) {
+  return values.map((value) => (typeof value === 'number' && !isNaN(value) ? value : 0));
+}
 
-  for (let i = 0; i < values.length; i += sampleSize) {
-    const sum = reversedValues
-      .slice(i, i + sampleSize)
-      .reduce(
-        (acc, currentValue) => acc + (typeof currentValue === 'number' && !isNaN(currentValue) ? currentValue : 0),
-        0
-      );
+function allocateGroupedArray(base: number[], sampleSize: number) {
+  const finalLength = Math.ceil(base.length / sampleSize);
+  const result: number[] = new Array(finalLength);
+  return {
+    result,
+    finalLength,
+  };
+}
 
-    const count = Math.min(sampleSize, values.length - i);
+export function calculateGroupedAverage(values: number[], sampleSize: number) {
+  //groups values starting from the end of the array (using average)
+  const base = notNanArray(values);
+  const { result, finalLength } = allocateGroupedArray(base, sampleSize);
+
+  let pos = finalLength - 1; //where to put the next value, it's the index of the result array
+  for (let i = base.length - 1; i >= 0; i -= sampleSize) {
+    let sum = 0.0;
+    let count = 0;
+    for (let j = 0; j < sampleSize && i - j >= 0; j++) {
+      const value = base[i - j];
+      sum += value;
+      count++;
+    }
     const average = sum / count;
-
-    result.push(average);
+    result[pos--] = average;
   }
 
-  return result.reverse();
+  return result;
 }
-function calculateGroupedDifference(values: number[], sampleSize: number) {
-  const reversedValues = [...values].reverse();
-  const result: number[] = [];
+export function calculateGroupedDifference(values: number[], sampleSize: number) {
+  //groups values starting from the end of the array (using difference)
 
-  for (let i = 0; i < values.length; i += sampleSize) {
-    const valuesInInterval = reversedValues.slice(i, i + sampleSize);
+  const base = notNanArray(values);
+  const { result, finalLength } = allocateGroupedArray(base, sampleSize);
 
-    const isValidNumber = (val: any) => typeof val === 'number' && !isNaN(val);
-
-    const max = Math.max(...valuesInInterval.filter(isValidNumber));
-    const min = Math.min(...valuesInInterval.filter(isValidNumber));
+  let pos = finalLength - 1; //where to put the next value, it's the index of the result array
+  for (let i = base.length - 1; i >= 0; i -= sampleSize) {
+    let max = base[i];
+    let min = base[i];
+    for (let j = 1; j < sampleSize && i - j >= 0; j++) {
+      const value = base[i - j];
+      if (value > max) {
+        max = value;
+      }
+      if (value < min) {
+        min = value;
+      }
+    }
 
     const difference = max - min;
-
-    result.push(difference);
+    result[pos--] = difference;
   }
 
-  return result.reverse();
+  return result;
 }
 
-function calculateGroupedStdDev(values: number[], sampleSize: number) {
+export function calculateGroupedStdDev(values: number[], sampleSize: number) {
   const reversedValues = [...values].reverse();
   const result: number[] = [];
 
