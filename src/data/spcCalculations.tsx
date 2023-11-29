@@ -104,25 +104,11 @@ export function calcTimeSampleSize(time: number[], sampleSize: number) {
 }
 
 export function calcMax(values: number[]) {
-  let maxValue: number | undefined;
-  const maxInField = Math.max(...values);
-
-  if (maxValue === undefined || maxInField > maxValue) {
-    maxValue = maxInField;
-  }
-
-  return maxValue;
+  return Math.max(...values);
 }
 
 export function calcMin(values: number[]) {
-  let minValue: number | undefined;
-  const minInField = Math.min(...values);
-
-  if (minValue === undefined || minInField < minValue) {
-    minValue = minInField;
-  }
-
-  return minValue;
+  return Math.min(...values);
 }
 
 export function calcMean(values: number[]) {
