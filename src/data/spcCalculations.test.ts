@@ -9,6 +9,7 @@ import {
   calcUcl,
   calculateGroupedAverage,
   calculateGroupedDifference,
+  calculateGroupedStdDev,
 } from './spcCalculations';
 
 describe('calcMin', () => {
@@ -97,6 +98,22 @@ describe('calculateGroupedDifference', () => {
 
     expect(calculateGroupedDifference([1, 2, 2, 2, 3, 3, 3, 4, 4, 4], 3)).toStrictEqual([0, 0, 0, 0]);
     expect(calculateGroupedDifference([1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4], 4)).toStrictEqual([0, 0, 0, 0]);
+  });
+});
+
+describe('calculateGroupedStdDev', () => {
+  it('should return the standard deviation of the grouped array', () => {
+    expect(calculateGroupedStdDev([1, 2, 3, 4, 5], 2)).toStrictEqual([0, 0.5, 0.5]);
+    expect(calculateGroupedStdDev([1, 2], 2)).toStrictEqual([0.5]);
+    expect(calculateGroupedStdDev([1], 2)).toStrictEqual([0]);
+    expect(calculateGroupedStdDev([], 2)).toStrictEqual([]);
+
+    expect(calculateGroupedStdDev([1, 1, 2, 3, 1, 2, 3, 1, 2, 3], 3)).toStrictEqual([
+      0, 0.816496580927726, 0.816496580927726, 0.816496580927726,
+    ]);
+    expect(calculateGroupedStdDev([1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4], 4)).toStrictEqual([
+      0, 1.118033988749895, 1.118033988749895, 1.118033988749895,
+    ]);
   });
 });
 

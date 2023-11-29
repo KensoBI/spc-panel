@@ -14,34 +14,50 @@ function allocateGroupedArray(base: number[], sampleSize: number) {
   };
 }
 
-export function calculateGroupedAverage(values: number[], sampleSize: number) {
-  //groups values starting from the end of the array (using average)
+function calcAvarageInRange(base: number[], start: number, end: number) {
+  let sum = 0.0;
+  let count = 0;
+  for (let i = start; i <= end; i++) {
+    const value = base[i];
+    sum += value;
+    count++;
+  }
+  const average = sum / count;
+  return average;
+}
+
+function calcMeanSquareDifferenceInRange(base: number[], start: number, end: number) {
+  const mean = calcAvarageInRange(base, start, end);
+  const count = end - start + 1;
+
+  let result = 0.0;
+  for (let i = start; i <= end; i++) {
+    result += Math.pow(base[i] - mean, 2);
+  }
+  return result / count;
+}
+
+function calculateGrouped(values: number[], sampleSize: number, processor: (base: number[], i: number) => number) {
+  //groups values starting from the end of the array (using processor)
   const base = notNanArray(values);
   const { result, finalLength } = allocateGroupedArray(base, sampleSize);
 
   let pos = finalLength - 1; //where to put the next value, it's the index of the result array
   for (let i = base.length - 1; i >= 0; i -= sampleSize) {
-    let sum = 0.0;
-    let count = 0;
-    for (let j = 0; j < sampleSize && i - j >= 0; j++) {
-      const value = base[i - j];
-      sum += value;
-      count++;
-    }
-    const average = sum / count;
-    result[pos--] = average;
+    const value = processor(base, i);
+    result[pos--] = value;
   }
 
   return result;
 }
+
+export function calculateGroupedAverage(values: number[], sampleSize: number) {
+  return calculateGrouped(values, sampleSize, (base, i) =>
+    calcAvarageInRange(base, Math.max(i - sampleSize + 1, 0), i)
+  );
+}
 export function calculateGroupedDifference(values: number[], sampleSize: number) {
-  //groups values starting from the end of the array (using difference)
-
-  const base = notNanArray(values);
-  const { result, finalLength } = allocateGroupedArray(base, sampleSize);
-
-  let pos = finalLength - 1; //where to put the next value, it's the index of the result array
-  for (let i = base.length - 1; i >= 0; i -= sampleSize) {
+  return calculateGrouped(values, sampleSize, (base, i) => {
     let max = base[i];
     let min = base[i];
     for (let j = 1; j < sampleSize && i - j >= 0; j++) {
@@ -55,62 +71,36 @@ export function calculateGroupedDifference(values: number[], sampleSize: number)
     }
 
     const difference = max - min;
-    result[pos--] = difference;
-  }
-
-  return result;
+    return difference;
+  });
 }
 
 export function calculateGroupedStdDev(values: number[], sampleSize: number) {
-  const reversedValues = [...values].reverse();
-  const result: number[] = [];
-
-  for (let i = 0; i < values.length; i += sampleSize) {
-    const valuesInInterval = reversedValues.slice(i, i + sampleSize);
-
-    const isValidNumber = (val: any) => typeof val === 'number' && !isNaN(val);
-
-    // Filter valid numbers in the range
-    const validValues = valuesInInterval.filter(isValidNumber);
-
-    // Calculate the average
-    const mean = validValues.reduce((sum, val) => sum + val, 0) / validValues.length;
-
-    // Calculate the squares of differences from the mean
-    const squaredDifferences = validValues.map((val) => Math.pow(val - mean, 2));
+  return calculateGrouped(values, sampleSize, (base, i) => {
+    const start = Math.max(i - sampleSize + 1, 0);
+    const end = i;
 
     // Calculate the average of the squares of the differences
-    const meanSquaredDifferences = squaredDifferences.reduce((acc, val) => acc + val, 0) / validValues.length;
+    const meanSquaredDifferences = calcMeanSquareDifferenceInRange(base, start, end);
 
     // Calculate the square root of the mean of the squares of the differences (standard deviation)
     const standardDeviation = Math.sqrt(meanSquaredDifferences);
-
-    result.push(standardDeviation);
-  }
-
-  return result.reverse();
+    return standardDeviation;
+  });
 }
 
+const groupingFunctions = {
+  range: calculateGroupedDifference,
+  standardDeviation: calculateGroupedStdDev,
+  mean: calculateGroupedAverage,
+};
+
 export function calcValueSampleSize(values: number[], sampleSize: number, aggType: AggregationType) {
-  if (sampleSize === 1) {
-    return values;
-  }
-  switch (aggType) {
-    case 'range':
-      return calculateGroupedDifference(values, sampleSize);
-    case 'standardDeviation':
-      return calculateGroupedStdDev(values, sampleSize);
-    default:
-    case 'mean':
-      return calculateGroupedAverage(values, sampleSize);
-  }
+  return sampleSize === 1 ? values : groupingFunctions[aggType](values, sampleSize);
 }
 
 export function calcTimeSampleSize(time: number[], sampleSize: number) {
-  if (sampleSize === 1) {
-    return time;
-  }
-  return calculateGroupedAverage(time, sampleSize);
+  return sampleSize === 1 ? time : calculateGroupedAverage(time, sampleSize);
 }
 
 export function calcMax(values: number[]) {
@@ -136,12 +126,7 @@ export function calcMin(values: number[]) {
 }
 
 export function calcMean(values: number[]) {
-  let sum = 0;
-  for (const val of values) {
-    sum += val;
-  }
-  const count = values.length;
-  return sum / count;
+  return calcAvarageInRange(values, 0, values.length - 1);
 }
 
 export function calcRange(values: number[]) {
@@ -216,9 +201,7 @@ export function calcLcl(values: number[], aggType: AggregationType, sample: numb
 }
 
 export function stdDev(values: number[], mean: number) {
-  const squaredDifferences = values.map((val) => Math.pow((val as number) - mean, 2));
-  const meanSquaredDifferences = squaredDifferences.reduce((acc, val) => acc + val, 0) / values.length;
+  const meanSquaredDifferences = calcMeanSquareDifferenceInRange(values, 0, values.length - 1);
   const standardDeviation = Math.sqrt(meanSquaredDifferences);
-
   return standardDeviation;
 }
