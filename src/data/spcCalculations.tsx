@@ -1,5 +1,5 @@
 import { AggregationType } from 'types';
-import { calcConst } from './calcConst';
+import { getCalcConst } from './calcConst';
 
 function notNanArray(values: number[]) {
   return values.map((value) => (typeof value === 'number' && !isNaN(value) ? value : 0));
@@ -134,73 +134,62 @@ export function calcRange(values: number[]) {
 }
 
 export function calcUcl(values: number[], aggType: AggregationType, sample: number) {
-  if (sample > 1) {
-    let row = calcConst[sample];
-    switch (aggType) {
-      case 'range':
-        const colD4 = 8;
-        const D4 = row[colD4];
-        const Ucl_range = D4 * calcRange(values);
-        return [Ucl_range];
-      case 'standardDeviation':
-        const colB3 = 5;
-        const B3 = row[colB3];
-        const Ucl_stdDev = B3 * stdDev(values, calcMean(values));
-        return [Ucl_stdDev];
-      default:
-      case 'mean':
-        const colA2 = 3;
-        const colA3 = 4;
-
-        const A2 = row[colA2];
-        const A3 = row[colA3];
-
-        const mean = calcMean(values);
-
-        const Ucl_Rbar = mean + A2 * calcRange(values);
-        const Ucl_Sbar = mean + A3 * stdDev(values, mean);
-
-        return [Ucl_Rbar, Ucl_Sbar];
-    }
+  if (sample <= 1) {
+    return;
   }
-  return;
+
+  switch (aggType) {
+    case 'range':
+      const D4 = getCalcConst(sample, 'd4_range_ucl');
+      const Ucl_range = D4 * calcRange(values);
+      return [Ucl_range];
+    case 'standardDeviation':
+      const B4 = getCalcConst(sample, 'b4_sigma_ucl');
+      const Ucl_stdDev = B4 * stdDev(values);
+      return [Ucl_stdDev];
+    default:
+    case 'mean':
+      const A2 = getCalcConst(sample, 'a2_xbar_limit_range');
+      const A3 = getCalcConst(sample, 'a3_xbar_limit_sigma');
+
+      const mean = calcMean(values);
+
+      const Ucl_Rbar = mean + A2 * calcRange(values);
+      const Ucl_Sbar = mean + A3 * stdDev(values);
+
+      return [Ucl_Rbar, Ucl_Sbar];
+  }
 }
 
 export function calcLcl(values: number[], aggType: AggregationType, sample: number) {
-  if (sample) {
-    let row = calcConst[sample];
-    switch (aggType) {
-      case 'range':
-        const colD3 = 7;
-        const D3 = row[colD3];
-
-        const Lcl_range = D3 * calcRange(values);
-
-        return [Lcl_range];
-      case 'standardDeviation':
-        const colB4 = 6;
-        const B4 = row[colB4];
-        const Lcl_stdDev = B4 * stdDev(values, calcMean(values));
-
-        return [Lcl_stdDev];
-      default:
-      case 'mean':
-        const colA2 = 3;
-        const colA3 = 4;
-        const A2 = row[colA2];
-        const A3 = row[colA3];
-        const mean = calcMean(values);
-
-        const Lcl_Rbar = mean - A2 * calcRange(values);
-        const Lcl_Sbar = mean - A3 * stdDev(values, mean);
-
-        return [Lcl_Rbar, Lcl_Sbar];
-    }
+  if (sample <= 1) {
+    return;
   }
-  return;
+
+  switch (aggType) {
+    case 'range':
+      const D3 = getCalcConst(sample, 'd3_range_lcl');
+      const Lcl_range = D3 * calcRange(values);
+      return [Lcl_range];
+    case 'standardDeviation':
+      const B3 = getCalcConst(sample, 'b3_sigma_lcl');
+      const Lcl_stdDev = B3 * stdDev(values);
+      return [Lcl_stdDev];
+    default:
+    case 'mean':
+      const A2 = getCalcConst(sample, 'a2_xbar_limit_range');
+      const A3 = getCalcConst(sample, 'a3_xbar_limit_sigma');
+
+      const mean = calcMean(values);
+
+      const Lcl_Rbar = mean - A2 * calcRange(values);
+      const Lcl_Sbar = mean - A3 * stdDev(values);
+
+      return [Lcl_Rbar, Lcl_Sbar];
+  }
 }
 
-export function stdDev(values: number[], mean: number) {
+export function stdDev(values: number[]) {
   const meanSquaredDifferences = calcMeanSquareDifferenceInRange(values, 0, values.length - 1);
   const standardDeviation = Math.sqrt(meanSquaredDifferences);
   return standardDeviation;
