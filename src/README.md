@@ -48,9 +48,9 @@ LCL: D3 * R-bar
 
 For <b>S-bar charts</b>, the control limits are calculated as follows:
 
-UCL: B3 * S
+UCL: B4 * S
 
-LCL: B4 * S
+LCL: B3 * S
 
 ### Constants
 The values A2, A3, D3, D4, B3, B4 are constants configured for calculations in the SPC panel. The values are also available as an [SQL script](https://gist.github.com/mrtomeq/e5d7a3d6321444ed89b263998c8e537b).
