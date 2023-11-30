@@ -220,8 +220,8 @@ export function SpcChart(props: Props) {
   );
 
   const timeRangeFromData: TimeRange = React.useMemo(() => {
-    const start = timeField?.values.get(0);
-    const stop = timeField?.values.get(timeField?.values.length - 1);
+    const start = timeField?.values[0];
+    const stop = timeField?.values[timeField?.values.length - 1];
     if (start == null || stop == null || start === stop) {
       return timeRange;
     }

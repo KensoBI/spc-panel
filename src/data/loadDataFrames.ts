@@ -1,6 +1,7 @@
 import { Field } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
+import { dvGet } from './deprecatedVectorUtils';
 
 type VectorField = Field<string, number[]>;
 type ColumnsDict = {
@@ -42,7 +43,7 @@ export class MappedFeatures extends Map<string, Feature> {
 
 function getRecord(columns: ColumnsDict, i: number) {
   return Object.keys(columns).reduce((acc, key) => {
-    acc[key] = columns[key].values[i];
+    acc[key] = dvGet<number | string>(columns[key].values, i);
     return acc;
   }, {} as DataFrameRecord);
 }
@@ -63,6 +64,7 @@ export function loadFeaturesByControl(
 
   for (let i = 0; i < length; i++) {
     const record = getRecord(columns, i);
+    console.log('🚀 ~ file: loadDataFrames.ts:66 ~ record:', record);
     const feature = mappedFeatures.getOrDefault(record, refId);
 
     if (!!record.control) {
@@ -77,9 +79,11 @@ function noNulls(timeVector: number[], valuesVector: number[]) {
   const t = [] as number[];
   const v = [] as number[];
   for (let i = 0; i < timeVector.length; i++) {
-    if (timeVector[i] != null && valuesVector[i] != null) {
-      t.push(timeVector[i]);
-      v.push(valuesVector[i]);
+    const tVal = dvGet(timeVector, i);
+    const vVal = dvGet(valuesVector, i);
+    if (tVal != null && vVal != null) {
+      t.push(tVal);
+      v.push(vVal);
     }
   }
   return { t, v };
