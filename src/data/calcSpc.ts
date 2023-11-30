@@ -20,8 +20,8 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     return f;
   }
 
-  const values = characteristic.timeseries.values.values;
-  const times = characteristic.timeseries.time.values;
+  let values = characteristic.timeseries.values.values;
+  let times = characteristic.timeseries.time.values;
   if (!isNumberArray(values) || !isNumberArray(times)) {
     return f;
   }
@@ -33,7 +33,8 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   );
   characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);
 
-  const newValues = characteristic.timeseries.values.values; 
+  values = characteristic.timeseries.values.values;
+  times = characteristic.timeseries.time.values;
 
   if (spcOptions?.nominal != null) {
     characteristic.table.nominal = spcOptions.nominal;
@@ -52,20 +53,20 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   const selected = new Set(constantsConfig.items.map((item) => item.name));
 
   if (selected.has('min')) {
-    characteristic.table.min = calcMin(newValues);
+    characteristic.table.min = calcMin(values);
   }
 
   if (selected.has('max')) {
-    characteristic.table.max = calcMax(newValues);
+    characteristic.table.max = calcMax(values);
   }
 
   if (selected.has('range')) {
     characteristic.table.range =
-      (characteristic.table.max ?? calcMax(newValues)) - (characteristic.table.min ?? calcMin(newValues));
-  } 
+      (characteristic.table.max ?? calcMax(values)) - (characteristic.table.min ?? calcMin(values));
+  }
 
   if (selected.has('mean')) {
-    characteristic.table.mean = calcMean(newValues);
+    characteristic.table.mean = calcMean(values);
   }
 
   if (
@@ -75,7 +76,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.aggregation != null &&
     spcOptions.aggregation !== 'mean'
   ) {
-    let resultLcl = calcLcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl = resultLcl ? resultLcl[0] : undefined;
   }
   if (
@@ -84,7 +85,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.sampleSize > 1 &&
     spcOptions.aggregation === 'mean'
   ) {
-    let resultLcl = calcLcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl_Rbar = resultLcl ? resultLcl[0] : undefined;
   }
   if (
@@ -93,7 +94,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.sampleSize > 1 &&
     spcOptions.aggregation === 'mean'
   ) {
-    let resultLcl = calcLcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.lcl_Sbar = resultLcl ? resultLcl[1] : undefined;
   }
   if (
@@ -103,7 +104,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.aggregation != null &&
     spcOptions.aggregation !== 'mean'
   ) {
-    let resultUcl = calcUcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl = resultUcl ? resultUcl[0] : undefined;
   }
   if (
@@ -112,7 +113,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.sampleSize > 1 &&
     spcOptions.aggregation === 'mean'
   ) {
-    let resultUcl = calcUcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl_Rbar = resultUcl ? resultUcl[0] : undefined;
   }
   if (
@@ -121,7 +122,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.sampleSize > 1 &&
     spcOptions.aggregation === 'mean'
   ) {
-    let resultUcl = calcUcl(newValues, spcOptions.aggregation, spcOptions.sampleSize);
+    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
   }
 
