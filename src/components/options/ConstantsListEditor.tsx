@@ -135,26 +135,28 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </Button>
         </div>
 
-        {value?.items?.map((el, index) => (
-          <div key={el.title} className={styles.row}>
-            <div className={styles.fieldName}>{el.title}</div>
-            <div>
-              <input
-                className={styles.titleInput}
-                type="text"
-                value={el?.title}
-                onChange={(e) => {
-                  if (value.items) {
-                    value.items[index].title = e.target.value;
-                  }
-                  onChange({ ...value });
-                }}
-              />
-            </div>
-            <div className={styles.rightColumn}>
-              {
-                //TODO not working now
-                /*<InlineField label={'Line Width'} className={styles.noMargin}>
+        {value?.items
+          ?.filter((el) => availableFields.includes(el.name))
+          .map((el, index) => (
+            <div key={el.title} className={styles.row}>
+              <div className={styles.fieldName}>{el.title}</div>
+              <div>
+                <input
+                  className={styles.titleInput}
+                  type="text"
+                  value={el?.title}
+                  onChange={(e) => {
+                    if (value.items) {
+                      value.items[index].title = e.target.value;
+                    }
+                    onChange({ ...value });
+                  }}
+                />
+              </div>
+              <div className={styles.rightColumn}>
+                {
+                  //TODO not working now
+                  /*<InlineField label={'Line Width'} className={styles.noMargin}>
                 <Select
                   width={8}
                   options={options_0}
@@ -167,30 +169,30 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   }}
                 />
                 </InlineField>*/
-              }
-              <InlineColorField
-                color={el?.color ?? defaultConstantColor}
-                onChange={(newColor) => {
-                  if (value.items) {
-                    value.items[index].color = newColor;
-                  }
-                  onChange({ ...value });
-                }}
-              />
-              <Button
-                onClick={() => {
-                  onChange({
-                    ...value,
-                    items: (value?.items ?? []).filter((conf) => conf.name !== el.name),
-                  });
-                }}
-                icon="trash-alt"
-                variant="destructive"
-                fill="text"
-              />
+                }
+                <InlineColorField
+                  color={el?.color ?? defaultConstantColor}
+                  onChange={(newColor) => {
+                    if (value.items) {
+                      value.items[index].color = newColor;
+                    }
+                    onChange({ ...value });
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    onChange({
+                      ...value,
+                      items: (value?.items ?? []).filter((conf) => conf.name !== el.name),
+                    });
+                  }}
+                  icon="trash-alt"
+                  variant="destructive"
+                  fill="text"
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         <div className={styles.addButtonContainer}></div>
       </div>
       <Popover {...popoverProps}>
