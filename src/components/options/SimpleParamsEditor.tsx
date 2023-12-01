@@ -5,7 +5,7 @@ import { css } from '@emotion/css';
 import { InlineField, InlineSwitch, Input, Select, useStyles2 } from '@grafana/ui';
 import { InlineColorField } from 'components/InlineColorField';
 import { toNumber } from 'lodash';
-import { options_0, options_05 } from './types';
+import { selectableZeroToTen, selectableHalfToTen } from './selectableValues';
 
 type Props = StandardEditorProps<TimeSeriesParams, any, PanelOptions>;
 
@@ -18,7 +18,7 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
           <InlineField label={'Fill'} className={styles.noMargin}>
             <Select
               width={8}
-              options={options_0}
+              options={selectableZeroToTen}
               value={value.fill}
               onChange={(selected) => {
                 if (selected?.value != null) {
@@ -30,7 +30,7 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
           <InlineField label={'Line Width'} className={styles.noMargin}>
             <Select
               width={8}
-              options={options_0}
+              options={selectableZeroToTen}
               value={value.lineWidth}
               onChange={(selected) => {
                 if (selected?.value != null) {
@@ -42,7 +42,7 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
           <InlineField label={'Point Radius'} className={styles.noMargin}>
             <Select
               width={8}
-              options={options_05}
+              options={selectableHalfToTen}
               value={value.pointSize}
               onChange={(selected) => {
                 if (selected?.value != null) {

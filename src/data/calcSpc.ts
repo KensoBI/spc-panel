@@ -10,6 +10,7 @@ import {
   calcUcl,
   calcValueSampleSize,
 } from './spcCalculations';
+import { SpcParam, filterSpcParams } from './spcParams';
 
 export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConfig?: ConstantsConfig) {
   const f = cloneDeep(feature);
@@ -50,7 +51,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     return f;
   }
 
-  const selected = new Set(constantsConfig.items.map((item) => item.name));
+  const selected = new Set<SpcParam>(filterSpcParams(constantsConfig.items.map((item) => item.name)));
 
   if (selected.has('min')) {
     characteristic.table.min = calcMin(values);

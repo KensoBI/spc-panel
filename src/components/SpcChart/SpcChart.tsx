@@ -102,6 +102,9 @@ export function SpcChart(props: Props) {
             mode: FieldColorModeId.Fixed,
             fixedColor: color,
           },
+          custom: {
+            lineWidth: lineWidth,
+          },
         },
 
         type: FieldType.number,
@@ -110,7 +113,9 @@ export function SpcChart(props: Props) {
 
     if (constants) {
       for (const c of constants) {
-        addConstantField(c.value, c.title, c.color, c.lineWidth);
+        if (!isNaN(c.value)) {
+          addConstantField(c.value, c.title, c.color, c.lineWidth);
+        }
       }
     }
 

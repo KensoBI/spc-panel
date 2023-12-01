@@ -1,4 +1,4 @@
-import { Button, useStyles2 } from '@grafana/ui';
+import { Button, InlineField, Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { PopoverContainer } from 'components/popover/PopoverContainer';
 import { css } from '@emotion/css';
@@ -9,6 +9,8 @@ import { MenuItem } from 'components/popover/MenuItem';
 import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
+import { selectableHalfToTen } from './selectableValues';
+import { SpcParam, allSpcParamsDict, availableSpcParams } from 'data/spcParams';
 
 type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
@@ -25,20 +27,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     if (!hasTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
       const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
-      return [
-        'nominal',
-        'lsl',
-        'usl',
-        'min',
-        'max',
-        'mean',
-        'range',
-        ...(sampleSize > 1
-          ? aggregationType === 'mean'
-            ? ['lcl_Rbar', 'ucl_Rbar', 'lcl_Sbar', 'ucl_Sbar']
-            : ['lcl', 'ucl']
-          : []),
-      ];
+      return availableSpcParams(sampleSize, aggregationType);
     }
     return characteristicKeys;
   }, [
@@ -99,7 +88,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   ...(value?.items ?? []),
                   {
                     name: fieldName,
-                    title: fieldName,
+                    title: allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName,
                     color: defaultConstantColor,
                     lineWidth: 2,
                   },
@@ -108,12 +97,16 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
               popoverProps.onClose();
             }}
           >
-            {fieldName}
+            {allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName}
           </MenuItem>
         ))}
       </PopoverContainer>
     );
   }, [notSelectedFields, onChange, popoverProps, value]);
+
+  const currentItems = React.useMemo(() => {
+    return value?.items?.filter((el) => availableFields.includes(el.name)) ?? [];
+  }, [availableFields, value?.items]);
 
   return (
     <>
@@ -135,64 +128,61 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </Button>
         </div>
 
-        {value?.items
-          ?.filter((el) => availableFields.includes(el.name))
-          .map((el, index) => (
-            <div key={el.title} className={styles.row}>
-              <div className={styles.fieldName}>{el.title}</div>
+        {currentItems.map((el, index) => (
+          <div key={el.title} className={styles.row}>
+            <div className={styles.fieldName}>{el.title}</div>
+            {hasTableData && (
               <div>
                 <input
                   className={styles.titleInput}
                   type="text"
                   value={el?.title}
                   onChange={(e) => {
-                    if (value.items) {
+                    if (value?.items) {
                       value.items[index].title = e.target.value;
+                      onChange({ ...value });
                     }
-                    onChange({ ...value });
                   }}
                 />
               </div>
-              <div className={styles.rightColumn}>
-                {
-                  //TODO not working now
-                  /*<InlineField label={'Line Width'} className={styles.noMargin}>
+            )}
+            <div className={styles.rightColumn}>
+              <InlineField label={'Line Width'} className={styles.noMargin}>
                 <Select
                   width={8}
-                  options={options_0}
+                  options={selectableHalfToTen}
                   value={el.lineWidth}
                   onChange={(selected) => {
-                    if (selected?.value != null) {
+                    if (selected?.value != null && value?.items) {
                       value.items[index].lineWidth = selected.value;
                       onChange({ ...value });
                     }
                   }}
                 />
-                </InlineField>*/
-                }
-                <InlineColorField
-                  color={el?.color ?? defaultConstantColor}
-                  onChange={(newColor) => {
-                    if (value.items) {
-                      value.items[index].color = newColor;
-                    }
+              </InlineField>
+              <InlineColorField
+                color={el?.color ?? defaultConstantColor}
+                onChange={(newColor) => {
+                  if (value?.items) {
+                    value.items[index].color = newColor;
                     onChange({ ...value });
-                  }}
-                />
-                <Button
-                  onClick={() => {
-                    onChange({
-                      ...value,
-                      items: (value?.items ?? []).filter((conf) => conf.name !== el.name),
-                    });
-                  }}
-                  icon="trash-alt"
-                  variant="destructive"
-                  fill="text"
-                />
-              </div>
+                  }
+                }}
+              />
+              <Button
+                onClick={() => {
+                  onChange({
+                    ...value,
+                    items: (value?.items ?? []).filter((conf) => conf.name !== el.name),
+                  });
+                }}
+                icon="trash-alt"
+                variant="destructive"
+                fill="text"
+              />
             </div>
-          ))}
+          </div>
+        ))}
         <div className={styles.addButtonContainer}></div>
       </div>
       <Popover {...popoverProps}>

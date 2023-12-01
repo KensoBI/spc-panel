@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, InlineField, Select, Input } from '@grafana/ui';
+import { InputFloat } from 'components/InputFloat';
 import React from 'react';
 import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
 
@@ -62,37 +63,31 @@ export function SpcOptionEditor({ value, onChange }: Props) {
       </div>
       <div className={styles.row}>
         <InlineField label={'Nominal'}>
-          <Input
-            type={'number'}
+          <InputFloat
             placeholder={'Enter value'}
             value={value?.nominal}
-            onChange={(selected) => {
-              const newNominal = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, nominal: newNominal });
+            onChange={(val) => {
+              onChange({ ...value, nominal: val });
             }}
             width={12}
           />
         </InlineField>
         <InlineField label={'LSL'}>
-          <Input
-            type={'number'}
+          <InputFloat
             placeholder={'Enter value'}
             value={value?.lsl}
-            onChange={(selected) => {
-              const newLsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, lsl: newLsl });
+            onChange={(val) => {
+              onChange({ ...value, lsl: val });
             }}
             width={12}
           />
         </InlineField>
         <InlineField label={'USL'}>
-          <Input
-            type={'number'}
+          <InputFloat
             placeholder={'Enter value'}
             value={value?.usl}
-            onChange={(selected) => {
-              const newUsl = parseFloat((selected?.target as HTMLInputElement)?.value ?? '');
-              onChange({ ...value, usl: newUsl });
+            onChange={(val) => {
+              onChange({ ...value, usl: val });
             }}
             width={12}
           />

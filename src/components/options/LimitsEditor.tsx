@@ -4,6 +4,7 @@ import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { css } from '@emotion/css';
 import { InlineField, Select, useStyles2 } from '@grafana/ui';
 import { InlineColorField } from '../InlineColorField';
+import { SpcParam, allSpcParamsDict } from 'data/spcParams';
 
 const defaultColor = 'rgb(196, 22, 42)';
 
@@ -20,7 +21,7 @@ export function LimitsEditor({ value, onChange, context }: Props) {
     }
     return characteristicKeys.map((fieldName) => ({
       value: fieldName,
-      label: fieldName,
+      label: allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName,
     }));
   }, [characteristicKeys]);
 
