@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
-import { useStyles2, InlineField, Select, Input } from '@grafana/ui';
+import { useStyles2, InlineField, Select } from '@grafana/ui';
 import { InputFloat } from 'components/InputFloat';
 import React from 'react';
 import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';

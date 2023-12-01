@@ -47,8 +47,6 @@ describe('stdDev', () => {
   });
 });
 
-//10, 11, 10, 10, 9, 10, 11, 10, 12, 10, 11, 10, 12, 11, 11, 10, 9, 11, 12, 10, 9, 11, 10, 10, 11
-
 describe('calcLcl-range', () => {
   it('should return the lower control limit of the array (range aggregation)', () => {
     const field = [1, 2, 3, 4, 5];

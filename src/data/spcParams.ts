@@ -1,19 +1,3 @@
-// const allSpcParams = [
-//   'nominal',
-//   'lsl',
-//   'usl',
-//   'min',
-//   'max',
-//   'mean',
-//   'range',
-//   'lcl_Rbar',
-//   'ucl_Rbar',
-//   'lcl_Sbar',
-//   'ucl_Sbar',
-//   'lcl',
-//   'ucl',
-// ];
-
 import { AggregationType } from 'types';
 
 export const allSpcParamsDict = {

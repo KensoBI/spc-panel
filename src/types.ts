@@ -65,17 +65,6 @@ export const defaultSpcOptons: SpcOptions = {
 };
 export const defaultConstantColor = '#37872d';
 
-export const defaultConstantOptions: ConstantsConfig = {
-  items: [
-    {
-      name: '',
-      color: defaultConstantColor,
-      title: '',
-      lineWidth: 2,
-    },
-  ],
-};
-
 export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
   constantsConfig: undefined,
