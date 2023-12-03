@@ -1,13 +1,7 @@
 name: PROD Plugin Release
 
-on: 
+on:
   push:
-    branches:
-      - main
-
-  pull_request:
-    types:
-      - closed
     branches:
       - main
 
@@ -33,6 +27,11 @@ jobs:
       - name: Build and test frontend
         id: build
         run: yarn build
+
+      - name: Sign plugin
+        run: |
+          export GRAFANA_ACCESS_POLICY_TOKEN=${{ secrets.GRAFANA_POLICY_TOKEN }}
+          npx @grafana/sign-plugin@latest --rootUrls ${{ vars.ROOT_URLS }}
 
       - name: Get plugin metadata
         id: metadata
@@ -69,7 +68,7 @@ jobs:
             ./${{ steps.metadata.outputs.archive-checksum }}
           body: |
             Release notes
-          
+
       - name: Set up S3cmd cli tool
         uses: s3-actions/s3cmd@v1.2.0
         with:
@@ -88,9 +87,9 @@ jobs:
           host: ${{ secrets.DEMO_DROPLET_HOST }}
           username: ${{ secrets.DEMO_DROPLET_USER }}
           key: ${{ secrets.DEMO_DROPLET_KEY}}
-          passphrase:  ${{ secrets.DEMO_DROPLET_PASSPHRASE }}
+          passphrase: ${{ secrets.DEMO_DROPLET_PASSPHRASE }}
           port: 22
           script: |
-            docker-compose -f /etc/kensobi/docker-compose.yml down 
-            docker-compose -f /etc/kensobi/docker-compose.yml pull 
-            docker-compose -f /etc/kensobi/docker-compose.yml up -d
+            docker compose -f /etc/kensobi/docker-compose.yml down 
+            docker compose -f /etc/kensobi/docker-compose.yml pull 
+            docker compose -f /etc/kensobi/docker-compose.yml up -d
