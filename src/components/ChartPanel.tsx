@@ -6,37 +6,41 @@ import { parseData } from 'data/parseData';
 import { PanelPropsProvider } from './PanelPropsProvider';
 import { TimeSeriesComponent } from './SpcChart/TimeSeriesComponent';
 import { TimeseriesSettings, defaultTimeseriesSettings } from './SpcChart/types';
+import { calcSpc } from 'data/calcSpc';
 
 export function ChartPanel(props: ChartPanelProps) {
   const { data, width, height, options } = props;
   const styles = useStyles2(getStyles);
 
-  const { features } = React.useMemo(() => parseData(data.series), [data.series]);
+  const { features, hasTableData } = React.useMemo(() => parseData(data.series), [data.series]);
 
   const [selectedFeature, selectedCharacteristic] = React.useMemo(() => {
     if (features.length === 0) {
       return [null, null];
     }
-    const selectedFeature = features[0];
+    let selectedFeature = features[0];
+    if (!hasTableData) {
+      selectedFeature = calcSpc(selectedFeature, options.spcOptions, options.constantsConfig);
+    }
     const keys = Object.keys(selectedFeature.characteristics);
     if (keys.length === 0) {
       return [null, null];
     }
     const selectedCharacteristic = selectedFeature.characteristics[keys[0]];
     return [selectedFeature, selectedCharacteristic];
-  }, [features]);
+  }, [features, hasTableData, options.constantsConfig, options.spcOptions]);
 
   const context = usePanelContext();
   const onInstanceStateChange = context.onInstanceStateChange;
   React.useEffect(() => {
     onInstanceStateChange?.({
-      selectedCharacteristic,
-      selectedFeature,
+      characteristicKeys: selectedCharacteristic?.table ? Object.keys(selectedCharacteristic.table) : null,
+      hasTableData,
     });
-  }, [onInstanceStateChange, selectedCharacteristic, selectedFeature]);
+  }, [hasTableData, onInstanceStateChange, selectedCharacteristic, selectedFeature]);
 
   const settings: TimeseriesSettings = React.useMemo(() => {
-    const settings = { ...defaultTimeseriesSettings, ...options.timeseriesParams };
+    const settings = { ...defaultTimeseriesSettings, ...options.timeseriesParams, ...options.spcOptions };
     settings.constantsConfig = {
       items: [],
     };
@@ -47,6 +51,7 @@ export function ChartPanel(props: ChartPanelProps) {
           name: options.limitConfig.up.name,
           title: options.limitConfig.up.name,
           color: options.limitConfig.up.color,
+          lineWidth: 2,
         });
       }
 
@@ -55,6 +60,7 @@ export function ChartPanel(props: ChartPanelProps) {
           name: options.limitConfig.down.name,
           title: options.limitConfig.down.name,
           color: options.limitConfig.down.color,
+          lineWidth: 2,
         });
       }
     }
@@ -62,7 +68,7 @@ export function ChartPanel(props: ChartPanelProps) {
       settings.constantsConfig.items.push(...options.constantsConfig.items);
     }
     return settings;
-  }, [options.timeseriesParams, options.limitConfig, options.constantsConfig]);
+  }, [options.timeseriesParams, options.spcOptions, options.limitConfig, options.constantsConfig]);
 
   return (
     <PanelPropsProvider panelProps={props}>

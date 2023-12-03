@@ -1,4 +1,4 @@
-import { Button, useStyles2 } from '@grafana/ui';
+import { Button, InlineField, Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { PopoverContainer } from 'components/popover/PopoverContainer';
 import { css } from '@emotion/css';
@@ -6,30 +6,39 @@ import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { Popover, usePopoverTrigger } from 'components/popover/Popover';
 import { CloseButton } from 'components/popover/CloseButton';
 import { MenuItem } from 'components/popover/MenuItem';
-import { ConstantsConfig, PanelOptions } from 'types';
-import { Characteristic } from 'data/types';
+import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
-
-const defaultColor = '#37872d';
+import { selectableHalfToTen } from './selectableValues';
+import { SpcParam, allSpcParamsDict, availableSpcParams } from 'data/spcParams';
 
 type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
 export function ConstantsListEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
-  const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
-
+  const characteristicKeys = context.instanceState?.characteristicKeys as string[] | null | undefined;
+  const hasTableData = context.instanceState?.hasTableData as boolean | null | undefined;
   const prevAvailableFields = React.useRef<string[] | null>(null);
 
   const availableFields = React.useMemo(() => {
-    if (selectedCharacteristic == null) {
+    if (characteristicKeys == null) {
       return [];
     }
-    return Object.keys(selectedCharacteristic.table);
-  }, [selectedCharacteristic]);
+    if (!hasTableData) {
+      const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
+      const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
+      return availableSpcParams(sampleSize, aggregationType);
+    }
+    return characteristicKeys;
+  }, [
+    characteristicKeys,
+    context.options?.spcOptions?.aggregation,
+    context.options?.spcOptions?.sampleSize,
+    hasTableData,
+  ]);
 
   React.useEffect(() => {
-    if (availableFields.length === 0) {
+    if (availableFields.length === 0 || !hasTableData) {
       return;
     }
     if (prevAvailableFields.current != null) {
@@ -42,7 +51,8 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
             ...newFields.map((fieldName) => ({
               name: fieldName,
               title: fieldName,
-              color: defaultColor,
+              color: defaultConstantColor,
+              lineWidth: 2,
             })),
           ],
           'name'
@@ -78,20 +88,25 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   ...(value?.items ?? []),
                   {
                     name: fieldName,
-                    title: fieldName,
-                    color: defaultColor,
+                    title: allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName,
+                    color: defaultConstantColor,
+                    lineWidth: 2,
                   },
                 ],
               });
               popoverProps.onClose();
             }}
           >
-            {fieldName}
+            {allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName}
           </MenuItem>
         ))}
       </PopoverContainer>
     );
   }, [notSelectedFields, onChange, popoverProps, value]);
+
+  const currentItems = React.useMemo(() => {
+    return value?.items?.filter((el) => availableFields.includes(el.name)) ?? [];
+  }, [availableFields, value?.items]);
 
   return (
     <>
@@ -113,30 +128,45 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
           </Button>
         </div>
 
-        {value?.items?.map((el, index) => (
+        {currentItems.map((el, index) => (
           <div key={el.title} className={styles.row}>
             <div className={styles.fieldName}>{el.title}</div>
-            <div>
-              <input
-                className={styles.titleInput}
-                type="text"
-                value={el?.title}
-                onChange={(e) => {
-                  if (value.items) {
-                    value.items[index].title = e.target.value;
-                  }
-                  onChange({ ...value });
-                }}
-              />
-            </div>
+            {hasTableData && (
+              <div>
+                <input
+                  className={styles.titleInput}
+                  type="text"
+                  value={el?.title}
+                  onChange={(e) => {
+                    if (value?.items) {
+                      value.items[index].title = e.target.value;
+                      onChange({ ...value });
+                    }
+                  }}
+                />
+              </div>
+            )}
             <div className={styles.rightColumn}>
+              <InlineField label={'Line Width'} className={styles.noMargin}>
+                <Select
+                  width={8}
+                  options={selectableHalfToTen}
+                  value={el.lineWidth}
+                  onChange={(selected) => {
+                    if (selected?.value != null && value?.items) {
+                      value.items[index].lineWidth = selected.value;
+                      onChange({ ...value });
+                    }
+                  }}
+                />
+              </InlineField>
               <InlineColorField
-                color={el?.color ?? defaultColor}
+                color={el?.color ?? defaultConstantColor}
                 onChange={(newColor) => {
-                  if (value.items) {
+                  if (value?.items) {
                     value.items[index].color = newColor;
+                    onChange({ ...value });
                   }
-                  onChange({ ...value });
                 }}
               />
               <Button
@@ -187,6 +217,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: block;
       -webkit-appearance: none;
       height: 100%;
+      width: 100%;
 
       &:focus {
         background-color: ${theme.colors.background.canvas};
@@ -207,12 +238,16 @@ const getStyles = (theme: GrafanaTheme2) => {
       margin-bottom: auto;
     `,
     rightColumn: css`
+      min-width: 260px;
       display: flex;
-      gap: ${theme.spacing(2)};
+      gap: ${theme.spacing(1)};
     `,
     addButtonContainer: css`
       display: flex;
       justify-content: center;
+    `,
+    noMargin: css`
+      margin: 0;
     `,
   };
 };

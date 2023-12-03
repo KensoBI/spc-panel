@@ -1,8 +1,9 @@
-import { ArrayVector, Field, Vector } from '@grafana/data';
+import { Field } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
+import { dvGet } from './deprecatedVectorUtils';
 
-type VectorField = Field<string, Vector<any>>;
+type VectorField = Field<string, number[]>;
 type ColumnsDict = {
   feature?: VectorField;
   control?: VectorField;
@@ -18,20 +19,23 @@ type DataFrameRecord = {
 
 const metaColumns = ['feature', 'control', 'partid', 'featuretype'];
 
+const defaultFeature = (key: string, partId: string, refId: string): Feature => ({
+  uid: '',
+  id: key,
+  partId: partId,
+  refId: refId,
+  name: '',
+  characteristics: {},
+});
+
 export class MappedFeatures extends Map<string, Feature> {
   getOrDefault = (record: DataFrameRecord, refId: string) => {
     const key = record.feature;
     if (this.has(key)) {
       return this.get(key) as Feature;
     }
-    const newFeature: Feature = {
-      uid: '',
-      id: key,
-      partId: record.partid?.toString() ?? '',
-      refId: refId,
-      name: '',
-      characteristics: {},
-    };
+
+    const newFeature = defaultFeature(key, record.partid?.toString() ?? '', refId);
     this.set(key, newFeature);
     return newFeature;
   };
@@ -39,13 +43,13 @@ export class MappedFeatures extends Map<string, Feature> {
 
 function getRecord(columns: ColumnsDict, i: number) {
   return Object.keys(columns).reduce((acc, key) => {
-    acc[key] = columns[key].values.get(i);
+    acc[key] = dvGet<number | string>(columns[key].values, i);
     return acc;
   }, {} as DataFrameRecord);
 }
 
 export function loadFeaturesByControl(
-  fields: Array<Field<string, Vector<any>>>,
+  fields: Array<Field<string, number[]>>,
   refId: string,
   mappedFeatures: MappedFeatures
 ) {
@@ -60,6 +64,7 @@ export function loadFeaturesByControl(
 
   for (let i = 0; i < length; i++) {
     const record = getRecord(columns, i);
+    console.log('🚀 ~ file: loadDataFrames.ts:66 ~ record:', record);
     const feature = mappedFeatures.getOrDefault(record, refId);
 
     if (!!record.control) {
@@ -70,20 +75,22 @@ export function loadFeaturesByControl(
   }
 }
 
-function noNulls(timeVector: Vector<any>, valuesVector: Vector<any>) {
-  const t = new ArrayVector<number>();
-  const v = new ArrayVector<any>();
+function noNulls(timeVector: number[], valuesVector: number[]) {
+  const t = [] as number[];
+  const v = [] as number[];
   for (let i = 0; i < timeVector.length; i++) {
-    if (timeVector.get(i) != null && valuesVector.get(i) != null) {
-      t.add(timeVector.get(i));
-      v.add(valuesVector.get(i));
+    const tVal = dvGet(timeVector, i);
+    const vVal = dvGet(valuesVector, i);
+    if (tVal != null && vVal != null) {
+      t.push(tVal);
+      v.push(vVal);
     }
   }
   return { t, v };
 }
 
 export function loadTimeseries(
-  fields: Array<Field<string, Vector<any>>>,
+  fields: Array<Field<string, number[]>>,
   refId: string,
   mappedFeatures: MappedFeatures,
   meta?: Dictionary<any>
@@ -104,7 +111,7 @@ export function loadTimeseries(
     if (feature == null) {
       continue;
     }
-    const { t, v } = noNulls(timeVector.values, fields[i].values);
+    const { t, v } = noNulls(timeVector.values as number[], fields[i].values as number[]);
     const timeseries = {
       time: { ...timeVector, values: t },
       values: { ...fields[i], values: v },
@@ -117,4 +124,41 @@ export function loadTimeseries(
       feature.meta = { ...(feature.meta ?? {}), ...meta };
     }
   }
+}
+
+export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
+  const timeVector = fields?.[0];
+  if (timeVector == null || timeVector.name !== 'Time') {
+    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
+    return;
+  }
+
+  const firstValueField = () => {
+    for (let i = 1; i < fields.length; i++) {
+      if (fields[i].type === 'number') {
+        return fields[i];
+      }
+    }
+    return undefined;
+  };
+
+  const valueVector = firstValueField();
+  if (valueVector == null) {
+    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
+    return;
+  }
+
+  const newFeature = defaultFeature('value', '', refId);
+
+  const { t, v } = noNulls(timeVector.values as number[], valueVector.values as number[]);
+  const timeseries = {
+    time: { ...timeVector, values: t },
+    values: { ...valueVector, values: v },
+  };
+  newFeature.characteristics['timeseries'] = {
+    table: {},
+    timeseries,
+  };
+
+  return newFeature;
 }

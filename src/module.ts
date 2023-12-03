@@ -2,10 +2,22 @@ import { PanelPlugin } from '@grafana/data';
 import { PanelOptions, defaultPanelOptions } from './types';
 import { ChartPanel } from './components/ChartPanel';
 import { LimitsEditor } from './components/options/LimitsEditor';
-import { ConstantsListEditor } from 'components/options/ConstrantsListEditor';
+import { ConstantsListEditor } from 'components/options/ConstantsListEditor';
 import { SimpleParamsEditor } from 'components/options/SimpleParamsEditor';
+import { SpcOptionEditor } from 'components/options/SpcOptionEditor';
+import { parseData } from 'data/parseData';
 
 export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions((builder) => {
+  builder.addCustomEditor({
+    id: 'spcOptions',
+    path: 'spcOptions',
+    name: 'SPC options',
+    description: 'Select options for SPC chart',
+    defaultValue: defaultPanelOptions.spcOptions,
+    editor: SpcOptionEditor,
+    category: ['Chart'],
+    showIf: (_, data) => parseData(data ?? []).hasTableData === false,
+  });
   builder.addCustomEditor({
     id: 'constantsConfig',
     path: 'constantsConfig',

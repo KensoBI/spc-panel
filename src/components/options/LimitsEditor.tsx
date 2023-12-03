@@ -4,7 +4,7 @@ import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { css } from '@emotion/css';
 import { InlineField, Select, useStyles2 } from '@grafana/ui';
 import { InlineColorField } from '../InlineColorField';
-import { Characteristic } from 'data/types';
+import { SpcParam, allSpcParamsDict } from 'data/spcParams';
 
 const defaultColor = 'rgb(196, 22, 42)';
 
@@ -13,17 +13,17 @@ type Props = StandardEditorProps<LimitConfig, any, PanelOptions>;
 export function LimitsEditor({ value, onChange, context }: Props) {
   const styles = useStyles2(getStyles);
 
-  const selectedCharacteristic = context.instanceState?.selectedCharacteristic as Characteristic | null | undefined;
+  const characteristicKeys = context.instanceState?.characteristicKeys as string[] | null | undefined;
 
   const options = React.useMemo(() => {
-    if (selectedCharacteristic == null) {
+    if (characteristicKeys == null) {
       return [];
     }
-    return Object.keys(selectedCharacteristic.table).map((fieldName) => ({
+    return characteristicKeys.map((fieldName) => ({
       value: fieldName,
-      label: fieldName,
+      label: allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName,
     }));
-  }, [selectedCharacteristic]);
+  }, [characteristicKeys]);
 
   const setLimitConfig = (key: keyof NonNullable<LimitConfig>, item: LimitConfigItem | undefined) => {
     onChange({

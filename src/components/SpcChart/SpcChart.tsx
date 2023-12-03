@@ -1,5 +1,5 @@
+/* eslint-disable deprecation/deprecation */
 import {
-  ArrayVector,
   dateTime,
   Field,
   FieldColorModeId,
@@ -10,7 +10,6 @@ import {
   TimeRange,
   toDataFrame,
   toFixed,
-  Vector,
 } from '@grafana/data';
 import {
   Alert,
@@ -37,8 +36,8 @@ const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
 type Props = {
   dataFrameName: string;
-  timeField?: Field<string, Vector<number>>;
-  valueField?: Field<string, Vector<any>>;
+  timeField?: Field<string, number[]>;
+  valueField?: Field<string, number[]>;
   limits?: {
     up?: {
       value: number;
@@ -53,6 +52,7 @@ type Props = {
     value: number;
     color: string;
     title: string;
+    lineWidth: number;
   }>;
   lineWidth: number;
   pointSize: number;
@@ -93,23 +93,29 @@ export function SpcChart(props: Props) {
     const valField = cloneDeep(valueField);
     const fields = [cloneDeep(timeField)];
 
-    const addConstantField = (value: number, name: string, color: string) => {
+    const addConstantField = (value: number, name: string, color: string, lineWidth: number) => {
       fields.push({
         name: name,
-        values: new ArrayVector<number>(valField.values.toArray().map(() => value)),
+        values: valField.values.map(() => value),
         config: {
           color: {
             mode: FieldColorModeId.Fixed,
             fixedColor: color,
           },
+          custom: {
+            lineWidth: lineWidth,
+          },
         },
+
         type: FieldType.number,
       });
     };
 
     if (constants) {
       for (const c of constants) {
-        addConstantField(c.value, c.title, c.color);
+        if (!isNaN(c.value)) {
+          addConstantField(c.value, c.title, c.color, c.lineWidth);
+        }
       }
     }
 
@@ -219,8 +225,8 @@ export function SpcChart(props: Props) {
   );
 
   const timeRangeFromData: TimeRange = React.useMemo(() => {
-    const start = timeField?.values.get(0);
-    const stop = timeField?.values.get(timeField?.values.length - 1);
+    const start = timeField?.values[0];
+    const stop = timeField?.values[timeField?.values.length - 1];
     if (start == null || stop == null || start === stop) {
       return timeRange;
     }
