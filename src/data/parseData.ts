@@ -2,6 +2,24 @@ import { DataFrame, FieldType } from '@grafana/data';
 import { loadFeaturesByControl, loadSingleTimeseries, loadTimeseries, MappedFeatures } from './loadDataFrames';
 import { Feature } from './types';
 
+function isSimpleTimeseries(df: DataFrame) {
+  const check = (timeIndex: number, valueIndex: number) => {
+    return df.fields?.[timeIndex]?.type === FieldType.time && df.fields?.[valueIndex]?.type === FieldType.number;
+  };
+  return df.fields.length === 2 && (check(0, 1) || check(1, 0));
+}
+
+function timeFieldFirst(df: DataFrame) {
+  const timeFieldIndex = df.fields.findIndex((field) => field.type === FieldType.time);
+  if (timeFieldIndex === 0) {
+    return df;
+  }
+  const fields = [...df.fields];
+  const timeField = fields.splice(timeFieldIndex, 1);
+  fields.unshift(timeField[0]);
+  return { ...df, fields };
+}
+
 function isTimeseries(df: DataFrame) {
   return df.meta?.type === 'timeseries-wide' && df.fields?.[0]?.type === FieldType.time;
 }
@@ -14,19 +32,9 @@ function isFeaturesTable(df: DataFrame) {
   return hasColumn(df, 'feature') && hasColumn(df, 'control') && hasColumn(df, 'nominal');
 }
 
-function isCadTable(df: DataFrame) {
-  return hasColumn(df, 'links') && hasColumn(df, 'colors');
-}
-
-function isScanTable(df: DataFrame) {
-  return df.name === 'scans' && hasColumn(df, 'links') && hasColumn(df, 'times');
-}
-
 function groupDataFrames(data: DataFrame[]) {
   const tables: DataFrame[] = [];
   const timeseries: DataFrame[] = [];
-  const cadFrames: DataFrame[] = [];
-  const scanFrames: DataFrame[] = [];
   for (const df of data) {
     if (df.refId == null) {
       continue;
@@ -35,10 +43,8 @@ function groupDataFrames(data: DataFrame[]) {
       timeseries.push(df);
     } else if (isFeaturesTable(df)) {
       tables.push(df);
-    } else if (isCadTable(df)) {
-      cadFrames.push(df);
-    } else if (isScanTable(df)) {
-      scanFrames.push(df);
+    } else if (isSimpleTimeseries(df)) {
+      timeseries.push(timeFieldFirst(df));
     } else {
       console.warn('Unknown DataFrame');
     }
@@ -46,8 +52,6 @@ function groupDataFrames(data: DataFrame[]) {
   return {
     tables,
     timeseries,
-    cadFrames,
-    scanFrames,
   };
 }
 
