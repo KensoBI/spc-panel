@@ -1,11 +1,11 @@
 # SPC Panel
 
-Welcome to KensoBI SPC panel for Grafana. This plugin provides various customizable settings and options to enhance your data visualization experience. Below, you will find a description of the available constants and parameters.
+Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build common statistical process control (SPC) charts like Xbar-R and Xbar-S charts using time-series data in Grafana.
 
 
 ## Plugin Overview
 
-![alt text](./src/img/mainview-options.PNG)
+![options](./src/img/mainview-options.PNG)
 
 ## Available options
 
@@ -30,6 +30,23 @@ Welcome to KensoBI SPC panel for Grafana. This plugin provides various customiza
 
 
 - **Line color:**  Customize the color of your graph lines to match your desired visual style.
+
+## How to build X-bar R chart
+
+### X-bar for R chart
+![X-Bar R chart](./src/img/X-barR.gif)
+
+
+### R Chart
+![R chart](./src/img/R-bar.gif)
+
+## How to build X-bar S chart
+
+### X-bar for S chart
+![X-Bar S chart](./src/img/X-barS.gif)
+
+### S chart
+![S chart](./src/img/S-chart.gif)
 
 ## Data Source Compatibility
 
@@ -115,7 +132,7 @@ To install this plugin in your Grafana instance, follow these steps:
 If you have any questions or feedback, you can:
 
 - Ask a question on the [KensoBI Discord channel](https://discord.gg/cVKKh7trXU).
-- [Send an email](mailto:support@kensobi.com)  to report bugs, issues, and feature suggestions.
+- Create an [issue](https://github.com/KensoBI/spc-panel/issues) to report bugs, issues, and feature suggestions.
 
 Your feedback is always welcome!
 
