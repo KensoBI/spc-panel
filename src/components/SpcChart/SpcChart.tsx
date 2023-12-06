@@ -184,7 +184,7 @@ export function SpcChart(props: Props) {
     valField.config = {
       thresholds: hasTresholds ? thresholds : undefined,
       custom,
-      displayName: TIMESERIES_SAMPLE_LABEL,
+      displayName: valField.labels?.control ? valField.labels?.control + ' sample' : TIMESERIES_SAMPLE_LABEL,
       color: {
         mode: FieldColorModeId.Fixed,
         fixedColor: lineColor,
