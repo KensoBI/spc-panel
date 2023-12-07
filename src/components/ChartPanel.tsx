@@ -7,10 +7,12 @@ import { PanelPropsProvider } from './PanelPropsProvider';
 import { TimeSeriesComponent } from './SpcChart/TimeSeriesComponent';
 import { TimeseriesSettings, defaultTimeseriesSettings } from './SpcChart/types';
 import { calcSpc } from 'data/calcSpc';
+import { parseOptions } from './options/parseOptions';
 
 export function ChartPanel(props: ChartPanelProps) {
-  const { data, width, height, options } = props;
+  const { data, width, height } = props;
   const styles = useStyles2(getStyles);
+  const options = parseOptions(props.options);
 
   const { features, hasTableData } = React.useMemo(() => parseData(data.series), [data.series]);
 
