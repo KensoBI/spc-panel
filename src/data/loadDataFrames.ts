@@ -1,4 +1,4 @@
-import { Field } from '@grafana/data';
+import { Field, FieldType } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
 import { dvGet } from './deprecatedVectorUtils';
@@ -128,7 +128,7 @@ export function loadTimeseries(
 
 export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
   const timeVector = fields?.[0];
-  if (timeVector == null || timeVector.name !== 'Time') {
+  if (timeVector == null || timeVector.type !== FieldType.time) {
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
