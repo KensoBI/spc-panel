@@ -2,20 +2,19 @@ version: '3.7'
 
 services:
   grafana:
-    image: kensobi/kensobi:latest
+    image: grafana/grafana:latest
     container_name: 'kensobi-spc-panel'
     ports:
       - 3000:3000/tcp
     volumes:
       - ./dist:/var/lib/grafana/plugins/kensobi-spc-panel
-      - spc_panel_storage:/var/lib/grafana
+#      - spc_panel_storage:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning
     environment:
       - TERM=linux
       - GF_LOG_LEVEL=debug
       - GF_DATAPROXY_LOGGING=true
       - GF_DEFAULT_APP_MODE=development
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=kensobi-cad-panel,kensobi-feature-datasource,kensobi-app
-      - GF_INSTALL_PLUGINS=https://cdn.kensobi.com/plugins/dev/kensobi-app.zip;kensobi-app,https://cdn.kensobi.com/plugins/dev/kensobi-cad-panel.zip;kensobi-cad-panel,https://cdn.kensobi.com/plugins/dev/kensobi-feature-datasource.zip;kensobi-feature-datasource
+#volumes:
+#  spc_panel_storage:
 
-volumes:
-  spc_panel_storage:
