@@ -1,57 +1,78 @@
-# Functions Documentation
+# SPC Panel
 
-## Introduction
-The SPC (Statistical Process Control) Panel allows you to visualize and analyze your data using three main charts: X-bar chart, R-bar chart, and S-bar chart. Each chart serves a specific purpose in monitoring and maintaining the stability of your processes.
-
-### X-Bar Chart
-The X-bar chart is designed to monitor the central tendency of your process over time. It calculates the average of sample means, providing insights into the overall process mean.
-
-<b>Aggregation Type:</b> Mean
+Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build common statistical process control (SPC) charts like Xbar-R and Xbar-S charts using time-series data in Grafana.
 
 
-### R-Bar Chart
-The R-bar chart focuses on the variability within your process by monitoring the range of samples. It calculates the average of ranges (R-bar) to assess the consistency of your process.
+## Plugin Overview
 
-<b>Aggregation Type:</b> Range
+![Main](https://github.com/KensoBI/spc-panel/blob/main/src/img/mainview-options.PNG?raw=true)
 
-### S-Bar Chart
+## Available options
 
-The S-bar chart is used to monitor the variability within your process by assessing the standard deviation of samples.
+- **Constants:** The constants for your data visualization, such as minimum, nominal and maximum values. Data for constanst can be downloaded from a datasource or entered using an editor.
 
-<b>Aggregation Type:</b> Standard Deviation
+- **Limits:** The limits for your data visualization, such as Upper Specification Limit (USL), Lower Specification Limit (LSL) values. Data for Limits can be downloaded from a datasource or entered using an editor.
 
 
-## Control Limits Calculation
+- **Fill:**   Customize the area or space under your graph lines. 
 
-It's important to note that X-bar charts can have up to four control limits, depending on the type of chart and the desired analysis.
 
-### X-bar charts
-The control limits for <b>X-bar charts</b> are calculated as follows:
+- **Line width:**   Adjust the width of the lines in your graph to make your data more visible and distinctive.
 
-UCL-Rbar: X-bar + A2 * R-bar
 
-LCL-Rbar: X-bar - A2 * R-bar
+- **Piont radius:**  Control the size of data points in your graph, making them more or less prominent as needed.
 
-UCL-Sbar: X-bar + A3 * S
 
-LCL-Sbar: X-bar - A3 * S
+- **View legend:**  Toggle the display of a legend to help your audience understand the data in your visualization.
 
-### R-bar charts
 
-For <b>R-bar charts</b>, the control limits are calculated as follows:
+- **Decimals:**  Set the number of decimal places to display in your data labels, providing more or less precision.
 
-UCL: D4 * R-bar
 
-LCL: D3 * R-bar
+- **Line color:**  Customize the color of your graph lines to match your desired visual style.
 
-### S-bar charts
+## How to build X-bar R chart
 
-For <b>S-bar charts</b>, the control limits are calculated as follows:
+### X-bar for R chart
+![X-Bar R chart](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/X-barR.gif)
 
-UCL: B4 * S
 
-LCL: B3 * S
+### R Chart
+![R chart](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/R-bar.gif)
 
-### Constants
-The values A2, A3, D3, D4, B3, B4 are constants configured for calculations in the SPC panel. The values are also available as an [SQL script](https://gist.github.com/mrtomeq/e5d7a3d6321444ed89b263998c8e537b).
+## How to build X-bar S chart
 
+### X-bar for S chart
+![X-Bar S chart](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/X-barS.gif)
+
+### S chart
+![S chart](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/S-chart.gif)
+
+## Data Source Compatibility
+
+This plugin is designed to work seamlessly with all available data sources in Grafana. Whether you are using InfluxDB, Prometheus, Elasticsearch, or any other supported data source, you can utilize the full potential of this plugin to enhance your data visualization.
+
+Feel free to modify and customize these settings to suit your specific needs and preferences. 
+
+## Functions documentation
+
+The SPC Panel plug-in uses various functions to analyze data and calculate constants. For detailed information about these mathematical formulas, please refer to the section [Functions Documentation](https://github.com/KensoBI/spc-panel/src/SPC_FUNCTIONS.md).
+
+
+## Getting Help
+
+If you have any questions or feedback, you can:
+
+- Create an [issue](https://github.com/KensoBI/spc-panel/issues) to report bugs, issues, and feature suggestions.
+- Ask a question on the [KensoBI Discord channel](https://discord.gg/cVKKh7trXU).
+
+Your feedback is always welcome!
+
+
+## License
+
+This software is distributed under the [Apache License](https://raw.githubusercontent.com/KensoBI/spc-panel/main/LICENSE).
+
+## Notes
+
+Copyright (c) 2023 [Kenso Software](https://kensobi.com)

@@ -3,7 +3,6 @@
   "type": "panel",
   "name": "SPC Panel",
   "id": "kensobi-spc-panel",
-  "streaming": true,
   "info": {
     "keywords": ["panel", "spc", "chart", "kensobi"],
     "description": "Create common SPC charts like X-Bar chart or R-chart.",
@@ -17,12 +16,20 @@
     },
     "links": [
       {
-        "name": "Website",
+        "name": "Project site",
         "url": "https://github.com/KensoBI/SPC-panel"
+      },
+      {
+        "name": "Documentation",
+        "url": "https://docs.kensobi.com/docs/panels/spc"
       },
       {
         "name": "License",
         "url": "https://github.com/KensoBI/SPC-panel/blob/main/LICENSE"
+      },
+      {
+        "name": "Author's site",
+        "url": "https://kensobi.com"
       }
     ],
     "screenshots": [

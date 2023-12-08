@@ -5,7 +5,7 @@ Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build co
 
 ## Plugin Overview
 
-![options](./src/img/mainview-options.PNG)
+![Main](./src/img/mainview-options.PNG)
 
 ## Available options
 
@@ -62,7 +62,7 @@ The SPC Panel plug-in uses various functions to analyze data and calculate const
 
 To install this plugin in your Grafana instance, follow these steps:
 
-1. Download the plugin from the [plugin repository](https://grafana.com/plugins)<!--Change url--> or use the Grafana CLI to install it.
+1. Download the plugin from the [plugin repository](https://grafana.com/grafana/plugins/) or [GitHub](https://github.com/KensoBI/spc-panel/releases) or use the Grafana CLI to install it.
 
 2. Restart your Grafana server if required.
 
