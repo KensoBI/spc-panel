@@ -3,6 +3,7 @@
   "type": "panel",
   "name": "SPC Panel",
   "id": "kensobi-spc-panel",
+  "streaming": true,
   "info": {
     "keywords": ["panel", "spc", "chart", "kensobi"],
     "description": "Create common SPC charts like X-Bar chart or R-chart.",
