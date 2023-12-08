@@ -23,9 +23,9 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
   const controlName = settingsWithDefaults.controlName;
   const constantsConfig = settingsWithDefaults.constantsConfig;
   const limitConfig = settingsWithDefaults.limitConfig;
-  const lineWidth = settingsWithDefaults.lineWidth;
-  const pointSize = settingsWithDefaults.pointSize;
-  const fill = settingsWithDefaults.fill;
+  const lineWidth = settingsWithDefaults.lineWidth!;
+  const pointSize = settingsWithDefaults.pointSize!;
+  const fill = settingsWithDefaults.fill!;
   const lineColor = settingsWithDefaults.lineColor as string;
   const showLegend = settingsWithDefaults.showLegend;
   const decimals = settingsWithDefaults.decimals;
@@ -45,11 +45,12 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
   );
 
   const constants = React.useMemo(() => {
-    return constantsConfig
+    return constantsConfig?.items
       ?.map((config) => ({
         title: config.title,
         value: characteristic?.table?.[config.name],
         color: config.color,
+        lineWidth: config.lineWidth,
       }))
       ?.filter((c) => c.value != null);
   }, [characteristic?.table, constantsConfig]);
@@ -80,7 +81,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
 
   const setSettings = React.useCallback((newSettings: TimeseriesSettings) => {
     //TODO: Implement
-    console.log('setSettings', newSettings);
+    // console.log('setSettings', newSettings);
   }, []);
 
   const onSeriesColorChange = React.useCallback(
@@ -89,7 +90,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
         setSettings({ ...settingsWithDefaults, lineColor: color });
       }
       if (settingsWithDefaults.constantsConfig != null) {
-        for (const constant of settingsWithDefaults.constantsConfig) {
+        for (const constant of settingsWithDefaults.constantsConfig.items) {
           if (constant.name === label) {
             constant.color = color;
             setSettings({ ...settingsWithDefaults });

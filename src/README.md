@@ -1,49 +1,57 @@
-<!-- This README file is going to be the one displayed on the Grafana.com website for your plugin. Uncomment and replace the content here before publishing.
+# Functions Documentation
 
-Remove any remaining comments before publishing as these may be displayed on Grafana.com -->
+## Introduction
+The SPC (Statistical Process Control) Panel allows you to visualize and analyze your data using three main charts: X-bar chart, R-bar chart, and S-bar chart. Each chart serves a specific purpose in monitoring and maintaining the stability of your processes.
 
-# SPC Panel
+### X-Bar Chart
+The X-bar chart is designed to monitor the central tendency of your process over time. It calculates the average of sample means, providing insights into the overall process mean.
 
-<!-- To help maximize the impact of your README and improve usability for users, we propose the following loose structure:
+<b>Aggregation Type:</b> Mean
 
-**BEFORE YOU BEGIN**
-- Ensure all links are absolute URLs so that they will work when the README is displayed within Grafana and Grafana.com
-- Be inspired ✨
-  - [grafana-polystat-panel](https://github.com/grafana/grafana-polystat-panel)
-  - [volkovlabs-variable-panel](https://github.com/volkovlabs/volkovlabs-variable-panel)
 
-**ADD SOME BADGES**
+### R-Bar Chart
+The R-bar chart focuses on the variability within your process by monitoring the range of samples. It calculates the average of ranges (R-bar) to assess the consistency of your process.
 
-Badges convey useful information at a glance for users whether in the Catalog or viewing the source code. You can use the generator on [Shields.io](https://shields.io/badges/dynamic-json-badge) together with the Grafana.com API
-to create dynamic badges that update automatically when you publish a new version to the marketplace.
+<b>Aggregation Type:</b> Range
 
-- For the logo field use 'grafana'.
-- Examples (label: query)
-  - Downloads: $.downloads
-  - Catalog Version: $.version
-  - Grafana Dependency: $.grafanaDependency
-  - Signature Type: $.versionSignatureType
+### S-Bar Chart
 
-Full example: ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?logo=grafana&query=$.version&url=https://grafana.com/api/plugins/grafana-polystat-panel&label=Marketplace&prefix=v&color=F47A20)
+The S-bar chart is used to monitor the variability within your process by assessing the standard deviation of samples.
 
-Consider other [badges](https://shields.io/badges) as you feel appropriate for your project.
+<b>Aggregation Type:</b> Standard Deviation
 
-## Overview / Introduction
-Provide one or more paragraphs as an introduction to your plugin to help users understand why they should use it.
 
-Consider including screenshots:
-- in [plugin.json](https://grafana.com/developers/plugin-tools/reference-plugin-json#info) include them as relative links.
-- in the README ensure they are absolute URLs.
+## Control Limits Calculation
 
-## Requirements
-List any requirements or dependencies they may need to run the plugin.
+It's important to note that X-bar charts can have up to four control limits, depending on the type of chart and the desired analysis.
 
-## Getting Started
-Provide a quick start on how to configure and use the plugin.
+### X-bar charts
+The control limits for <b>X-bar charts</b> are calculated as follows:
 
-## Documentation
-If your project has dedicated documentation available for users, provide links here. For help in following Grafana's style recommendations for technical documentation, refer to our [Writer's Toolkit](https://grafana.com/docs/writers-toolkit/).
+UCL-Rbar: X-bar + A2 * R-bar
 
-## Contributing
-Do you want folks to contribute to the plugin or provide feedback through specific means? If so, tell them how!
--->
+LCL-Rbar: X-bar - A2 * R-bar
+
+UCL-Sbar: X-bar + A3 * S
+
+LCL-Sbar: X-bar - A3 * S
+
+### R-bar charts
+
+For <b>R-bar charts</b>, the control limits are calculated as follows:
+
+UCL: D4 * R-bar
+
+LCL: D3 * R-bar
+
+### S-bar charts
+
+For <b>S-bar charts</b>, the control limits are calculated as follows:
+
+UCL: B4 * S
+
+LCL: B3 * S
+
+### Constants
+The values A2, A3, D3, D4, B3, B4 are constants configured for calculations in the SPC panel. The values are also available as an [SQL script](https://gist.github.com/mrtomeq/e5d7a3d6321444ed89b263998c8e537b).
+

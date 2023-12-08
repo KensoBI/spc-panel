@@ -1,22 +1,12 @@
-import { LimitConfig } from 'types';
+import { ConstantsConfig, LimitConfig, SpcOptions, TimeSeriesParams, defaultTimeseriesSettingsColor } from 'types';
 
-export type TimeseriesSettings = {
+export type TimeseriesSettings = TimeSeriesParams & {
   controlName: string;
   limitConfig?: LimitConfig;
-  constantsConfig?: Array<{
-    name: string;
-    color: string;
-    title: string;
-  }>;
-  fill: number;
-  lineWidth: number;
-  pointSize: number;
-  lineColor?: string;
-  showLegend?: boolean;
-  decimals?: number;
+  constantsConfig?: ConstantsConfig;
+  spcOptions?: SpcOptions;
 };
 
-export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
 export const defaultTimeseriesSettings: TimeseriesSettings = {
   controlName: '',
   fill: 0,
@@ -26,3 +16,4 @@ export const defaultTimeseriesSettings: TimeseriesSettings = {
   showLegend: false,
   decimals: 2,
 };
+

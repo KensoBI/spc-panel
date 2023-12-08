@@ -1,114 +1,146 @@
-# Grafana panel plugin template
+# SPC Panel
 
-This template is a starting point for building a panel plugin for Grafana.
+Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build common statistical process control (SPC) charts like Xbar-R and Xbar-S charts using time-series data in Grafana.
 
-## What are Grafana panel plugins?
 
-Panel plugins allow you to add new types of visualizations to your dashboard, such as maps, clocks, pie charts, lists, and more.
+## Plugin Overview
 
-Use panel plugins when you want to do things like visualize data returned by data source queries, navigate between dashboards, or control external systems (such as smart home devices).
+![options](./src/img/mainview-options.PNG)
 
-## Getting started
+## Available options
+
+- **Constants:** The constants for your data visualization, such as minimum, nominal and maximum values. Data for constanst can be downloaded from a datasource or entered using an editor.
+
+- **Limits:** The limits for your data visualization, such as Upper Specification Limit (USL), Lower Specification Limit (LSL) values. Data for Limits can be downloaded from a datasource or entered using an editor.
+
+
+- **Fill:**   Customize the area or space under your graph lines. 
+
+
+- **Line width:**   Adjust the width of the lines in your graph to make your data more visible and distinctive.
+
+
+- **Piont radius:**  Control the size of data points in your graph, making them more or less prominent as needed.
+
+
+- **View legend:**  Toggle the display of a legend to help your audience understand the data in your visualization.
+
+
+- **Decimals:**  Set the number of decimal places to display in your data labels, providing more or less precision.
+
+
+- **Line color:**  Customize the color of your graph lines to match your desired visual style.
+
+## How to build X-bar R chart
+
+### X-bar for R chart
+![X-Bar R chart](./src/img/X-barR.gif)
+
+
+### R Chart
+![R chart](./src/img/R-bar.gif)
+
+## How to build X-bar S chart
+
+### X-bar for S chart
+![X-Bar S chart](./src/img/X-barS.gif)
+
+### S chart
+![S chart](./src/img/S-chart.gif)
+
+## Data Source Compatibility
+
+This plugin is designed to work seamlessly with all available data sources in Grafana. Whether you are using InfluxDB, Prometheus, Elasticsearch, or any other supported data source, you can utilize the full potential of this plugin to enhance your data visualization.
+
+Feel free to modify and customize these settings to suit your specific needs and preferences. 
+
+## Functions documentation
+
+The SPC Panel plug-in uses various functions to analyze data and calculate constants. For detailed information about these mathematical formulas, please refer to the section [Functions Documentation](./src/README.md).
+
+## Installation
+
+To install this plugin in your Grafana instance, follow these steps:
+
+1. Download the plugin from the [plugin repository](https://grafana.com/plugins)<!--Change url--> or use the Grafana CLI to install it.
+
+2. Restart your Grafana server if required.
+
+3. Configure the plugin with the options described above via the Grafana web interface.
+
+## Building the plugin
+
 
 ### Frontend
 
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
 2. Build plugin in development mode and run in watch mode
 
    ```bash
-   npm run dev
+   yarn run dev
    ```
 
 3. Build plugin in production mode
 
    ```bash
-   npm run build
+   yarn run build
    ```
 
 4. Run the tests (using Jest)
 
    ```bash
    # Runs the tests and watches for changes, requires git init first
-   npm run test
+   yarn run test
 
    # Exits after running all the tests
-   npm run test:ci
+   yarn run test:ci
    ```
 
 5. Spin up a Grafana instance and run the plugin inside it (using Docker)
 
    ```bash
-   npm run server
+   yarn run server
    ```
 
 6. Run the E2E tests (using Cypress)
 
    ```bash
    # Spins up a Grafana instance first that we tests against
-   npm run server
+   yarn run server
 
    # Starts the tests
-   npm run e2e
+   yarn run e2e
    ```
 
 7. Run the linter
 
    ```bash
-   npm run lint
+   yarn run lint
 
    # or
 
-   npm run lint:fix
+   yarn run lint:fix
    ```
 
-# Distributing your plugin
+## Getting Help
 
-When distributing a Grafana plugin either within the community or privately the plugin must be signed so the Grafana application can verify its authenticity. This can be done with the `@grafana/sign-plugin` package.
+If you have any questions or feedback, you can:
 
-_Note: It's not necessary to sign a plugin during development. The docker development environment that is scaffolded with `@grafana/create-plugin` caters for running the plugin without a signature._
+- Ask a question on the [KensoBI Discord channel](https://discord.gg/cVKKh7trXU).
+- Create an [issue](https://github.com/KensoBI/spc-panel/issues) to report bugs, issues, and feature suggestions.
 
-## Initial steps
+Your feedback is always welcome!
 
-Before signing a plugin please read the Grafana [plugin publishing and signing criteria](https://grafana.com/legal/plugins/#plugin-publishing-and-signing-criteria) documentation carefully.
 
-`@grafana/create-plugin` has added the necessary commands and workflows to make signing and distributing a plugin via the grafana plugins catalog as straightforward as possible.
+## License
 
-Before signing a plugin for the first time please consult the Grafana [plugin signature levels](https://grafana.com/legal/plugins/#what-are-the-different-classifications-of-plugins) documentation to understand the differences between the types of signature level.
+This software is distributed under the [Apache License](./LICENSE).
 
-1. Create a [Grafana Cloud account](https://grafana.com/signup).
-2. Make sure that the first part of the plugin ID matches the slug of your Grafana Cloud account.
-   - _You can find the plugin ID in the `plugin.json` file inside your plugin directory. For example, if your account slug is `acmecorp`, you need to prefix the plugin ID with `acmecorp-`._
-3. Create a Grafana Cloud API key with the `PluginPublisher` role.
-4. Keep a record of this API key as it will be required for signing a plugin
+## Notes
 
-## Signing a plugin
-
-### Using Github actions release workflow
-
-If the plugin is using the github actions supplied with `@grafana/create-plugin` signing a plugin is included out of the box. The [release workflow](./.github/workflows/release.yml) can prepare everything to make submitting your plugin to Grafana as easy as possible. Before being able to sign the plugin however a secret needs adding to the Github repository.
-
-1. Please navigate to "settings > secrets > actions" within your repo to create secrets.
-2. Click "New repository secret"
-3. Name the secret "GRAFANA_API_KEY"
-4. Paste your Grafana Cloud API key in the Secret field
-5. Click "Add secret"
-
-#### Push a version tag
-
-To trigger the workflow we need to push a version tag to github. This can be achieved with the following steps:
-
-1. Run `npm version <major|minor|patch>`
-2. Run `git push origin main --follow-tags`
-
-## Learn more
-
-Below you can find source code for existing app plugins and other related documentation.
-
-- [Basic panel plugin example](https://github.com/grafana/grafana-plugin-examples/tree/master/examples/panel-basic#readme)
-- [`plugin.json` documentation](https://grafana.com/developers/plugin-tools/reference-plugin-json)
-- [How to sign a plugin?](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin)
+Copyright (c) 2023 [Kenso Software](https://kensobi.com)

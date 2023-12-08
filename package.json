@@ -1,6 +1,6 @@
 {
   "name": "kensobi-spc-panel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
@@ -64,6 +64,5 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "tslib": "2.5.3"
-  },
-  "packageManager": "npm@10.1.0"
+  }
 }

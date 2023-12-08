@@ -1,12 +1,12 @@
-import { Field, Vector } from '@grafana/data';
+import { Field } from '@grafana/data';
 
 export type Characteristic = {
   table: {
     [field: string]: any;
   };
   timeseries?: {
-    time: Field<string, Vector<number>>;
-    values: Field<string, Vector<any>>;
+    time: Field<string, number[]>;
+    values: Field<string, number[]>;
   };
 };
 
