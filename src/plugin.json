@@ -5,7 +5,7 @@
   "id": "kensobi-spc-panel",
   "info": {
     "keywords": ["panel", "spc", "chart", "kensobi"],
-    "description": "KensoBI SPC panel allows you to create common SPC charts like X-Bar chart or R-chart.",
+    "description": "Create common SPC charts like X-Bar chart or R-chart.",
     "author": {
       "name": "Kenso Software",
       "url": "https://kensobi.com"
@@ -24,7 +24,12 @@
         "url": "https://github.com/KensoBI/SPC-panel/blob/main/LICENSE"
       }
     ],
-    "screenshots": [],
+    "screenshots": [
+      { "name": "X-Bar R chart", "path": "img/X-barR.gif" }, 
+      { "name": "R chart", "path": "img/R-bar.gif" }, 
+      { "name": "X-Bar S chart", "path": "img/X-barS.gif" },
+      { "name": "S chart", "path": "img/S-chart.gif" }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
