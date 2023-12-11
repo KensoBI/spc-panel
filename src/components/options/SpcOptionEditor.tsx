@@ -4,6 +4,7 @@ import { useStyles2, InlineField, Select } from '@grafana/ui';
 import { InputFloat } from 'components/InputFloat';
 import React from 'react';
 import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
+import { useParseSpcOptions } from './parseOptions';
 
 const sampleSizeOptions = [...Array(10)]
   .map((_, i) => i + 1)
@@ -23,38 +24,41 @@ const isCalculationType = (value: unknown): value is AggregationType => {
 };
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
-export function SpcOptionEditor({ value, onChange }: Props) {
+export function SpcOptionEditor(props: Props) {
   const styles = useStyles2(getStyles);
+
+  const { value: options, isVar } = useParseSpcOptions(props.value);
+  const onChange = props.onChange;
 
   return (
     <>
       <div className={styles.row}>
-        <InlineField label="Sample size" disabled={false}>
+        <InlineField label="Sample size" disabled={isVar}>
           <Select
             options={sampleSizeOptions}
-            value={value.sampleSize}
+            value={options.sampleSize}
             onChange={(e) => {
               const newSampleSize = e.value ?? 1;
-              const newSpc: SpcOptions = { ...value, sampleSize: newSampleSize };
+              const newSpc: SpcOptions = { ...options, sampleSize: newSampleSize };
               if (newSampleSize === 1) {
                 newSpc.aggregation = 'mean';
               }
-              onChange({ ...value, sampleSize: newSampleSize });
+              onChange({ ...options, sampleSize: newSampleSize });
             }}
             width={10}
           />
         </InlineField>
-        {value.sampleSize !== 1 && (
+        {options.sampleSize !== 1 && (
           <InlineField label="Aggregation type" disabled={false}>
             <Select
               placeholder={defaultAggregationType?.label}
               options={aggregationTypeOptions}
-              value={value.aggregation}
+              value={options.aggregation}
               onChange={(e) => {
                 if (!isCalculationType(e.value)) {
                   return;
                 }
-                onChange({ ...value, aggregation: e.value });
+                onChange({ ...options, aggregation: e.value });
               }}
               width={22}
             />
@@ -65,9 +69,9 @@ export function SpcOptionEditor({ value, onChange }: Props) {
         <InlineField label={'Nominal'}>
           <InputFloat
             placeholder={'Enter value'}
-            value={value?.nominal}
+            value={options?.nominal}
             onChange={(val) => {
-              onChange({ ...value, nominal: val });
+              onChange({ ...options, nominal: val });
             }}
             width={12}
           />
@@ -75,9 +79,9 @@ export function SpcOptionEditor({ value, onChange }: Props) {
         <InlineField label={'LSL'}>
           <InputFloat
             placeholder={'Enter value'}
-            value={value?.lsl}
+            value={options?.lsl}
             onChange={(val) => {
-              onChange({ ...value, lsl: val });
+              onChange({ ...options, lsl: val });
             }}
             width={12}
           />
@@ -85,9 +89,9 @@ export function SpcOptionEditor({ value, onChange }: Props) {
         <InlineField label={'USL'}>
           <InputFloat
             placeholder={'Enter value'}
-            value={value?.usl}
+            value={options?.usl}
             onChange={(val) => {
-              onChange({ ...value, usl: val });
+              onChange({ ...options, usl: val });
             }}
             width={12}
           />
