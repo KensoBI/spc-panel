@@ -56,7 +56,7 @@ Feel free to modify and customize these settings to suit your specific needs and
 
 ## Functions documentation
 
-The SPC Panel plug-in uses various functions to analyze data and calculate constants. For detailed information about these mathematical formulas, please refer to the section [Functions Documentation](https://github.com/KensoBI/spc-panel/src/SPC_FUNCTIONS.md).
+The SPC Panel plug-in uses various functions to analyze data and calculate constants. For detailed information about these mathematical formulas, please refer to the section [Functions Documentation](https://github.com/KensoBI/spc-panel/blob/main/src/SPC_FUNCTIONS.md).
 
 
 ## Getting Help
