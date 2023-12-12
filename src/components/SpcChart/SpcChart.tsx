@@ -89,7 +89,6 @@ export function SpcChart(props: Props) {
     if (timeField == null || valueField == null) {
       return undefined;
     }
-    console.log('🚀 ~ file: SpcChart.tsx:90 ~ dataFrames ~ timeField:', timeField, valueField);
 
     const valField = cloneDeep(valueField);
     const fields = [cloneDeep(timeField)];

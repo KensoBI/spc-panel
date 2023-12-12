@@ -64,7 +64,6 @@ export function loadFeaturesByControl(
 
   for (let i = 0; i < length; i++) {
     const record = getRecord(columns, i);
-    console.log('🚀 ~ file: loadDataFrames.ts:66 ~ record:', record);
     const feature = mappedFeatures.getOrDefault(record, refId);
 
     if (!!record.control) {
