@@ -99,6 +99,9 @@ export function loadTimeseries(
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
+  if(fields.length > 2) {
+    console.warn('alert-danger', [`Select one characteristic for the chart. The panel does not support several charts at the same time.`])
+  }
 
   for (let i = 1; i < fields.length; i++) {
     const featureName = fields[i].labels?.feature;
