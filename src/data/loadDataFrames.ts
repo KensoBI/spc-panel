@@ -159,20 +159,25 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     table: {},
     timeseries,
   };
+  console.log(newFeature, ' -> SimpleTimeseriesPlot')
   return newFeature;
 }
 
-export function loadTimeseriesWithCustomData(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
-  const timeVector = fields?.[0];
+export function loadTimeseriesWithCustomData(tsField: Array<Field<string, number[]>>, refId: string, tabField: Array<Field<string, number[]>>): Feature | undefined {
+  const timeVector = tsField?.[0];
   if (timeVector == null || timeVector.type !== FieldType.time) {
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
+  if (tabField.length == null) {
+    console.warn('alert-danger', [`No data or wrong query for custom constants table.`]);
+    return;
+  }
 
   const firstValueField = () => {
-    for (let i = 1; i < fields.length; i++) {
-      if (fields[i].type === 'number') {
-        return fields[i];
+    for (let i = 1; i < tsField.length; i++) {
+      if (tsField[i].type === 'number') {
+        return tsField[i];
       }
     }
     return undefined;
@@ -191,10 +196,11 @@ export function loadTimeseriesWithCustomData(fields: Array<Field<string, number[
     time: { ...timeVector, values: t },
     values: { ...valueVector, values: v },
   };
+  // TODO - adding all tabField items as  name : value
   newFeature.characteristics['timeseries'] = {
-    table: {},
+    table: {test1: 3, test2: 6}, //Testing values
     timeseries,
   };
-
+console.log(newFeature)
   return newFeature;
 }
