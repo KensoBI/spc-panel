@@ -34,6 +34,11 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   );
   characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);
 
+  //clear obsolate, computed values from config
+  //it's important, because otherwise the timeseries plot will be broken
+  characteristic.timeseries.time.config = {};
+  characteristic.timeseries.values.config = {};
+
   values = characteristic.timeseries.values.values;
   times = characteristic.timeseries.time.values;
 

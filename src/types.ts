@@ -52,7 +52,7 @@ export const defaultTimeseriesParams = {
   lineWidth: 2,
   pointSize: 6,
   lineColor: defaultTimeseriesSettingsColor,
-  showLegend: false,
+  showLegend: true,
   decimals: 2,
 };
 

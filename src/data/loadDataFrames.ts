@@ -64,7 +64,6 @@ export function loadFeaturesByControl(
 
   for (let i = 0; i < length; i++) {
     const record = getRecord(columns, i);
-    console.log('🚀 ~ file: loadDataFrames.ts:66 ~ record:', record);
     const feature = mappedFeatures.getOrDefault(record, refId);
 
     if (!!record.control) {
@@ -99,6 +98,9 @@ export function loadTimeseries(
   if (timeVector == null || timeVector.name !== 'Time') {
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
+  }
+  if(fields.length > 2) {
+    console.warn('alert-danger', [`Select one characteristic for the chart. The panel does not support several charts at the same time.`])
   }
 
   for (let i = 1; i < fields.length; i++) {
