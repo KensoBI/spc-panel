@@ -1,5 +1,5 @@
 import { DataFrame, FieldType } from '@grafana/data';
-import { loadFeaturesByControl, loadSingleTimeseries, loadTimeseries, MappedFeatures } from './loadDataFrames';
+import { loadFeaturesByControl, loadSingleTimeseries, loadTimeseries, loadTimeseriesWithCustomData, MappedFeatures } from './loadDataFrames';
 import { Feature } from './types';
 
 function isSimpleTimeseries(df: DataFrame) {
@@ -31,6 +31,9 @@ function hasColumn(df: DataFrame, name: string) {
 function isFeaturesTable(df: DataFrame) {
   return hasColumn(df, 'feature') && hasColumn(df, 'control') && hasColumn(df, 'nominal');
 }
+function isCustomTableVeriables(df: DataFrame) {
+  return !(hasColumn(df, 'feature') && !hasColumn(df, 'control') && !hasColumn(df, 'nominal')) && df.fields.length > 0;
+}
 
 function groupDataFrames(data: DataFrame[]) {
   const tables: DataFrame[] = [];
@@ -45,6 +48,8 @@ function groupDataFrames(data: DataFrame[]) {
       tables.push(df);
     } else if (isSimpleTimeseries(df)) {
       timeseries.push(timeFieldFirst(df));
+    } else if (isCustomTableVeriables(df)) {
+      tables.push(df);
     } else {
       console.warn('Unknown DataFrame');
     }
@@ -58,20 +63,36 @@ function groupDataFrames(data: DataFrame[]) {
 export type ParsedData = {
   features: Feature[];
   hasTableData: boolean;
+  hasCustomTableData: boolean;
 };
 
 export function parseData(data: DataFrame[]): ParsedData {
   const { tables, timeseries } = groupDataFrames(data);
 
   if (tables.length === 0 && timeseries.length > 0) {
+    console.log('this is single timeseries plot')
     const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
     return {
       features: singleTimeseries ? [singleTimeseries] : [],
       hasTableData: false,
+      hasCustomTableData: false,
+    };
+  }
+  
+  //check that it is not a FEATURE chart
+  if(!tables[0]?.fields.some((field: { name: string; }) => field.name === 'feature') && timeseries.length > 0) { //in feature plot there is feature on the [0] place
+    
+    console.log('this is single timeseries with custom table data plot')
+    const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(timeseries[0].fields, timeseries[0].refId as string)
+    return {
+      features: singleTimeseriesCustomTable ? [singleTimeseriesCustomTable] : [],
+      hasTableData: false,
+      hasCustomTableData: tables.length > 0,
     };
   }
 
   const mappedFeatures = new MappedFeatures();
+
   for (const df of tables) {
     loadFeaturesByControl(df.fields, df.refId as string, mappedFeatures);
   }
@@ -84,5 +105,6 @@ export function parseData(data: DataFrame[]): ParsedData {
   return {
     features,
     hasTableData: tables.length > 0,
+    hasCustomTableData: false
   };
 }

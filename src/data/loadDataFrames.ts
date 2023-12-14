@@ -159,6 +159,42 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     table: {},
     timeseries,
   };
+  return newFeature;
+}
+
+export function loadTimeseriesWithCustomData(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
+  const timeVector = fields?.[0];
+  if (timeVector == null || timeVector.type !== FieldType.time) {
+    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
+    return;
+  }
+
+  const firstValueField = () => {
+    for (let i = 1; i < fields.length; i++) {
+      if (fields[i].type === 'number') {
+        return fields[i];
+      }
+    }
+    return undefined;
+  };
+
+  const valueVector = firstValueField();
+  if (valueVector == null) {
+    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
+    return;
+  }
+
+  const newFeature = defaultFeature('value', '', refId);
+
+  const { t, v } = noNulls(timeVector.values as number[], valueVector.values as number[]);
+  const timeseries = {
+    time: { ...timeVector, values: t },
+    values: { ...valueVector, values: v },
+  };
+  newFeature.characteristics['timeseries'] = {
+    table: {},
+    timeseries,
+  };
 
   return newFeature;
 }
