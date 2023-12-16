@@ -82,7 +82,6 @@ export function parseData(data: DataFrame[]): ParsedData {
   //check that it is not a FEATURE chart
   if(!tables[0]?.fields.some((field: { name: string; }) => field.name === 'feature') && timeseries.length > 0) { //in feature plot there is feature on the [0] place
     
-    console.log('this is single timeseries with custom table data plot')
     const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(timeseries[0].fields, timeseries[0].refId as string, tables[0].fields)
     return {
       features: singleTimeseriesCustomTable ? [singleTimeseriesCustomTable] : [],

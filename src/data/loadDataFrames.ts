@@ -161,7 +161,6 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     table: {},
     timeseries,
   };
-  console.log(newFeature, ' -> SimpleTimeseriesPlot')
   return newFeature;
 }
 
@@ -200,7 +199,7 @@ export function loadTimeseriesWithCustomData(tsField: Array<Field<string, number
   };
   // TODO - adding all tabField items as  name : value
   newFeature.characteristics['timeseries'] = {
-    table: {test1: 3, test2: 6}, //Testing values
+    table: {test1: 3, test2: 6, lsl: 2, usl: 4}, //Testing values
     timeseries,
   };
 console.log(newFeature)
