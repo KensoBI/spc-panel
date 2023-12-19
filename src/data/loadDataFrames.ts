@@ -1,4 +1,4 @@
-import { Field, FieldType } from '@grafana/data';
+import { ArrayVector, Field, FieldType } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
 import { dvGet } from './deprecatedVectorUtils';
@@ -99,8 +99,10 @@ export function loadTimeseries(
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
-  if(fields.length > 2) {
-    console.warn('alert-danger', [`Select one characteristic for the chart. The panel does not support several charts at the same time.`])
+  if (fields.length > 2) {
+    console.warn('alert-danger', [
+      `Select one characteristic for the chart. The panel does not support several charts at the same time.`,
+    ]);
   }
 
   for (let i = 1; i < fields.length; i++) {
@@ -164,13 +166,17 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
   return newFeature;
 }
 
-export function loadTimeseriesWithCustomData(tsField: Array<Field<string, number[]>>, refId: string, tabField: Array<Field<string, number[]>>): Feature | undefined {
+export function loadTimeseriesWithCustomData(
+  tsField: Array<Field<string, number[]>>,
+  refId: string,
+  tableField: Array<Field<string, number[]>>
+): Feature | undefined {
   const timeVector = tsField?.[0];
   if (timeVector == null || timeVector.type !== FieldType.time) {
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
-  if (tabField.length == null) {
+  if (tableField.length == null) {
     console.warn('alert-danger', [`No data or wrong query for custom constants table.`]);
     return;
   }
@@ -197,11 +203,22 @@ export function loadTimeseriesWithCustomData(tsField: Array<Field<string, number
     time: { ...timeVector, values: t },
     values: { ...valueVector, values: v },
   };
-  // TODO - adding all tabField items as  name : value
+  // RESERVED VALUES!
+  // nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl,
+  // This values in table query are reserved for frontend calculations.
+  // If you want to use your custom database constant values use a different name in SQL query.
+
+  const table: { [field: string]: any } = {};
+
+  tableField?.map((item) => {
+    if (item.values instanceof ArrayVector && item.values.length > 0) {
+      Object.assign(table, { [item.name]: item.values.get(0) });
+    }
+  });
+
   newFeature.characteristics['timeseries'] = {
-    table: {test1: 3, test2: 6, lsl: 2, usl: 4}, //Testing values
+    table,
     timeseries,
   };
-console.log(newFeature)
   return newFeature;
 }

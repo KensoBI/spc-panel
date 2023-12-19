@@ -1,5 +1,11 @@
 import { DataFrame, FieldType } from '@grafana/data';
-import { loadFeaturesByControl, loadSingleTimeseries, loadTimeseries, loadTimeseriesWithCustomData, MappedFeatures } from './loadDataFrames';
+import {
+  loadFeaturesByControl,
+  loadSingleTimeseries,
+  loadTimeseries,
+  loadTimeseriesWithCustomData,
+  MappedFeatures,
+} from './loadDataFrames';
 import { Feature } from './types';
 
 function isSimpleTimeseries(df: DataFrame) {
@@ -70,7 +76,6 @@ export function parseData(data: DataFrame[]): ParsedData {
   const { tables, timeseries } = groupDataFrames(data);
 
   if (tables.length === 0 && timeseries.length > 0) {
-    console.log('this is single timeseries plot')
     const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
     return {
       features: singleTimeseries ? [singleTimeseries] : [],
@@ -78,11 +83,16 @@ export function parseData(data: DataFrame[]): ParsedData {
       hasCustomTableData: false,
     };
   }
-  
-  //check that it is not a FEATURE chart
-  if(!tables[0]?.fields.some((field: { name: string; }) => field.name === 'feature') && timeseries.length > 0) { //in feature plot there is feature on the [0] place
-    
-    const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(timeseries[0].fields, timeseries[0].refId as string, tables[0].fields)
+
+  //check if it's not a FEATURE chart
+  if (!tables[0]?.fields.some((field: { name: string }) => field.name === 'feature') && timeseries.length > 0) {
+    //in feature plot there is feature on the [0] place
+
+    const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(
+      timeseries[0].fields,
+      timeseries[0].refId as string,
+      tables[0].fields
+    );
     return {
       features: singleTimeseriesCustomTable ? [singleTimeseriesCustomTable] : [],
       hasTableData: false,
@@ -104,6 +114,6 @@ export function parseData(data: DataFrame[]): ParsedData {
   return {
     features,
     hasTableData: tables.length > 0,
-    hasCustomTableData: false
+    hasCustomTableData: false,
   };
 }
