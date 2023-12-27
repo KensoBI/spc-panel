@@ -1,4 +1,4 @@
-import { ArrayVector, Field, FieldType } from '@grafana/data';
+import { Field, FieldType } from '@grafana/data';
 import { Dictionary, keyBy, omit } from 'lodash';
 import { Feature } from './types';
 import { dvGet } from './deprecatedVectorUtils';
@@ -169,7 +169,7 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
 export function loadTimeseriesWithCustomData(
   tsField: Array<Field<string, number[]>>,
   refId: string,
-  tableField: Array<Field<string, number[]>>
+  tableField: Array<Field<string, any>>
 ): Feature | undefined {
   const timeVector = tsField?.[0];
   if (timeVector == null || timeVector.type !== FieldType.time) {
@@ -211,9 +211,7 @@ export function loadTimeseriesWithCustomData(
   const table: { [field: string]: any } = {};
 
   tableField?.map((item) => {
-    if (item.values instanceof ArrayVector && item.values.length > 0) {
-      Object.assign(table, { [item.name]: item.values.get(0) });
-    }
+    Object.assign(table, { [item.name]: dvGet(item.values, 0) });
   });
 
   newFeature.characteristics['timeseries'] = {
