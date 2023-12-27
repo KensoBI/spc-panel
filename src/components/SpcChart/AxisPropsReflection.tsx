@@ -22,6 +22,8 @@ export interface AxisPropsReflection {
   splits?: any; //Axis.Splits;
   values?: any; //Axis.Values;
   isTime?: boolean;
+  //TimeZone is deprecated, because it is reflection of AsixProps, witch also has deprecated zone
+  // eslint-disable-next-line deprecation/deprecation
   timeZone?: TimeZone;
   color?: any; //uPlot.Axis.Stroke;
   border?: any; //uPlot.Axis.Border;
