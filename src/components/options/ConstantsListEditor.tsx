@@ -1,16 +1,13 @@
-import { Button, InlineField, Select, useStyles2 } from '@grafana/ui';
+import { Button, Dropdown, InlineField, Menu, Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
-import { PopoverContainer } from 'components/popover/PopoverContainer';
 import { css } from '@emotion/css';
 import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
-import { Popover, usePopoverTrigger } from 'components/popover/Popover';
-import { CloseButton } from 'components/popover/CloseButton';
-import { MenuItem } from 'components/popover/MenuItem';
 import { ConstantsConfig, PanelOptions, defaultConstantColor } from 'types';
 import { InlineColorField } from 'components/InlineColorField';
 import { difference, uniqBy } from 'lodash';
 import { selectableHalfToTen } from './selectableValues';
 import { SpcParam, allSpcParamsDict, availableSpcParams, availableSpcParamsWithData } from 'data/spcParams';
+import { MenuItem } from './MenuItem';
 
 type Props = StandardEditorProps<ConstantsConfig | undefined, any, PanelOptions>;
 
@@ -80,11 +77,9 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     return difference(availableFields, value?.items?.map((conf) => conf.name) ?? []);
   }, [availableFields, value?.items]);
 
-  const { popoverProps, triggerClick } = usePopoverTrigger();
-
   const menu = React.useMemo(() => {
     return (
-      <PopoverContainer>
+      <Menu>
         {notSelectedFields?.map((fieldName) => (
           <MenuItem
             key={fieldName}
@@ -101,15 +96,14 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   },
                 ],
               });
-              popoverProps.onClose();
             }}
           >
             {allSpcParamsDict?.[fieldName as SpcParam] ?? fieldName}
           </MenuItem>
         ))}
-      </PopoverContainer>
+      </Menu>
     );
-  }, [notSelectedFields, onChange, popoverProps, value]);
+  }, [notSelectedFields, onChange, value]);
 
   const currentItems = React.useMemo(() => {
     return value?.items?.filter((el) => availableFields.includes(el.name)) ?? [];
@@ -123,16 +117,17 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
             <h5>{!value?.items?.length ? <i>Empty</i> : <></>}</h5>
           </div>
 
-          <Button
-            disabled={notSelectedFields.length === 0}
-            onClick={triggerClick}
-            icon="plus-circle"
-            variant="success"
-            fill="text"
-            size="sm"
-          >
-            Add
-          </Button>
+          <Dropdown overlay={menu}>
+            <Button
+              disabled={notSelectedFields.length === 0}
+              icon="plus-circle"
+              variant="success"
+              fill="text"
+              size="sm"
+            >
+              Add
+            </Button>
+          </Dropdown>
         </div>
 
         {currentItems.map((el, index) => (
@@ -190,12 +185,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
             </div>
           </div>
         ))}
-        <div className={styles.addButtonContainer}></div>
       </div>
-      <Popover {...popoverProps}>
-        <CloseButton onClick={() => popoverProps.onClose()} style={{ background: 'black', color: 'white' }} />
-        {menu}
-      </Popover>
     </>
   );
 }
