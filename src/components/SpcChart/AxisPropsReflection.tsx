@@ -1,4 +1,4 @@
-import { DecimalCount, GrafanaTheme2, TimeZone } from '@grafana/data';
+import { DecimalCount, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, ScaleDistribution } from '@grafana/ui';
 
 //import {AxisProps} from '@grafana/ui';
@@ -22,7 +22,6 @@ export interface AxisPropsReflection {
   splits?: any; //Axis.Splits;
   values?: any; //Axis.Values;
   isTime?: boolean;
-  timeZone?: TimeZone;
   color?: any; //uPlot.Axis.Stroke;
   border?: any; //uPlot.Axis.Border;
   decimals?: DecimalCount;

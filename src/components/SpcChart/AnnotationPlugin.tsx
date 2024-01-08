@@ -1,7 +1,7 @@
 import React from 'react';
 import uPlot from 'uplot';
 
-import { colorManipulator, TimeZone } from '@grafana/data';
+import { colorManipulator } from '@grafana/data';
 import { getTextColorForBackground, UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
 
 const DEFAULT_TIMESERIES_FLAG_COLOR = '#03839e';
@@ -27,7 +27,6 @@ export type AnnotationEntity = Flag | Region;
 export type AnnotationsPluginProps = {
   config: UPlotConfigBuilder;
   annotations: AnnotationEntity[];
-  timeZone: TimeZone;
 };
 
 type ConditionFunc = {
@@ -59,7 +58,7 @@ export function isAnnotationEntityArray(value: any): value is AnnotationEntity[]
   return true;
 }
 
-export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotations, timeZone, config }) => {
+export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotations, config }) => {
   const theme = useTheme2();
 
   const [tooltip, setTooltip] = React.useState<TooltipState | null>(null);
