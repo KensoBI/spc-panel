@@ -45,7 +45,7 @@ export function SpcOptionEditor(props: Props) {
               }
               onChange({ ...options, sampleSize: newSampleSize });
             }}
-            width={10}
+            width={'auto'}
           />
         </InlineField>
         {options.sampleSize !== 1 && (
@@ -60,7 +60,7 @@ export function SpcOptionEditor(props: Props) {
                 }
                 onChange({ ...options, aggregation: e.value });
               }}
-              width={22}
+              width={'auto'}
             />
           </InlineField>
         )}
@@ -111,6 +111,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     row: css`
       display: flex;
       gap: ${theme.spacing(0)};
+      flex-wrap: wrap;
     `,
   };
 };
