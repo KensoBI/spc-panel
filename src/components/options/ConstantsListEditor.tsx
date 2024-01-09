@@ -139,6 +139,7 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   className={styles.titleInput}
                   type="text"
                   value={el?.title}
+                  size={el?.title.length}
                   onChange={(e) => {
                     if (value?.items) {
                       value.items[index].title = e.target.value;
@@ -211,10 +212,12 @@ const getStyles = (theme: GrafanaTheme2) => {
       padding: 0px 8px;
       resize: none;
       outline: none;
-      display: block;
+      display: flex;
       -webkit-appearance: none;
       height: 100%;
       width: 100%;
+      flex-grow: 0;
+      flex-shrink: 0;
 
       &:focus {
         background-color: ${theme.colors.background.canvas};
@@ -225,19 +228,21 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: flex;
       gap: ${theme.spacing(0.5)};
       margin-top: ${theme.spacing(0.5)};
-
-      & > div {
-        flex: 1;
-      }
+      flex-wrap: wrap;
     `,
     fieldName: css`
       margin-top: auto;
       margin-bottom: auto;
+      flex-grow: 0;
+      flex-shrink: 0;
     `,
     rightColumn: css`
-      min-width: 260px;
+      justify-content: right;
+      flex-grow: 1;
+      flex-shrink: 1;
       display: flex;
       gap: ${theme.spacing(1)};
+      flex-wrap: wrap;
     `,
     addButtonContainer: css`
       display: flex;

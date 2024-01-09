@@ -51,15 +51,13 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
               }}
             />
           </InlineField>
-        </div>
-        <div className={styles.rowNotFirst}>
           <InlineSwitch
             label="View legend"
             showLabel={true}
             value={value.showLegend}
             onChange={(e) => onChange({ ...value, showLegend: e.currentTarget.checked })}
           />
-          <InlineField label={'Decimals'} className={styles.noMargin} grow>
+          <InlineField label={'Decimals'} className={styles.noMargin}>
             <Input
               value={value.decimals ?? ''}
               onChange={(e) => {
@@ -94,6 +92,7 @@ const getStyles = (theme: GrafanaTheme2) => {
   const row = css`
     display: flex;
     gap: ${theme.spacing(1)};
+    flex-wrap: wrap;
   `;
   return {
     container: css`

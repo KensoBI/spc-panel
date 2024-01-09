@@ -66,7 +66,7 @@ export function LimitsEditor({ value, onChange, context }: Props) {
               onChange={(selected) => {
                 setName('up', selected?.value);
               }}
-              width={15}
+              width={'auto'}
             />
           </InlineField>
 
@@ -88,7 +88,7 @@ export function LimitsEditor({ value, onChange, context }: Props) {
               onChange={(selected) => {
                 setName('down', selected?.value);
               }}
-              width={15}
+              width={'auto'}
             />
           </InlineField>
           {value?.down && (
@@ -115,6 +115,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     `,
     row: css`
       display: flex;
+      flex-wrap: wrap;
     `,
   };
 };
