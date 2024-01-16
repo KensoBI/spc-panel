@@ -72,34 +72,41 @@ export type ParsedData = {
   hasCustomTableData: boolean;
 };
 
-export function parseData(data: DataFrame[]): ParsedData {
-  const { tables, timeseries } = groupDataFrames(data);
+type chartType = 'singleTimeseries' | 'notFeatureChart' | 'featureChart';
 
+function guessChartType(tables: DataFrame[], timeseries: DataFrame[]): chartType {
   if (tables.length === 0 && timeseries.length > 0) {
-    const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
-    return {
-      features: singleTimeseries ? [singleTimeseries] : [],
-      hasTableData: false,
-      hasCustomTableData: false,
-    };
+    return 'singleTimeseries';
   }
-
-  //check if it's not a FEATURE chart
   if (!tables[0]?.fields.some((field: { name: string }) => field.name === 'feature') && timeseries.length > 0) {
-    //in feature plot there is feature on the [0] place
-
-    const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(
-      timeseries[0].fields,
-      timeseries[0].refId as string,
-      tables[0].fields
-    );
-    return {
-      features: singleTimeseriesCustomTable ? [singleTimeseriesCustomTable] : [],
-      hasTableData: false,
-      hasCustomTableData: tables.length > 0,
-    };
+    return 'notFeatureChart';
   }
+  return 'featureChart';
+}
 
+function parseSingleTimeseries(timeseries: DataFrame[]): ParsedData {
+  const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
+  return {
+    features: singleTimeseries ? [singleTimeseries] : [],
+    hasTableData: false,
+    hasCustomTableData: false,
+  };
+}
+
+function parseNotFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
+  const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(
+    timeseries[0].fields,
+    timeseries[0].refId as string,
+    tables[0].fields
+  );
+  return {
+    features: singleTimeseriesCustomTable ? [singleTimeseriesCustomTable] : [],
+    hasTableData: false,
+    hasCustomTableData: tables.length > 0,
+  };
+}
+
+function parseFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
   const mappedFeatures = new MappedFeatures();
 
   for (const df of tables) {
@@ -116,4 +123,17 @@ export function parseData(data: DataFrame[]): ParsedData {
     hasTableData: tables.length > 0,
     hasCustomTableData: false,
   };
+}
+
+const parsers: Record<chartType, (tables: DataFrame[], timeseries: DataFrame[]) => ParsedData> = {
+  singleTimeseries: parseSingleTimeseries,
+  notFeatureChart: parseNotFeatureChart,
+  featureChart: parseFeatureChart,
+};
+
+export function parseData(data: DataFrame[]): ParsedData {
+  const { tables, timeseries } = groupDataFrames(data);
+
+  const type = guessChartType(tables, timeseries);
+  return parsers[type](tables, timeseries);
 }

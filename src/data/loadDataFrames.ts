@@ -137,16 +137,7 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     return;
   }
 
-  const firstValueField = () => {
-    for (let i = 1; i < fields.length; i++) {
-      if (fields[i].type === 'number') {
-        return fields[i];
-      }
-    }
-    return undefined;
-  };
-
-  const valueVector = firstValueField();
+  const valueVector = firstValueField(fields);
   if (valueVector == null) {
     console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
     return;
@@ -181,16 +172,7 @@ export function loadTimeseriesWithCustomData(
     return;
   }
 
-  const firstValueField = () => {
-    for (let i = 1; i < tsField.length; i++) {
-      if (tsField[i].type === 'number') {
-        return tsField[i];
-      }
-    }
-    return undefined;
-  };
-
-  const valueVector = firstValueField();
+  const valueVector = firstValueField(tsField);
   if (valueVector == null) {
     console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
     return;
@@ -203,10 +185,12 @@ export function loadTimeseriesWithCustomData(
     time: { ...timeVector, values: t },
     values: { ...valueVector, values: v },
   };
+
   // RESERVED VALUES!
   // nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl,
   // This values in table query are reserved for frontend calculations.
   // If you want to use your custom database constant values use a different name in SQL query.
+  //TODO: add warning if reserved values are used
 
   const table: { [field: string]: any } = {};
 
@@ -219,4 +203,13 @@ export function loadTimeseriesWithCustomData(
     timeseries,
   };
   return newFeature;
+}
+
+function firstValueField(fields: Array<Field<string, number[]>>) {
+  for (let i = 0; i < fields.length; i++) {
+    if (fields[i].type === 'number') {
+      return fields[i];
+    }
+  }
+  return undefined;
 }
