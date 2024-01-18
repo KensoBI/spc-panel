@@ -84,7 +84,7 @@ function guessChartType(tables: DataFrame[], timeseries: DataFrame[]): chartType
   return 'featureChart';
 }
 
-function parseSingleTimeseries(timeseries: DataFrame[]): ParsedData {
+function parseSingleTimeseries(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
   const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
   return {
     features: singleTimeseries ? [singleTimeseries] : [],
