@@ -186,13 +186,31 @@ export function loadTimeseriesWithCustomData(
     values: { ...valueVector, values: v },
   };
 
-  // RESERVED VALUES!
-  // nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl,
-  // This values in table query are reserved for frontend calculations.
-  // If you want to use your custom database constant values use a different name in SQL query.
-  //TODO: add warning if reserved values are used
-
   const table: { [field: string]: any } = {};
+
+  const reservedValues = [
+    'nominal',
+    'lsl',
+    'usl',
+    'min',
+    'max',
+    'mean',
+    'range',
+    'lcl_Rbar',
+    'ucl_Rbar',
+    'lcl_Sbar',
+    'ucl_Sbar',
+    'lcl',
+    'ucl',
+  ];
+
+  if (tableField.some((val) => reservedValues.includes(val.name))) {
+    console.warn(
+      'RESERVED VALUES! nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl.',
+      'This values in table query are reserved for frontend calculations.',
+      'If you want to use your custom database constant values use a different name in SQL query.'
+    );
+  }
 
   tableField?.map((item) => {
     Object.assign(table, { [item.name]: dvGet(item.values, 0) });
