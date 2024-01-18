@@ -137,7 +137,7 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     return;
   }
 
-  const valueVector = firstValueField(fields);
+  const valueVector = firstValueField(fields, 1);
   if (valueVector == null) {
     console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
     return;
@@ -172,7 +172,7 @@ export function loadTimeseriesWithCustomData(
     return;
   }
 
-  const valueVector = firstValueField(tsField);
+  const valueVector = firstValueField(tsField, 1);
   if (valueVector == null) {
     console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
     return;
@@ -205,8 +205,8 @@ export function loadTimeseriesWithCustomData(
   return newFeature;
 }
 
-function firstValueField(fields: Array<Field<string, number[]>>) {
-  for (let i = 0; i < fields.length; i++) {
+function firstValueField(fields: Array<Field<string, number[]>>, startIndex: number) {
+  for (let i = startIndex; i < fields.length; i++) {
     if (fields[i].type === 'number') {
       return fields[i];
     }
