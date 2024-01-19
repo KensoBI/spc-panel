@@ -84,16 +84,18 @@ function guessChartType(tables: DataFrame[], timeseries: DataFrame[]): chartType
   return 'featureChart';
 }
 
-function parseSingleTimeseries(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
+type ParseFunction = (tables: DataFrame[], timeseries: DataFrame[]) => ParsedData;
+
+const parseSingleTimeseries: ParseFunction = (_, timeseries) => {
   const singleTimeseries = loadSingleTimeseries(timeseries[0].fields, timeseries[0].refId as string);
   return {
     features: singleTimeseries ? [singleTimeseries] : [],
     hasTableData: false,
     hasCustomTableData: false,
   };
-}
+};
 
-function parseNotFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
+const parseNotFeatureChart: ParseFunction = (tables, timeseries) => {
   const singleTimeseriesCustomTable = loadTimeseriesWithCustomData(
     timeseries[0].fields,
     timeseries[0].refId as string,
@@ -104,9 +106,9 @@ function parseNotFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): Par
     hasTableData: false,
     hasCustomTableData: tables.length > 0,
   };
-}
+};
 
-function parseFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): ParsedData {
+const parseFeatureChart: ParseFunction = (tables, timeseries) => {
   const mappedFeatures = new MappedFeatures();
 
   for (const df of tables) {
@@ -123,9 +125,9 @@ function parseFeatureChart(tables: DataFrame[], timeseries: DataFrame[]): Parsed
     hasTableData: tables.length > 0,
     hasCustomTableData: false,
   };
-}
+};
 
-const parsers: Record<chartType, (tables: DataFrame[], timeseries: DataFrame[]) => ParsedData> = {
+const parsers: Record<chartType, ParseFunction> = {
   singleTimeseries: parseSingleTimeseries,
   notFeatureChart: parseNotFeatureChart,
   featureChart: parseFeatureChart,
