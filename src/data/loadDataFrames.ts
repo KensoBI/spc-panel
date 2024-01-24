@@ -99,8 +99,10 @@ export function loadTimeseries(
     console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
     return;
   }
-  if(fields.length > 2) {
-    console.warn('alert-danger', [`Select one characteristic for the chart. The panel does not support several charts at the same time.`])
+  if (fields.length > 2) {
+    console.warn('alert-danger', [
+      `Select one characteristic for the chart. The panel does not support several charts at the same time.`,
+    ]);
   }
 
   for (let i = 1; i < fields.length; i++) {
@@ -135,16 +137,7 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     return;
   }
 
-  const firstValueField = () => {
-    for (let i = 1; i < fields.length; i++) {
-      if (fields[i].type === 'number') {
-        return fields[i];
-      }
-    }
-    return undefined;
-  };
-
-  const valueVector = firstValueField();
+  const valueVector = firstValueField(fields, 1);
   if (valueVector == null) {
     console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
     return;
@@ -161,6 +154,80 @@ export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, ref
     table: {},
     timeseries,
   };
-
   return newFeature;
+}
+
+export function loadTimeseriesWithCustomData(
+  tsField: Array<Field<string, number[]>>,
+  refId: string,
+  tableField: Array<Field<string, any>>
+): Feature | undefined {
+  const timeVector = tsField?.[0];
+  if (timeVector == null || timeVector.type !== FieldType.time) {
+    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
+    return;
+  }
+  if (tableField.length == null) {
+    console.warn('alert-danger', [`No data or wrong query for custom constants table.`]);
+    return;
+  }
+
+  const valueVector = firstValueField(tsField, 1);
+  if (valueVector == null) {
+    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
+    return;
+  }
+
+  const newFeature = defaultFeature('value', '', refId);
+
+  const { t, v } = noNulls(timeVector.values as number[], valueVector.values as number[]);
+  const timeseries = {
+    time: { ...timeVector, values: t },
+    values: { ...valueVector, values: v },
+  };
+
+  const table: { [field: string]: any } = {};
+
+  const reservedValues = [
+    'nominal',
+    'lsl',
+    'usl',
+    'min',
+    'max',
+    'mean',
+    'range',
+    'lcl_Rbar',
+    'ucl_Rbar',
+    'lcl_Sbar',
+    'ucl_Sbar',
+    'lcl',
+    'ucl',
+  ];
+
+  if (tableField.some((val) => reservedValues.includes(val.name))) {
+    console.warn(
+      'RESERVED VALUES! nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl.',
+      'This values in table query are reserved for frontend calculations.',
+      'If you want to use your custom database constant values use a different name in SQL query.'
+    );
+  }
+
+  tableField?.map((item) => {
+    Object.assign(table, { [item.name]: dvGet(item.values, 0) });
+  });
+
+  newFeature.characteristics['timeseries'] = {
+    table,
+    timeseries,
+  };
+  return newFeature;
+}
+
+function firstValueField(fields: Array<Field<string, number[]>>, startIndex: number) {
+  for (let i = startIndex; i < fields.length; i++) {
+    if (fields[i].type === 'number') {
+      return fields[i];
+    }
+  }
+  return undefined;
 }

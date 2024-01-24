@@ -279,7 +279,7 @@ export function SpcChart(props: Props) {
                 timeZone={timeZone}
               />
 
-              {annotations && <AnnotationsPlugin annotations={annotations} config={config} timeZone={timeZone} />}
+              {annotations && <AnnotationsPlugin annotations={annotations} config={config} />}
             </>
           );
         }}

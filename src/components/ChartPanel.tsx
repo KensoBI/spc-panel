@@ -14,7 +14,7 @@ export function ChartPanel(props: ChartPanelProps) {
   const styles = useStyles2(getStyles);
   const { value: options } = useParseOptions(props.options);
 
-  const { features, hasTableData } = React.useMemo(() => parseData(data.series), [data.series]);
+  const { features, hasTableData, hasCustomTableData } = React.useMemo(() => parseData(data.series), [data.series]);
 
   const [selectedFeature, selectedCharacteristic] = React.useMemo(() => {
     if (features.length === 0) {
@@ -38,8 +38,9 @@ export function ChartPanel(props: ChartPanelProps) {
     onInstanceStateChange?.({
       characteristicKeys: selectedCharacteristic?.table ? Object.keys(selectedCharacteristic.table) : null,
       hasTableData,
+      hasCustomTableData,
     });
-  }, [hasTableData, onInstanceStateChange, selectedCharacteristic, selectedFeature]);
+  }, [hasTableData, onInstanceStateChange, selectedCharacteristic, selectedFeature, hasCustomTableData]);
 
   const settings: TimeseriesSettings = React.useMemo(() => {
     const settings = { ...defaultTimeseriesSettings, ...options.timeseriesParams, ...options.spcOptions };
