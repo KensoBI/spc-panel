@@ -27,12 +27,14 @@ import {
   useTheme2,
 } from '@grafana/ui';
 import React from 'react';
-import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
+import { FlagsPlugin, isFlagEntityArray } from './FlagsPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
+
+const flagsKeyFromDatasource = 'annotations';
 
 type Props = {
   dataFrameName: string;
@@ -242,10 +244,10 @@ export function SpcChart(props: Props) {
     };
   }, [timeField?.values, timeRange]);
 
-  const annotations = React.useMemo(() => {
-    const annArray = valueField?.config?.custom?.annotations;
-    return isAnnotationEntityArray(annArray) ? annArray : undefined;
-  }, [valueField?.config?.custom?.annotations]);
+  const flags = React.useMemo(() => {
+    const flagsArray = valueField?.config?.custom?.[flagsKeyFromDatasource];
+    return isFlagEntityArray(flagsArray) ? flagsArray : undefined;
+  }, [valueField?.config?.custom]);
 
   if (!dataFrames) {
     return <Alert title="No Data" severity="warning" />;
@@ -279,7 +281,7 @@ export function SpcChart(props: Props) {
                 timeZone={timeZone}
               />
 
-              {annotations && <AnnotationsPlugin annotations={annotations} config={config} />}
+              {flags && <FlagsPlugin flags={flags} config={config} />}
             </>
           );
         }}
