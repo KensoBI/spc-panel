@@ -1,5 +1,7 @@
 /* eslint-disable deprecation/deprecation */
 import {
+  DataFrame,
+  DataFrameView,
   dateTime,
   Field,
   FieldColorModeId,
@@ -27,10 +29,11 @@ import {
   useTheme2,
 } from '@grafana/ui';
 import React from 'react';
-import { FlagsPlugin, isFlagEntityArray } from './FlagsPlugin';
+import { FlagEntity, FlagsPlugin, isFlagEntityArray } from './FlagsPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
+import { AnnotationsDataFrameViewDTO } from './types';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -65,6 +68,7 @@ type Props = {
   showLegend: boolean;
   decimals: number;
   onSeriesColorChange: (label: string, color: string) => void;
+  annotations?: DataFrame[];
 };
 
 export function SpcChart(props: Props) {
@@ -83,6 +87,7 @@ export function SpcChart(props: Props) {
     showLegend,
     decimals,
     onSeriesColorChange,
+    annotations,
   } = props;
   const { timeZone, timeRange } = usePanelProps();
   const theme = useTheme2();
@@ -246,8 +251,43 @@ export function SpcChart(props: Props) {
 
   const flags = React.useMemo(() => {
     const flagsArray = valueField?.config?.custom?.[flagsKeyFromDatasource];
-    return isFlagEntityArray(flagsArray) ? flagsArray : undefined;
-  }, [valueField?.config?.custom]);
+    let entities = isFlagEntityArray(flagsArray) ? flagsArray : undefined;
+
+    const addFlag = (entity: FlagEntity) => {
+      if (entities == null) {
+        entities = [];
+      }
+      entities.push(entity);
+    };
+
+    if (annotations != null) {
+      const views: Array<DataFrameView<AnnotationsDataFrameViewDTO>> = [];
+
+      for (const frame of annotations) {
+        views.push(new DataFrameView(frame));
+      }
+
+      for (let i = 0; i < views.length; i++) {
+        const annotationsView = views[i];
+        for (let j = 0; j < annotationsView.length; j++) {
+          const annotation = annotationsView.get(j);
+
+          if (!annotation.time) {
+            continue;
+          }
+
+          addFlag({
+            type: 'flag',
+            time: annotation.time,
+            title: annotation.text,
+            color: annotation.color,
+          });
+        }
+      }
+    }
+
+    return entities;
+  }, [annotations, valueField?.config?.custom]);
 
   if (!dataFrames) {
     return <Alert title="No Data" severity="warning" />;

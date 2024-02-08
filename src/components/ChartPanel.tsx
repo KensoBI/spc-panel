@@ -93,7 +93,12 @@ export function ChartPanel(props: ChartPanelProps) {
         )}
       >
         {selectedFeature && selectedCharacteristic && (
-          <TimeSeriesComponent feature={selectedFeature} characteristic={selectedCharacteristic} settings={settings} />
+          <TimeSeriesComponent
+            feature={selectedFeature}
+            characteristic={selectedCharacteristic}
+            settings={settings}
+            annotations={data.annotations}
+          />
         )}
       </div>
     </PanelPropsProvider>

@@ -1,4 +1,4 @@
-import { GrafanaTheme2 } from '@grafana/data';
+import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { SpcChart } from './SpcChart';
@@ -13,9 +13,10 @@ type Props = {
   feature: Feature;
   characteristic: Characteristic;
   settings?: TimeseriesSettings;
+  annotations?: DataFrame[];
 };
 
-export function TimeSeriesComponent({ characteristic, settings }: Props) {
+export function TimeSeriesComponent({ characteristic, settings, annotations }: Props) {
   const styles = useStyles2(getStyles);
 
   const settingsWithDefaults = React.useMemo(() => defaults(settings, defaultTimeseriesSettings), [settings]);
@@ -120,6 +121,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
           showLegend={!!showLegend}
           decimals={decimals ?? 3}
           onSeriesColorChange={onSeriesColorChange}
+          annotations={annotations}
         />
       ) : (
         <></>
