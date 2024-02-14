@@ -33,7 +33,9 @@ import { FlagEntity, FlagsPlugin, isFlagEntityArray } from './FlagsPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
-import { AnnotationsDataFrameViewDTO } from './types';
+import { AnnotationsDataFrameViewDTO } from './annotations/types';
+import { AnnotationEditorPlugin } from './annotations/AnnotationEditorPlugin';
+import { ContextMenuPlugin } from './annotations/ContextMenuPlugin';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -322,6 +324,36 @@ export function SpcChart(props: Props) {
               />
 
               {flags && <FlagsPlugin flags={flags} config={config} />}
+
+              <AnnotationEditorPlugin data={alignedDataFrame} timeZone={timeZone} config={config}>
+                {({ startAnnotating }) => {
+                  return (
+                    <ContextMenuPlugin
+                      data={alignedDataFrame}
+                      config={config}
+                      timeZone={timeZone}
+                      replaceVariables={undefined} //TODO check if this is needed
+                      defaultItems={[
+                        {
+                          items: [
+                            {
+                              label: 'Add annotation',
+                              ariaLabel: 'Add annotation',
+                              icon: 'comment-alt',
+                              onClick: (e, p) => {
+                                if (!p) {
+                                  return;
+                                }
+                                startAnnotating({ coords: p.coords });
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  );
+                }}
+              </AnnotationEditorPlugin>
             </>
           );
         }}
