@@ -5,7 +5,7 @@ Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build co
 
 ## Plugin Overview
 
-![Main](https://github.com/KensoBI/spc-panel/blob/main/src/img/mainview-options.PNG?raw=true)
+![Main](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/mainview-options.PNG)
 
 ## Available options
 
