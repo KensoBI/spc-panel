@@ -31,6 +31,7 @@ import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
+import { DrawStyleType } from 'types';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -63,6 +64,7 @@ type Props = {
   showLegend: boolean;
   decimals: number;
   onSeriesColorChange: (label: string, color: string) => void;
+  drawStyle: DrawStyleType;
 };
 
 export function SpcChart(props: Props) {
@@ -81,6 +83,7 @@ export function SpcChart(props: Props) {
     showLegend,
     decimals,
     onSeriesColorChange,
+    drawStyle,
   } = props;
   const { timeZone, timeRange } = usePanelProps();
   const theme = useTheme2();
@@ -176,6 +179,7 @@ export function SpcChart(props: Props) {
       gradientMode: GraphGradientMode.Opacity,
       lineWidth: lineWidth,
       lineInterpolation: LineInterpolation.Smooth,
+      drawStyle: drawStyle, //    Bars = "bars",    Line = "line",     Points = "points"
       thresholdsStyle,
       pointSize: pointSize,
       fillOpacity: fill * 10,
@@ -212,7 +216,20 @@ export function SpcChart(props: Props) {
     });
 
     return [df];
-  }, [constants, dataFrameName, decimals, fill, limits, lineColor, lineWidth, pointSize, theme, timeField, valueField]);
+  }, [
+    constants,
+    dataFrameName,
+    decimals,
+    fill,
+    limits,
+    lineColor,
+    lineWidth,
+    pointSize,
+    theme,
+    timeField,
+    valueField,
+    drawStyle,
+  ]);
 
   const tweakAxis = React.useCallback(
     (opts: AxisPropsReflection, forField: Field) => {
