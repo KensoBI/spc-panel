@@ -157,8 +157,12 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                   value={el.lineWidth}
                   onChange={(selected) => {
                     if (selected?.value != null && value?.items) {
-                      value.items[index].lineWidth = selected.value;
-                      onChange({ ...value });
+                      const newItems = [...value.items];
+                      const current = newItems.find((item) => item.name === el.name);
+                      if (current) {
+                        current.lineWidth = selected.value;
+                        onChange({ ...value, items: newItems });
+                      }
                     }
                   }}
                 />
@@ -167,8 +171,12 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
                 color={el?.color ?? defaultConstantColor}
                 onChange={(newColor) => {
                   if (value?.items) {
-                    value.items[index].color = newColor;
-                    onChange({ ...value });
+                    const newItems = [...value.items];
+                    const current = newItems.find((item) => item.name === el.name);
+                    if (current) {
+                      current.color = newColor;
+                      onChange({ ...value, items: newItems });
+                    }
                   }
                 }}
               />

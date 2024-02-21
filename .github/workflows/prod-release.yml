@@ -31,7 +31,7 @@ jobs:
       - name: Sign plugin
         run: |
           export GRAFANA_ACCESS_POLICY_TOKEN=${{ secrets.GRAFANA_POLICY_TOKEN }}
-          npx @grafana/sign-plugin@latest --rootUrls ${{ vars.ROOT_URLS }}
+          npx @grafana/sign-plugin@latest
 
       - name: Get plugin metadata
         id: metadata
