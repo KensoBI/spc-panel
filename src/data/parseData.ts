@@ -56,8 +56,6 @@ function groupDataFrames(data: DataFrame[]) {
       timeseries.push(timeFieldFirst(df));
     } else if (isCustomTableVeriables(df)) {
       tables.push(df);
-    } else {
-      console.warn('Unknown DataFrame');
     }
   }
   return {
