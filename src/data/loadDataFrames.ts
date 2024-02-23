@@ -56,8 +56,7 @@ export function loadFeaturesByControl(
   const columns: ColumnsDict = keyBy(fields, (column) => column.name.toLowerCase());
 
   if (!columns.feature || !columns.control || !columns.nominal) {
-    console.warn('alert-danger', [`Feature or Control or Nominal column is missing in query ${refId}.`]);
-    return;
+    throw new Error(`Feature, Control or Nominal column is missing in query ${refId}.`);
   }
   const length = columns.feature.values.length;
   //assert that fields.every(field => field.values.length === length) is true
@@ -96,13 +95,13 @@ export function loadTimeseries(
 ) {
   const timeVector = fields?.[0];
   if (timeVector == null || timeVector.name !== 'Time') {
-    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
+    throw new Error(`Timeseries data - missing Time vector in ${refId}.`);
     return;
   }
   if (fields.length > 2) {
-    console.warn('alert-danger', [
+    throw new Error(
       `Select one characteristic for the chart. The panel does not support several charts at the same time.`,
-    ]);
+    );
   }
 
   for (let i = 1; i < fields.length; i++) {
@@ -133,14 +132,12 @@ export function loadTimeseries(
 export function loadSingleTimeseries(fields: Array<Field<string, number[]>>, refId: string): Feature | undefined {
   const timeVector = fields?.[0];
   if (timeVector == null || timeVector.type !== FieldType.time) {
-    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
-    return;
+    throw new Error(`Timeseries data - missing Time vector in ${refId}.`);
   }
 
   const valueVector = firstValueField(fields, 1);
   if (valueVector == null) {
-    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
-    return;
+    throw new Error(`Timeseries data - missing Value vector in ${refId}.`);
   }
 
   const newFeature = defaultFeature('value', '', refId);
@@ -164,18 +161,16 @@ export function loadTimeseriesWithCustomData(
 ): Feature | undefined {
   const timeVector = tsField?.[0];
   if (timeVector == null || timeVector.type !== FieldType.time) {
-    console.warn('alert-danger', [`Timeseries data - missing Time vector in ${refId}.`]);
-    return;
+    throw new Error(`Timeseries data - missing Time field in ${refId}.`);
+
   }
   if (tableField.length == null) {
-    console.warn('alert-danger', [`No data or wrong query for custom constants table.`]);
-    return;
+    throw new Error(`No data or wrong query for custom constants table.`);
   }
 
   const valueVector = firstValueField(tsField, 1);
   if (valueVector == null) {
-    console.warn('alert-danger', [`Timeseries data - missing Value vector in ${refId}.`]);
-    return;
+    throw new Error(`Timeseries data - missing Value field in ${refId}.`);
   }
 
   const newFeature = defaultFeature('value', '', refId);
@@ -205,10 +200,8 @@ export function loadTimeseriesWithCustomData(
   ];
 
   if (tableField.some((val) => reservedValues.includes(val.name))) {
-    console.warn(
-      'RESERVED VALUES! nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl.',
-      'This values in table query are reserved for frontend calculations.',
-      'If you want to use your custom database constant values use a different name in SQL query.'
+    throw new Error(
+      'Reserved values like nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl in table queries are exclusively for frontend calculations.'
     );
   }
 
