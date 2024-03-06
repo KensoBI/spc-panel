@@ -29,7 +29,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
 
   characteristic.timeseries.values.values = calcValueSampleSize(
     values,
-    spcOptions?.sampleSize === undefined || spcOptions?.sampleSize > 10 ? 1 : spcOptions?.sampleSize,
+    spcOptions?.sampleSize ?? 1,
     spcOptions?.aggregation ?? 'mean'
   );
   characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);

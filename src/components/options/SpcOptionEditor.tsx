@@ -37,6 +37,7 @@ export function SpcOptionEditor(props: Props) {
         <InlineField label="Sample size" disabled={isVar}>
           <Select
             options={[...sampleSizeOptions, ...customOptions]}
+            placeholder={options.sampleSize.toString()}
             value={options.sampleSize}
             onChange={(v) => {
               const newSampleSize = v.value ?? 1;
@@ -104,6 +105,13 @@ export function SpcOptionEditor(props: Props) {
           />
         </InlineField>
       </div>
+      {options.sampleSize > 10 ? (
+        <span className="css-zjkzrp-Label-description">
+          UCL and LCL calculations for Sample size &gt; 10 are not supported.
+        </span>
+      ) : (
+        <></>
+      )}
     </>
   );
 }
