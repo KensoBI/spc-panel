@@ -179,7 +179,7 @@ export function SpcChart(props: Props) {
       gradientMode: GraphGradientMode.Opacity,
       lineWidth: lineWidth,
       lineInterpolation: LineInterpolation.Smooth,
-      drawStyle: drawStyle, //    Bars = "bars",    Line = "line",     Points = "points"
+      drawStyle: drawStyle,
       thresholdsStyle,
       pointSize: pointSize,
       fillOpacity: fill * 10,
