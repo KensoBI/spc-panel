@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
+import { StandardEditorProps, GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { useStyles2, InlineField, Select } from '@grafana/ui';
 import { InputFloat } from 'components/InputFloat';
 import React from 'react';
@@ -28,6 +28,7 @@ export function SpcOptionEditor(props: Props) {
   const styles = useStyles2(getStyles);
 
   const { value: options, isVar } = useParseSpcOptions(props.value);
+  const [customOptions, setCustomOptions] = React.useState<Array<SelectableValue<number>>>([]);
   const onChange = props.onChange;
 
   return (
@@ -35,10 +36,10 @@ export function SpcOptionEditor(props: Props) {
       <div className={styles.row}>
         <InlineField label="Sample size" disabled={isVar}>
           <Select
-            options={sampleSizeOptions}
+            options={[...sampleSizeOptions, ...customOptions]}
             value={options.sampleSize}
-            onChange={(e) => {
-              const newSampleSize = e.value ?? 1;
+            onChange={(v) => {
+              const newSampleSize = v.value ?? 1;
               const newSpc: SpcOptions = { ...options, sampleSize: newSampleSize };
               if (newSampleSize === 1) {
                 newSpc.aggregation = 'mean';
@@ -46,6 +47,12 @@ export function SpcOptionEditor(props: Props) {
               onChange({ ...options, sampleSize: newSampleSize });
             }}
             width={'auto'}
+            allowCustomValue={true}
+            onCreateOption={(v) => {
+              const customValue: SelectableValue<number> = { value: parseInt(v, 10), label: v.toString() };
+              setCustomOptions([customValue]);
+              onChange({ ...options, sampleSize: customValue.value ?? 1 });
+            }}
           />
         </InlineField>
         {options.sampleSize !== 1 && (
