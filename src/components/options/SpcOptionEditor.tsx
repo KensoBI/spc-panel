@@ -3,10 +3,10 @@ import { StandardEditorProps, GrafanaTheme2, SelectableValue } from '@grafana/da
 import { useStyles2, InlineField, Select } from '@grafana/ui';
 import { InputFloat } from 'components/InputFloat';
 import React from 'react';
-import { AggregationType, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
+import { AggregationType, MAX_DEFAULT_SAMPLE_SIZE, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
 import { useParseSpcOptions } from './parseOptions';
 
-const sampleSizeOptions = [...Array(10)]
+const sampleSizeOptions = [...Array(MAX_DEFAULT_SAMPLE_SIZE)]
   .map((_, i) => i + 1)
   .map((i) => ({
     label: `${i}`,
@@ -28,15 +28,22 @@ export function SpcOptionEditor(props: Props) {
   const styles = useStyles2(getStyles);
 
   const { value: options, isVar } = useParseSpcOptions(props.value);
-  const [customOptions, setCustomOptions] = React.useState<Array<SelectableValue<number>>>([]);
+  const [customOption, setCustomOption] = React.useState<SelectableValue<number> | null>(null);
   const onChange = props.onChange;
+
+  const allSelectableOptions = React.useMemo(() => {
+    if (customOption && customOption.value !== undefined && customOption.value > MAX_DEFAULT_SAMPLE_SIZE) {
+      return [...sampleSizeOptions, customOption];
+    }
+    return sampleSizeOptions;
+  }, [customOption]);
 
   return (
     <>
       <div className={styles.row}>
         <InlineField label="Sample size" disabled={isVar}>
           <Select
-            options={[...sampleSizeOptions, ...customOptions]}
+            options={allSelectableOptions}
             placeholder={options.sampleSize.toString()}
             value={options.sampleSize}
             onChange={(v) => {
@@ -50,8 +57,12 @@ export function SpcOptionEditor(props: Props) {
             width={'auto'}
             allowCustomValue={true}
             onCreateOption={(v) => {
-              const customValue: SelectableValue<number> = { value: parseInt(v, 10), label: v.toString() };
-              setCustomOptions([customValue]);
+              const parsedValue = parseInt(v, 10);
+              const customValue: SelectableValue<number> | null =
+                !isNaN(parsedValue) && parsedValue > 0
+                  ? { value: parsedValue, label: parsedValue.toString() }
+                  : { value: undefined, label: undefined };
+              setCustomOption(customValue);
               onChange({ ...options, sampleSize: customValue.value ?? 1 });
             }}
           />
@@ -105,9 +116,9 @@ export function SpcOptionEditor(props: Props) {
           />
         </InlineField>
       </div>
-      {options.sampleSize > 10 ? (
+      {options.sampleSize > MAX_DEFAULT_SAMPLE_SIZE ? (
         <span className="css-zjkzrp-Label-description">
-          UCL and LCL calculations for Sample size &gt; 10 are not supported.
+          UCL and LCL calculations for Sample size &gt; {MAX_DEFAULT_SAMPLE_SIZE} are not supported.
         </span>
       ) : (
         <></>

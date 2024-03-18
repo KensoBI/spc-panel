@@ -1,4 +1,4 @@
-import { AggregationType } from 'types';
+import { AggregationType, MAX_DEFAULT_SAMPLE_SIZE } from 'types';
 
 export const allSpcParamsDict = {
   nominal: 'Nominal',
@@ -26,7 +26,7 @@ function mergeArraysUniqueValues(arr1: string[], arr2: string[]): string[] {
 
 export function availableSpcParams(sampleSize: number, aggregationType: AggregationType): SpcParam[] {
   const params: SpcParam[] = ['nominal', 'lsl', 'usl', 'min', 'max', 'mean', 'range'];
-  if (sampleSize > 1 && sampleSize <= 10) {
+  if (sampleSize > 1 && sampleSize <= MAX_DEFAULT_SAMPLE_SIZE) {
     if (aggregationType === 'mean') {
       params.push('lcl_Rbar', 'ucl_Rbar', 'lcl_Sbar', 'ucl_Sbar');
     } else {
@@ -41,7 +41,7 @@ export function availableSpcParamsWithData(
   characteristicKeys: any
 ): string[] {
   const params: SpcParam[] = ['nominal', 'lsl', 'usl', 'min', 'max', 'mean', 'range'];
-  if (sampleSize > 1 && sampleSize <= 10) {
+  if (sampleSize > 1 && sampleSize <= MAX_DEFAULT_SAMPLE_SIZE) {
     if (aggregationType === 'mean') {
       params.push('lcl_Rbar', 'ucl_Rbar', 'lcl_Sbar', 'ucl_Sbar');
     } else {

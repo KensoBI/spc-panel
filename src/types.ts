@@ -65,6 +65,8 @@ export const defaultSpcOptons: SpcOptions = {
 };
 export const defaultConstantColor = '#37872d';
 
+export const MAX_DEFAULT_SAMPLE_SIZE = 10;
+
 export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
   constantsConfig: undefined,
