@@ -16,4 +16,3 @@ export const defaultTimeseriesSettings: TimeseriesSettings = {
   showLegend: false,
   decimals: 2,
 };
-

@@ -6,70 +6,70 @@ import { getTextColorForBackground, UPlotConfigBuilder, useTheme2 } from '@grafa
 
 const DEFAULT_TIMESERIES_FLAG_COLOR = '#03839e';
 
-export type AnnotationInfo = {
+export type FlagInfo = {
   title?: string;
   color?: string;
 };
 
-export type Flag = AnnotationInfo & {
+export type Flag = FlagInfo & {
   type: 'flag';
   time: number;
 };
 
-export type Region = AnnotationInfo & {
+export type Region = FlagInfo & {
   type: 'region';
   timeStart?: number;
   timeEnd?: number;
 };
 
-export type AnnotationEntity = Flag | Region;
+export type FlagEntity = Flag | Region;
 
-export type AnnotationsPluginProps = {
+export type FlagsPluginProps = {
   config: UPlotConfigBuilder;
-  annotations: AnnotationEntity[];
+  flags: FlagEntity[];
 };
 
 type ConditionFunc = {
   func: (xPos: number) => boolean;
-  annotaion: AnnotationEntity;
+  flag: FlagEntity;
   x: number;
 };
 type Conditions = ConditionFunc[];
 
 type TooltipState = {
   x: number;
-  annotation: AnnotationEntity;
+  flag: FlagEntity;
   position: 'left' | 'center' | 'right';
 };
 
-export function isAnnotationEntity(value: any): value is AnnotationEntity {
+export function isFlagEntity(value: any): value is FlagEntity {
   return (value?.type === 'flag' && typeof value?.time === 'number') || value?.type === 'region';
 }
 
-export function isAnnotationEntityArray(value: any): value is AnnotationEntity[] {
+export function isFlagEntityArray(value: any): value is FlagEntity[] {
   if (!Array.isArray(value)) {
     return false;
   }
   for (const en of value) {
-    if (!isAnnotationEntity(en)) {
+    if (!isFlagEntity(en)) {
       return false;
     }
   }
   return true;
 }
 
-export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotations, config }) => {
+export const FlagsPlugin: React.FC<FlagsPluginProps> = ({ flags, config }) => {
   const theme = useTheme2();
 
   const [tooltip, setTooltip] = React.useState<TooltipState | null>(null);
 
   const plotInstance = React.useRef<uPlot>();
-  const annotationsRef = React.useRef<AnnotationEntity[]>();
+  const flagsRef = React.useRef<FlagEntity[]>();
 
-  // Update annotations views when new annotations came
+  // Update flags views when new flags came
   React.useEffect(() => {
-    annotationsRef.current = annotations.sort((a, b) => typeToValue(b.type) - typeToValue(a.type));
-  }, [annotations]);
+    flagsRef.current = flags.sort((a, b) => typeToValue(b.type) - typeToValue(a.type));
+  }, [flags]);
 
   React.useLayoutEffect(() => {
     let bbox: DOMRect | undefined = undefined;
@@ -82,7 +82,7 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
         for (const cond of conditions) {
           if (cond.func(x)) {
             setTooltip((prev) => {
-              if (prev?.annotation === cond.annotaion) {
+              if (prev?.flag === cond.flag) {
                 return prev;
               }
               let position: TooltipState['position'] = 'center';
@@ -96,7 +96,7 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
               }
 
               return {
-                annotation: cond.annotaion,
+                flag: cond.flag,
                 x: cond.x,
                 position,
               };
@@ -128,11 +128,11 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
     });
 
     config.addHook('draw', (u) => {
-      // Render annotation lines on the canvas
+      // Render flag lines on the canvas
       /**
        * We cannot rely on state value here, as it would require this effect to be dependent on the state value.
        */
-      if (!annotationsRef.current) {
+      if (!flagsRef.current) {
         return null;
       }
 
@@ -168,15 +168,15 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
         ctx.fill();
       };
 
-      for (let i = 0; i < annotationsRef.current.length; i++) {
-        const entity = annotationsRef.current[i];
+      for (let i = 0; i < flagsRef.current.length; i++) {
+        const entity = flagsRef.current[i];
         const lineColor = entity.color ?? DEFAULT_TIMESERIES_FLAG_COLOR;
         if (entity.type === 'flag') {
           renderLine(entity.time, lineColor);
           const xCssPixelPosition = u.valToPos(entity.time, 'x', false);
 
           conditions.push({
-            annotaion: entity,
+            flag: entity,
             func: inRange(xCssPixelPosition, 30),
             x: xCssPixelPosition + u.over.offsetLeft,
           });
@@ -191,7 +191,7 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
           const x = x0CssPixelPosition ?? x1CssPixelPosition ?? u.over.clientWidth / 2;
 
           conditions.push({
-            annotaion: entity,
+            flag: entity,
             func: rectInRange(x0CssPixelPosition ?? 0, x1CssPixelPosition ?? u.over.clientWidth, 30),
             x: x + u.over.offsetLeft,
           });
@@ -212,7 +212,7 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
     return <></>;
   }
 
-  const backgroundColor = tooltip.annotation.color ?? DEFAULT_TIMESERIES_FLAG_COLOR;
+  const backgroundColor = tooltip.flag.color ?? DEFAULT_TIMESERIES_FLAG_COLOR;
 
   return (
     <div
@@ -229,7 +229,7 @@ export const AnnotationsPlugin: React.FC<AnnotationsPluginProps> = ({ annotation
         borderRadius: 2,
       }}
     >
-      {tooltip.annotation.title ?? 'EMPTY'}
+      {tooltip.flag.title ?? 'EMPTY'}
     </div>
   );
 };
@@ -242,7 +242,7 @@ const rectInRange = (valueStart: number, valueEnd: number, range: number) => (vP
   return vPos >= valueStart - range && vPos <= valueEnd + range;
 };
 
-const typeToValue = (type: AnnotationEntity['type']) => {
+const typeToValue = (type: FlagEntity['type']) => {
   switch (type) {
     case 'flag':
       return 2;

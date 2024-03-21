@@ -1,5 +1,7 @@
 /* eslint-disable deprecation/deprecation */
 import {
+  DataFrame,
+  DataFrameView,
   dateTime,
   Field,
   FieldColorModeId,
@@ -27,13 +29,18 @@ import {
   useTheme2,
 } from '@grafana/ui';
 import React from 'react';
-import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
+import { FlagEntity, FlagsPlugin, isFlagEntityArray } from './FlagsPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
+import { AnnotationsDataFrameViewDTO } from './annotations/types';
+import { AnnotationEditorPlugin } from './annotations/AnnotationEditorPlugin';
+import { ContextMenuPlugin } from './annotations/ContextMenuPlugin';
 import { DrawStyleType } from 'types';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
+
+const flagsKeyFromDatasource = 'annotations';
 
 type Props = {
   dataFrameName: string;
@@ -64,6 +71,7 @@ type Props = {
   showLegend: boolean;
   decimals: number;
   onSeriesColorChange: (label: string, color: string) => void;
+  annotations?: DataFrame[];
   drawStyle: DrawStyleType;
 };
 
@@ -83,6 +91,7 @@ export function SpcChart(props: Props) {
     showLegend,
     decimals,
     onSeriesColorChange,
+    annotations,
     drawStyle,
   } = props;
   const { timeZone, timeRange } = usePanelProps();
@@ -259,10 +268,45 @@ export function SpcChart(props: Props) {
     };
   }, [timeField?.values, timeRange]);
 
-  const annotations = React.useMemo(() => {
-    const annArray = valueField?.config?.custom?.annotations;
-    return isAnnotationEntityArray(annArray) ? annArray : undefined;
-  }, [valueField?.config?.custom?.annotations]);
+  const flags = React.useMemo(() => {
+    const flagsArray = valueField?.config?.custom?.[flagsKeyFromDatasource];
+    let entities = isFlagEntityArray(flagsArray) ? flagsArray : undefined;
+
+    const addFlag = (entity: FlagEntity) => {
+      if (entities == null) {
+        entities = [];
+      }
+      entities.push(entity);
+    };
+
+    if (annotations != null) {
+      const views: Array<DataFrameView<AnnotationsDataFrameViewDTO>> = [];
+
+      for (const frame of annotations) {
+        views.push(new DataFrameView(frame));
+      }
+
+      for (let i = 0; i < views.length; i++) {
+        const annotationsView = views[i];
+        for (let j = 0; j < annotationsView.length; j++) {
+          const annotation = annotationsView.get(j);
+
+          if (!annotation.time) {
+            continue;
+          }
+
+          addFlag({
+            type: 'flag',
+            time: annotation.time,
+            title: annotation.text,
+            color: annotation.color,
+          });
+        }
+      }
+    }
+
+    return entities;
+  }, [annotations, valueField?.config?.custom]);
 
   if (!dataFrames) {
     return <Alert title="No Data" severity="warning" />;
@@ -296,7 +340,37 @@ export function SpcChart(props: Props) {
                 timeZone={timeZone}
               />
 
-              {annotations && <AnnotationsPlugin annotations={annotations} config={config} />}
+              {flags && <FlagsPlugin flags={flags} config={config} />}
+
+              <AnnotationEditorPlugin data={alignedDataFrame} timeZone={timeZone} config={config}>
+                {({ startAnnotating }) => {
+                  return (
+                    <ContextMenuPlugin
+                      data={alignedDataFrame}
+                      config={config}
+                      timeZone={timeZone}
+                      replaceVariables={undefined} //TODO check if this is needed
+                      defaultItems={[
+                        {
+                          items: [
+                            {
+                              label: 'Add annotation',
+                              ariaLabel: 'Add annotation',
+                              icon: 'comment-alt',
+                              onClick: (e, p) => {
+                                if (!p) {
+                                  return;
+                                }
+                                startAnnotating({ coords: p.coords });
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  );
+                }}
+              </AnnotationEditorPlugin>
             </>
           );
         }}
