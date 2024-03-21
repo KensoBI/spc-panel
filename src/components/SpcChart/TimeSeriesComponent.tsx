@@ -30,6 +30,7 @@ export function TimeSeriesComponent({ characteristic, settings, annotations }: P
   const lineColor = settingsWithDefaults.lineColor as string;
   const showLegend = settingsWithDefaults.showLegend;
   const decimals = settingsWithDefaults.decimals;
+  const drawStyle = settingsWithDefaults.drawStyle;
 
   const limits = React.useMemo(
     () => ({
@@ -122,6 +123,7 @@ export function TimeSeriesComponent({ characteristic, settings, annotations }: P
           decimals={decimals ?? 3}
           onSeriesColorChange={onSeriesColorChange}
           annotations={annotations}
+          drawStyle={drawStyle ?? 'line'}
         />
       ) : (
         <></>

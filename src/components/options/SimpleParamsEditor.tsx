@@ -1,5 +1,5 @@
 import React from 'react';
-import { TimeSeriesParams, PanelOptions, defaultTimeseriesSettingsColor } from 'types';
+import { TimeSeriesParams, PanelOptions, defaultTimeseriesSettingsColor, DrawStyleType } from 'types';
 import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { css } from '@emotion/css';
 import { InlineField, InlineSwitch, Input, Select, useStyles2 } from '@grafana/ui';
@@ -8,6 +8,13 @@ import { toNumber } from 'lodash';
 import { selectableZeroToTen, selectableHalfToTen } from './selectableValues';
 
 type Props = StandardEditorProps<TimeSeriesParams, any, PanelOptions>;
+
+const styleOptions: Array<{ value: DrawStyleType; label: string }> = [
+  { value: 'bars', label: 'Bars' },
+  { value: 'lines', label: 'Lines' },
+  { value: 'line', label: 'Smooth line' },
+  { value: 'points', label: 'Points' },
+];
 
 export function SimpleParamsEditor({ value, onChange }: Props) {
   const styles = useStyles2(getStyles);
@@ -71,6 +78,15 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
               max={6}
               onFocus={(e) => e.currentTarget.select()}
               placeholder="Decimal places"
+            />
+          </InlineField>
+          <InlineField label={'Graph style'} className={styles.noMargin}>
+            <Select
+              options={styleOptions}
+              value={value.drawStyle}
+              onChange={(selected) => {
+                onChange({ ...value, drawStyle: selected.value });
+              }}
             />
           </InlineField>
           <div>

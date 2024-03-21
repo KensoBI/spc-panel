@@ -14,6 +14,8 @@ export type LimitConfigItem = {
 
 export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
+export type DrawStyleType = 'bars' | 'lines' | 'points' | 'line';
+
 export type SpcOptions = {
   sampleSize: number;
   aggregation?: AggregationType;
@@ -37,6 +39,7 @@ export type TimeSeriesParams = {
   lineColor?: string;
   showLegend?: boolean;
   decimals?: number;
+  drawStyle?: DrawStyleType;
 };
 
 export interface PanelOptions {
@@ -47,13 +50,14 @@ export interface PanelOptions {
 }
 
 export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
-export const defaultTimeseriesParams = {
+export const defaultTimeseriesParams: TimeSeriesParams = {
   fill: 0,
   lineWidth: 2,
   pointSize: 6,
   lineColor: defaultTimeseriesSettingsColor,
   showLegend: true,
   decimals: 2,
+  drawStyle: 'line',
 };
 
 export const defaultSpcOptons: SpcOptions = {
