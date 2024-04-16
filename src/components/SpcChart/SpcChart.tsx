@@ -16,7 +16,6 @@ import {
   GraphFieldConfig,
   GraphGradientMode,
   GraphThresholdsStyleConfig,
-  GraphTresholdsStyleMode,
   LegendDisplayMode,
   LineInterpolation,
   PanelContextProvider,
@@ -171,7 +170,9 @@ export function SpcChart(props: Props) {
     const hasTresholds = thresholds.steps.length > 0;
 
     const thresholdsStyle: GraphThresholdsStyleConfig = {
-      mode: GraphTresholdsStyleMode.Area,
+      // known issue with the enum type: GraphTresholdsStyleMode which does not exist for grafana >= 10.4.x
+      // raw string is used instead
+      mode: 'area' as any,
     };
 
     const custom: GraphFieldConfig = {
