@@ -172,4 +172,4 @@ This software is distributed under the [Apache License](./LICENSE).
 
 ## Notes
 
-Copyright (c) 2023 [Kenso Software](https://kensobi.com)
+Copyright (c) 2024 [Kenso Software](https://kensobi.com)

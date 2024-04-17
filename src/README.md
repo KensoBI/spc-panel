@@ -33,7 +33,7 @@ Welcome to the KensoBI SPC panel for Grafana. This plugin allows you to build co
 
 ## How to built SQL query
 
-![Chart build SQL overview](./img/chart-build-sql.png)
+![Chart build SQL overview](https://raw.githubusercontent.com/KensoBI/spc-panel/main/src/img/chart-build-sql.png)
 
 ### Building a chart using PostgreSQL datasource
 
@@ -104,4 +104,4 @@ This software is distributed under the [Apache License](https://raw.githubuserco
 
 ## Notes
 
-Copyright (c) 2023 [Kenso Software](https://kensobi.com)
+Copyright (c) 2024 [Kenso Software](https://kensobi.com)
