@@ -2,12 +2,14 @@
 
 ## 1.0.3 (2024-04-16)
 
-- Fix compatibility to grafana 10.4.x (undefined reading 'Area')
-- Fixed bug with displaying colors in constants.
-- Add ability to enter custom Sample size value.
-- Add new chart display styles (lines, smooth line, points, bars).
-- Added an example of how to build a SQL query and use constants on a chart. See [documentation](https://docs.kensobi.com/panels/spc) for more information.
+### Bug fixes
+- Compatibility issue with Grafana 10.4.x (undefined reading 'Area') has been resolved.
+- Bug with displaying colors in constants has been fixed.
 
+### Features and enhancements
+- Ability to enter custom Sample size value has been added.
+- New chart display styles: lines, smooth line, points, bars.
+- Example demonstrating how to build a SQL query and use constants on a chart. See [documentation](https://docs.kensobi.com/panels/spc) for more information.
 
 
 ## 1.0.2 (2024-01-20)
