@@ -12,7 +12,7 @@ export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions(
     id: 'spcOptions',
     path: 'spcOptions',
     name: 'SPC options',
-    description: 'Select options for SPC chart',
+    description: 'Select options for SPC chart. You can enter a custom sample size value by typing a number.',
     defaultValue: defaultPanelOptions.spcOptions,
     editor: SpcOptionEditor,
     category: ['Chart'],

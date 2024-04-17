@@ -1,4 +1,4 @@
-import { ConstantsConfig, SpcOptions } from 'types';
+import { ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
 import {
@@ -79,6 +79,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('lcl') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation != null &&
     spcOptions.aggregation !== 'mean'
   ) {
@@ -89,6 +90,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('lcl_Rbar') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation === 'mean'
   ) {
     let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
@@ -98,6 +100,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('lcl_Sbar') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation === 'mean'
   ) {
     let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
@@ -107,6 +110,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('ucl') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation != null &&
     spcOptions.aggregation !== 'mean'
   ) {
@@ -117,6 +121,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('ucl_Rbar') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation === 'mean'
   ) {
     let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
@@ -126,6 +131,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     selected.has('ucl_Sbar') &&
     spcOptions != null &&
     spcOptions.sampleSize > 1 &&
+    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
     spcOptions.aggregation === 'mean'
   ) {
     let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);

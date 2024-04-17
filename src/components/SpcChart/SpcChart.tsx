@@ -16,7 +16,6 @@ import {
   GraphFieldConfig,
   GraphGradientMode,
   GraphThresholdsStyleConfig,
-  GraphTresholdsStyleMode,
   LegendDisplayMode,
   LineInterpolation,
   PanelContextProvider,
@@ -31,6 +30,7 @@ import { AnnotationsPlugin, isAnnotationEntityArray } from './AnnotationPlugin';
 import { AxisPropsReflection } from './AxisPropsReflection';
 import { cloneDeep } from 'lodash';
 import { usePanelProps } from '../PanelPropsProvider';
+import { DrawStyleType } from 'types';
 
 const TIMESERIES_SAMPLE_LABEL = 'Sample';
 
@@ -63,6 +63,7 @@ type Props = {
   showLegend: boolean;
   decimals: number;
   onSeriesColorChange: (label: string, color: string) => void;
+  drawStyle: DrawStyleType;
 };
 
 export function SpcChart(props: Props) {
@@ -81,6 +82,7 @@ export function SpcChart(props: Props) {
     showLegend,
     decimals,
     onSeriesColorChange,
+    drawStyle,
   } = props;
   const { timeZone, timeRange } = usePanelProps();
   const theme = useTheme2();
@@ -168,7 +170,9 @@ export function SpcChart(props: Props) {
     const hasTresholds = thresholds.steps.length > 0;
 
     const thresholdsStyle: GraphThresholdsStyleConfig = {
-      mode: GraphTresholdsStyleMode.Area,
+      // known issue with the enum type: GraphTresholdsStyleMode which does not exist for grafana >= 10.4.x
+      // raw string is used instead
+      mode: 'area' as any,
     };
 
     const custom: GraphFieldConfig = {
@@ -176,6 +180,7 @@ export function SpcChart(props: Props) {
       gradientMode: GraphGradientMode.Opacity,
       lineWidth: lineWidth,
       lineInterpolation: LineInterpolation.Smooth,
+      drawStyle: drawStyle,
       thresholdsStyle,
       pointSize: pointSize,
       fillOpacity: fill * 10,
@@ -212,7 +217,20 @@ export function SpcChart(props: Props) {
     });
 
     return [df];
-  }, [constants, dataFrameName, decimals, fill, limits, lineColor, lineWidth, pointSize, theme, timeField, valueField]);
+  }, [
+    constants,
+    dataFrameName,
+    decimals,
+    fill,
+    limits,
+    lineColor,
+    lineWidth,
+    pointSize,
+    theme,
+    timeField,
+    valueField,
+    drawStyle,
+  ]);
 
   const tweakAxis = React.useCallback(
     (opts: AxisPropsReflection, forField: Field) => {
