@@ -36,9 +36,14 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   characteristic.timeseries.values.values = calcValueSampleSize(
     values,
     spcOptions?.sampleSize ?? 1,
-    spcOptions?.aggregation ?? 'mean'
+    spcOptions?.aggregation ?? 'mean',
+    spcOptions?.chartType ?? 'meanChart'
   );
-  characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);
+  characteristic.timeseries.time.values = calcTimeSampleSize(
+    times,
+    spcOptions?.sampleSize ?? 1,
+    spcOptions?.chartType ?? 'meanChart'
+  );
 
   //clear obsolate, computed values from config
   //it's important, because otherwise the timeseries plot will be broken
@@ -168,7 +173,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.chartType === 'mrChart'
   ) {
     let resultLclMr = calcLclMr(values);
-    characteristic.table.lcl_mr = resultLclMr ? resultLclMr : undefined; //fix
+    characteristic.table.lcl_mr = resultLclMr ? resultLclMr : 0;
   }
   if (
     selected.has('center_line_x') &&
@@ -177,7 +182,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.chartType === 'meanChart'
   ) {
     let resultCenterLineX = calcClX(values);
-    characteristic.table.center_line_x = resultCenterLineX ? resultCenterLineX : undefined; //fix
+    characteristic.table.center_line_x = resultCenterLineX ? resultCenterLineX : undefined;
   }
   if (
     selected.has('ucl_x') &&
@@ -186,7 +191,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.chartType === 'meanChart'
   ) {
     let resultUclX = calcUclX(values);
-    characteristic.table.ucl_x = resultUclX ? resultUclX : undefined; //fix
+    characteristic.table.ucl_x = resultUclX ? resultUclX : undefined;
   }
   if (
     selected.has('lcl_x') &&
@@ -195,7 +200,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     spcOptions.chartType === 'meanChart'
   ) {
     let resultLclX = calcLclX(values);
-    characteristic.table.lcl_x = resultLclX ? resultLclX : undefined; //fix
+    characteristic.table.lcl_x = resultLclX ? resultLclX : undefined;
   }
 
   return f;

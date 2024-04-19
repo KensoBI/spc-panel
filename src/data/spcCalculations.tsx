@@ -1,4 +1,4 @@
-import { AggregationType } from 'types';
+import { AggregationType, ChartType } from 'types';
 import { getCalcConst } from './calcConst';
 
 function notNanArray(values: number[]) {
@@ -95,12 +95,27 @@ const groupingFunctions = {
   mean: calculateGroupedAverage,
 };
 
-export function calcValueSampleSize(values: number[], sampleSize: number, aggType: AggregationType) {
-  return sampleSize === 1 ? values : groupingFunctions[aggType](values, sampleSize);
+export function calcValueSampleSize(
+  values: number[],
+  sampleSize: number,
+  aggType: AggregationType,
+  chartType?: ChartType
+) {
+  if (sampleSize === 1 && chartType === 'mrChart') {
+    return calcMrArray(values);
+  } else {
+    return sampleSize === 1 ? values : groupingFunctions[aggType](values, sampleSize);
+  }
 }
 
-export function calcTimeSampleSize(time: number[], sampleSize: number) {
-  return sampleSize === 1 ? time : calculateGroupedAverage(time, sampleSize);
+export function calcTimeSampleSize(time: number[], sampleSize: number, chartType?: ChartType) {
+  if (sampleSize === 1 && chartType === 'mrChart') {
+    let newTime: number[] = time;
+    newTime.shift();
+    return newTime;
+  } else {
+    return sampleSize === 1 ? time : calculateGroupedAverage(time, sampleSize);
+  }
 }
 
 export function calcMax(values: number[]) {
@@ -181,32 +196,50 @@ export function stdDev(values: number[]) {
   return standardDeviation;
 }
 
+export function calcMrArray(values: number[]) {
+  let newValues: number[] = [];
+  for (let i = 0; i < values.length - 1; i++) {
+    newValues.push(Math.abs(values[i] - values[i + 1]));
+  }
+  return newValues;
+}
+
+//The same like MR mean.
 export function calcClMr(values: number[]) {
-  console.log('central line for mr calc', values);
-  return 1;
+  const sum = values.reduce((acc, curr) => acc + curr, 0);
+  return sum / values.length;
+}
+
+export function calcMRforMean(values: number[]) {
+  let newValues: number[] = [];
+  for (let i = 0; i < values.length - 1; i++) {
+    newValues.push(Math.abs(values[i] - values[i + 1]));
+  }
+  const sum = newValues.reduce((acc, curr) => acc + curr, 0);
+  return sum / newValues.length;
 }
 
 export function calcLclMr(values: number[]) {
-  console.log('lcl mr calc', values);
-  return 2;
+  const d3 = getCalcConst(2, 'd3_range_lcl');
+  let result = calcClMr(values) * d3;
+  return result;
 }
 
 export function calcUclMr(values: number[]) {
-  console.log('ucl mr calc', values);
-  return 3;
+  const d4 = getCalcConst(2, 'd4_range_ucl');
+  return calcClMr(values) * d4;
 }
 
 export function calcClX(values: number[]) {
-  console.log('central line X calc', values);
-  return 4;
+  return calcAvarageInRange(values, 0, values.length - 1);
 }
 
 export function calcLclX(values: number[]) {
-  console.log('lcl X calc', values);
-  return 5;
+  const d2 = getCalcConst(2, 'd2_xbar_range');
+  return calcAvarageInRange(values, 0, values.length - 1) - (3 * calcMRforMean(values)) / d2;
 }
 
 export function calcUclX(values: number[]) {
-  console.log('ucl X calc', values);
-  return 6;
+  const d2 = getCalcConst(2, 'd2_xbar_range');
+  return calcAvarageInRange(values, 0, values.length - 1) + (3 * calcMRforMean(values)) / d2;
 }
