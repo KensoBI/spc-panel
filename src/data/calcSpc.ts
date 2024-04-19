@@ -2,12 +2,18 @@ import { ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
 import {
+  calcClMr,
+  calcClX,
   calcLcl,
+  calcLclMr,
+  calcLclX,
   calcMax,
   calcMean,
   calcMin,
   calcTimeSampleSize,
   calcUcl,
+  calcUclMr,
+  calcUclX,
   calcValueSampleSize,
 } from './spcCalculations';
 import { SpcParam, filterSpcParams } from './spcParams';
@@ -136,6 +142,60 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   ) {
     let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
     characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
+  }
+  if (
+    selected.has('center_line_mr') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'mrChart'
+  ) {
+    let resultCenterLineMr = calcClMr(values);
+    characteristic.table.center_line_mr = resultCenterLineMr ? resultCenterLineMr : undefined; //fix
+  }
+  if (
+    selected.has('ucl_mr') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'mrChart'
+  ) {
+    let resultUclMr = calcUclMr(values);
+    characteristic.table.ucl_mr = resultUclMr ? resultUclMr : undefined; //fix
+  }
+  if (
+    selected.has('lcl_mr') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'mrChart'
+  ) {
+    let resultLclMr = calcLclMr(values);
+    characteristic.table.lcl_mr = resultLclMr ? resultLclMr : undefined; //fix
+  }
+  if (
+    selected.has('center_line_x') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'meanChart'
+  ) {
+    let resultCenterLineX = calcClX(values);
+    characteristic.table.center_line_x = resultCenterLineX ? resultCenterLineX : undefined; //fix
+  }
+  if (
+    selected.has('ucl_x') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'meanChart'
+  ) {
+    let resultUclX = calcUclX(values);
+    characteristic.table.ucl_x = resultUclX ? resultUclX : undefined; //fix
+  }
+  if (
+    selected.has('lcl_x') &&
+    spcOptions != null &&
+    spcOptions.sampleSize === 1 &&
+    spcOptions.chartType === 'meanChart'
+  ) {
+    let resultLclX = calcLclX(values);
+    characteristic.table.lcl_x = resultLclX ? resultLclX : undefined; //fix
   }
 
   return f;

@@ -180,3 +180,33 @@ export function stdDev(values: number[]) {
   const standardDeviation = Math.sqrt(meanSquaredDifferences);
   return standardDeviation;
 }
+
+export function calcClMr(values: number[]) {
+  console.log('central line for mr calc', values);
+  return 1;
+}
+
+export function calcLclMr(values: number[]) {
+  console.log('lcl mr calc', values);
+  return 2;
+}
+
+export function calcUclMr(values: number[]) {
+  console.log('ucl mr calc', values);
+  return 3;
+}
+
+export function calcClX(values: number[]) {
+  console.log('central line X calc', values);
+  return 4;
+}
+
+export function calcLclX(values: number[]) {
+  console.log('lcl X calc', values);
+  return 5;
+}
+
+export function calcUclX(values: number[]) {
+  console.log('ucl X calc', values);
+  return 6;
+}
