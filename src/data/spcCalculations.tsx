@@ -204,19 +204,18 @@ export function calcMrArray(values: number[]) {
   return newValues;
 }
 
-//The same like MR mean.
 export function calcClMr(values: number[]) {
   const sum = values.reduce((acc, curr) => acc + curr, 0);
   return sum / values.length;
 }
 
 export function calcMRforMean(values: number[]) {
-  let newValues: number[] = [];
+  let newMRValues: number[] = [];
   for (let i = 0; i < values.length - 1; i++) {
-    newValues.push(Math.abs(values[i] - values[i + 1]));
+    newMRValues.push(Math.abs(values[i] - values[i + 1]));
   }
-  const sum = newValues.reduce((acc, curr) => acc + curr, 0);
-  return sum / newValues.length;
+  const sum = newMRValues.reduce((acc, curr) => acc + curr, 0);
+  return sum / newMRValues.length;
 }
 
 export function calcLclMr(values: number[]) {
