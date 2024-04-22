@@ -1,4 +1,4 @@
-import { ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
+import { AggregationType, ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
 import {
@@ -86,122 +86,55 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     characteristic.table.mean = calcMean(values);
   }
 
-  if (
-    selected.has('lcl') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation != null &&
-    spcOptions.aggregation !== 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl = resultLcl ? resultLcl[0] : undefined;
+  if (spcOptions == null) {
+    return f;
   }
-  if (
-    selected.has('lcl_Rbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl_Rbar = resultLcl ? resultLcl[0] : undefined;
-  }
-  if (
-    selected.has('lcl_Sbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl_Sbar = resultLcl ? resultLcl[1] : undefined;
-  }
-  if (
-    selected.has('ucl') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation != null &&
-    spcOptions.aggregation !== 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl = resultUcl ? resultUcl[0] : undefined;
-  }
-  if (
-    selected.has('ucl_Rbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl_Rbar = resultUcl ? resultUcl[0] : undefined;
-  }
-  if (
-    selected.has('ucl_Sbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
-  }
-  if (
-    selected.has('center_line_mr') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'mrChart'
-  ) {
-    let resultCenterLineMr = calcClMr(values);
-    characteristic.table.center_line_mr = resultCenterLineMr ? resultCenterLineMr : undefined; //fix
-  }
-  if (
-    selected.has('ucl_mr') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'mrChart'
-  ) {
-    let resultUclMr = calcUclMr(values);
-    characteristic.table.ucl_mr = resultUclMr ? resultUclMr : undefined; //fix
-  }
-  if (
-    selected.has('lcl_mr') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'mrChart'
-  ) {
-    let resultLclMr = calcLclMr(values);
-    characteristic.table.lcl_mr = resultLclMr ? resultLclMr : 0;
-  }
-  if (
-    selected.has('center_line_x') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'meanChart'
-  ) {
-    let resultCenterLineX = calcClX(values);
-    characteristic.table.center_line_x = resultCenterLineX ? resultCenterLineX : undefined;
-  }
-  if (
-    selected.has('ucl_x') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'meanChart'
-  ) {
-    let resultUclX = calcUclX(values);
-    characteristic.table.ucl_x = resultUclX ? resultUclX : undefined;
-  }
-  if (
-    selected.has('lcl_x') &&
-    spcOptions != null &&
-    spcOptions.sampleSize === 1 &&
-    spcOptions.chartType === 'meanChart'
-  ) {
-    let resultLclX = calcLclX(values);
-    characteristic.table.lcl_x = resultLclX ? resultLclX : undefined;
-  }
+
+  const applyAggParam = (
+    key: SpcParam,
+    computeFunc: (values: number[], aggType: AggregationType, sample: number) => number[] | undefined,
+    additionalCond: boolean,
+    resultIndex: number
+  ) => {
+    if (
+      selected.has(key) &&
+      spcOptions.sampleSize > 1 &&
+      spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
+      additionalCond
+    ) {
+      let result = computeFunc(values, spcOptions.aggregation!, spcOptions.sampleSize);
+      characteristic.table[key] = result ? result[resultIndex] : undefined;
+    }
+  };
+
+  const aggNotMean = spcOptions.aggregation != null && spcOptions.aggregation !== 'mean';
+  const aggIsMean = spcOptions.aggregation !== 'mean';
+
+  applyAggParam('lcl', calcLcl, aggNotMean, 0);
+  applyAggParam('lcl_Rbar', calcLcl, aggIsMean, 0);
+  applyAggParam('lcl_Sbar', calcLcl, aggIsMean, 1);
+  applyAggParam('ucl', calcUcl, aggNotMean, 0);
+  applyAggParam('ucl_Rbar', calcUcl, aggIsMean, 0);
+  applyAggParam('ucl_Sbar', calcUcl, aggIsMean, 1);
+
+  const applyNoAggParam = (
+    key: SpcParam,
+    computeFunc: (values: any) => any,
+    chartType: string,
+    defaultValue: any = undefined
+  ) => {
+    if (selected.has(key) && spcOptions.sampleSize === 1 && spcOptions.chartType === chartType) {
+      let result = computeFunc(values);
+      characteristic.table[key] = result ? result : defaultValue;
+    }
+  };
+
+  applyNoAggParam('center_line_mr', calcClMr, 'mrChart');
+  applyNoAggParam('ucl_mr', calcUclMr, 'mrChart');
+  applyNoAggParam('lcl_mr', calcLclMr, 'mrChart', 0);
+  applyNoAggParam('center_line_x', calcClX, 'meanChart');
+  applyNoAggParam('ucl_x', calcUclX, 'meanChart');
+  applyNoAggParam('lcl_x', calcLclX, 'meanChart');
 
   return f;
 }
