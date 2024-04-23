@@ -92,7 +92,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
 
   const applyAggParam = (
     key: SpcParam,
-    computeFunc: (values: number[], aggType: AggregationType, sample: number) => number[] | undefined,
+    computeFunc: (values: any, aggType: AggregationType, sample: number) => number[] | undefined,
     additionalCond: boolean,
     resultIndex: number
   ) => {
@@ -108,7 +108,7 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   };
 
   const aggNotMean = spcOptions.aggregation != null && spcOptions.aggregation !== 'mean';
-  const aggIsMean = spcOptions.aggregation !== 'mean';
+  const aggIsMean = spcOptions.aggregation === 'mean';
 
   applyAggParam('lcl', calcLcl, aggNotMean, 0);
   applyAggParam('lcl_Rbar', calcLcl, aggIsMean, 0);
