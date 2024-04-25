@@ -3,7 +3,7 @@ import { StandardEditorProps, GrafanaTheme2, SelectableValue } from '@grafana/da
 import { useStyles2, InlineField, Select } from '@grafana/ui';
 import { InputFloat } from 'components/InputFloat';
 import React from 'react';
-import { AggregationType, MAX_DEFAULT_SAMPLE_SIZE, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
+import { AggregationType, ChartType, MAX_DEFAULT_SAMPLE_SIZE, PanelOptions, SpcOptions, defaultSpcOptons } from 'types';
 import { useParseSpcOptions } from './parseOptions';
 
 const sampleSizeOptions = [...Array(MAX_DEFAULT_SAMPLE_SIZE)]
@@ -17,10 +17,18 @@ const aggregationTypeOptions: Array<{ label: string; value: AggregationType }> =
   { label: 'Range', value: 'range' },
   { label: 'Standard deviation', value: 'standardDeviation' },
 ];
+const chartTypeOptions: Array<{ label: string; value: ChartType }> = [
+  { label: 'Time series', value: 'timeseries' }, //default
+  { label: 'Moving-range', value: 'mrChart' },
+];
 const defaultAggregationType = aggregationTypeOptions.find((option) => option.value === defaultSpcOptons.aggregation);
+const defaultChartType = chartTypeOptions.find((option) => option.value === defaultSpcOptons.chartType);
 
 const isCalculationType = (value: unknown): value is AggregationType => {
   return typeof value === 'string' && aggregationTypeOptions.some((option) => option.value === value);
+};
+const isChartType = (value: unknown): value is ChartType => {
+  return typeof value === 'string' && chartTypeOptions.some((option) => option.value === value);
 };
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
@@ -67,7 +75,7 @@ export function SpcOptionEditor(props: Props) {
             }}
           />
         </InlineField>
-        {options.sampleSize !== 1 && (
+        {options.sampleSize !== 1 ? (
           <InlineField label="Aggregation type" disabled={false}>
             <Select
               placeholder={defaultAggregationType?.label}
@@ -78,6 +86,21 @@ export function SpcOptionEditor(props: Props) {
                   return;
                 }
                 onChange({ ...options, aggregation: e.value });
+              }}
+              width={'auto'}
+            />
+          </InlineField>
+        ) : (
+          <InlineField label="Chart type" disabled={false}>
+            <Select
+              placeholder={defaultChartType?.label}
+              options={chartTypeOptions}
+              value={options.chartType}
+              onChange={(e) => {
+                if (!isChartType(e.value)) {
+                  return;
+                }
+                onChange({ ...options, chartType: e.value });
               }}
               width={'auto'}
             />

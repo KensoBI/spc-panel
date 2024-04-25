@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 (2024-04-XXXX)
+
+### Features and enhancements
+- Add Shewhart individuals control chart 
+- See [documentation](https://docs.kensobi.com/panels/spc) for more information.
+
 ## 1.0.3 (2024-04-16)
 
 ### Bug fixes

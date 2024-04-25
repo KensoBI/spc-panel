@@ -14,11 +14,14 @@ export type LimitConfigItem = {
 
 export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
+export type ChartType = 'mrChart' | 'timeseries';
+
 export type DrawStyleType = 'bars' | 'lines' | 'points' | 'line';
 
 export type SpcOptions = {
   sampleSize: number;
   aggregation?: AggregationType;
+  chartType?: ChartType;
   nominal?: number;
   lsl?: number;
   usl?: number;
@@ -63,6 +66,7 @@ export const defaultTimeseriesParams: TimeSeriesParams = {
 export const defaultSpcOptons: SpcOptions = {
   sampleSize: 1,
   aggregation: 'mean',
+  chartType: 'timeseries',
   nominal: undefined,
   lsl: undefined,
   usl: undefined,

@@ -25,17 +25,20 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     if (hasCustomTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
       const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
-      return availableSpcParamsWithData(sampleSize, aggregationType, characteristicKeys);
+      const chartType = context.options?.spcOptions?.chartType ?? 'timeseries';
+      return availableSpcParamsWithData(sampleSize, aggregationType, characteristicKeys, chartType);
     }
     if (!hasTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
       const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
-      return availableSpcParams(sampleSize, aggregationType);
+      const chartType = context.options?.spcOptions?.chartType ?? 'timeseries';
+      return availableSpcParams(sampleSize, aggregationType, chartType);
     }
     return characteristicKeys;
   }, [
     characteristicKeys,
     context.options?.spcOptions?.aggregation,
+    context.options?.spcOptions?.chartType,
     context.options?.spcOptions?.sampleSize,
     hasCustomTableData,
     hasTableData,

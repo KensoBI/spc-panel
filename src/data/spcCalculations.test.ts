@@ -10,6 +10,15 @@ import {
   calculateGroupedAverage,
   calculateGroupedDifference,
   calculateGroupedStdDev,
+  calcLclX,
+  calcUclX,
+  calcClX,
+  calcLclMr,
+  calcUclMr,
+  calcClMr,
+  calcMrArray,
+  calcMRforMean,
+  calcTimeSampleSize,
 } from './spcCalculations';
 
 describe('calcMin', () => {
@@ -78,7 +87,7 @@ describe('calcUcl-range', () => {
 });
 
 describe('calcLcl-mean', () => {
-  it('should return the upper control limit of the array (mean aggregation)', () => {
+  it('should return the lower control limit of the array (mean aggregation)', () => {
     const field = [1, 2, 3, 4, 5];
     expect(calcLcl(field, 'mean', 2)).toStrictEqual([-4.52, -0.7603938623500599]);
     expect(calcLcl(field, 'mean', 7)).toStrictEqual([1.324, 1.3283995692750017]);
@@ -152,5 +161,79 @@ describe('calculateGroupedStdDev', () => {
     expect(calculateGroupedStdDev([1, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4], 4)).toStrictEqual([
       0, 1.118033988749895, 1.118033988749895, 1.118033988749895,
     ]);
+  });
+});
+
+//Shewhart individuals control (XmR) chart
+
+describe('calcValueSampleSize-XmR charts (sampleSize=1)', () => {
+  it('should return a new vector with  timeseries chart with sampleSize=1', () => {
+    const field = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    expect(calcValueSampleSize(field, 1, 'mean', 'timeseries')).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(calcValueSampleSize(field, 1, 'mean', 'mrChart')).toStrictEqual([1, 1, 1, 1, 1, 1, 1, 1]);
+  });
+});
+
+describe('calcTimeSampleSize-XmR charts (sampleSize=1)', () => {
+  it('should return a new vector with  timeseries chart with sampleSize=1', () => {
+    const field = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    expect(calcTimeSampleSize(field, 1, 'timeseries')).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(calcTimeSampleSize(field, 1, 'mrChart')).toStrictEqual([2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+});
+
+describe('calcMrArray', () => {
+  it('should return the new array of difference of adjacent values for moving range chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcMrArray(field)).toStrictEqual([1, 1, 1, 1]);
+  });
+});
+
+describe('calcMrValue for timeseries chart calculations', () => {
+  it('should return the MR value for timeseries chart (with SampleSize = 1) to calculatiobns UCL and LCL', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcMRforMean(field)).toBe(1);
+  });
+});
+
+describe('calcLcl-mean_chart', () => {
+  it('should return the lower control limit of the array timeseries chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcLclX(field)).toBe(0.3404255319148932);
+  });
+});
+
+describe('calcUcl-mean_chart', () => {
+  it('should return the upper control limit of the array timeseries chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcUclX(field)).toBe(5.659574468085107);
+  });
+});
+
+describe('calcCL-mean_chart', () => {
+  it('should return the center line of the array timeseries chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcClX(field)).toBe(3);
+  });
+});
+
+describe('calcLcl-mr_chart', () => {
+  it('should return the lower control limit of the array Moving range chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcLclMr(field)).toBe(0);
+  });
+});
+
+describe('calcUcl-mr_chart', () => {
+  it('should return the upper control limit of the array Moving range chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcUclMr(field)).toBe(9.801);
+  });
+});
+
+describe('calcCL-mr_chart', () => {
+  it('should return the center line of the array Moving range chart with SampleSize = 1', () => {
+    const field = [1, 2, 3, 4, 5];
+    expect(calcClMr(field)).toBe(3);
   });
 });

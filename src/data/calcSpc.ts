@@ -1,13 +1,19 @@
-import { ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
+import { AggregationType, ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions } from 'types';
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
 import {
+  calcClMr,
+  calcClX,
   calcLcl,
+  calcLclMr,
+  calcLclX,
   calcMax,
   calcMean,
   calcMin,
   calcTimeSampleSize,
   calcUcl,
+  calcUclMr,
+  calcUclX,
   calcValueSampleSize,
 } from './spcCalculations';
 import { SpcParam, filterSpcParams } from './spcParams';
@@ -30,9 +36,14 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   characteristic.timeseries.values.values = calcValueSampleSize(
     values,
     spcOptions?.sampleSize ?? 1,
-    spcOptions?.aggregation ?? 'mean'
+    spcOptions?.aggregation ?? 'mean',
+    spcOptions?.chartType ?? 'timeseries'
   );
-  characteristic.timeseries.time.values = calcTimeSampleSize(times, spcOptions?.sampleSize ?? 1);
+  characteristic.timeseries.time.values = calcTimeSampleSize(
+    times,
+    spcOptions?.sampleSize ?? 1,
+    spcOptions?.chartType ?? 'timeseries'
+  );
 
   //clear obsolate, computed values from config
   //it's important, because otherwise the timeseries plot will be broken
@@ -75,68 +86,55 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     characteristic.table.mean = calcMean(values);
   }
 
-  if (
-    selected.has('lcl') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation != null &&
-    spcOptions.aggregation !== 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl = resultLcl ? resultLcl[0] : undefined;
+  if (spcOptions == null) {
+    return f;
   }
-  if (
-    selected.has('lcl_Rbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl_Rbar = resultLcl ? resultLcl[0] : undefined;
-  }
-  if (
-    selected.has('lcl_Sbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultLcl = calcLcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.lcl_Sbar = resultLcl ? resultLcl[1] : undefined;
-  }
-  if (
-    selected.has('ucl') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation != null &&
-    spcOptions.aggregation !== 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl = resultUcl ? resultUcl[0] : undefined;
-  }
-  if (
-    selected.has('ucl_Rbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl_Rbar = resultUcl ? resultUcl[0] : undefined;
-  }
-  if (
-    selected.has('ucl_Sbar') &&
-    spcOptions != null &&
-    spcOptions.sampleSize > 1 &&
-    spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
-    spcOptions.aggregation === 'mean'
-  ) {
-    let resultUcl = calcUcl(values, spcOptions.aggregation, spcOptions.sampleSize);
-    characteristic.table.ucl_Sbar = resultUcl ? resultUcl[1] : undefined;
-  }
+
+  const applyAggParam = (
+    key: SpcParam,
+    computeFunc: (values: any, aggType: AggregationType, sample: number) => number[] | undefined,
+    additionalCond: boolean,
+    resultIndex: number
+  ) => {
+    if (
+      selected.has(key) &&
+      spcOptions.sampleSize > 1 &&
+      spcOptions.sampleSize <= MAX_DEFAULT_SAMPLE_SIZE &&
+      additionalCond
+    ) {
+      let result = computeFunc(values, spcOptions.aggregation!, spcOptions.sampleSize);
+      characteristic.table[key] = result ? result[resultIndex] : undefined;
+    }
+  };
+
+  const aggNotMean = spcOptions.aggregation != null && spcOptions.aggregation !== 'mean';
+  const aggIsMean = spcOptions.aggregation === 'mean';
+
+  applyAggParam('lcl', calcLcl, aggNotMean, 0);
+  applyAggParam('lcl_Rbar', calcLcl, aggIsMean, 0);
+  applyAggParam('lcl_Sbar', calcLcl, aggIsMean, 1);
+  applyAggParam('ucl', calcUcl, aggNotMean, 0);
+  applyAggParam('ucl_Rbar', calcUcl, aggIsMean, 0);
+  applyAggParam('ucl_Sbar', calcUcl, aggIsMean, 1);
+
+  const applyNoAggParam = (
+    key: SpcParam,
+    computeFunc: (values: any) => any,
+    chartType: string,
+    defaultValue: any = undefined
+  ) => {
+    if (selected.has(key) && spcOptions.sampleSize === 1 && spcOptions.chartType === chartType) {
+      let result = computeFunc(values);
+      characteristic.table[key] = result ? result : defaultValue;
+    }
+  };
+
+  applyNoAggParam('center_line_mr', calcClMr, 'mrChart');
+  applyNoAggParam('ucl_mr', calcUclMr, 'mrChart');
+  applyNoAggParam('lcl_mr', calcLclMr, 'mrChart', 0);
+  applyNoAggParam('center_line_x', calcClX, 'timeseries');
+  applyNoAggParam('ucl_x', calcUclX, 'timeseries');
+  applyNoAggParam('lcl_x', calcLclX, 'timeseries');
 
   return f;
 }
