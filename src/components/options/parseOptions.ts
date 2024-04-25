@@ -3,14 +3,14 @@ import { PanelOptions, SpcOptions } from 'types';
 import { getTemplateSrv } from '@grafana/runtime';
 import { VariableWithOptions } from '@grafana/data';
 
-const SAMPLE_SIZE_VARIABLE = 'sampleSize';
+const SAMPLE_SIZE_VARIABLE = 'samplesize';
 
 type WithIsVar<T> = { value: T; isVar: boolean };
 
 function getSampleSize(spcOptions?: SpcOptions): WithIsVar<number> {
   const sampleSizeVarModel = getTemplateSrv()
     .getVariables()
-    .find((v) => v.name === SAMPLE_SIZE_VARIABLE) as VariableWithOptions | undefined;
+    .find((v) => v.name.toLowerCase()  === SAMPLE_SIZE_VARIABLE) as VariableWithOptions | undefined;
   const sampleSizeVarStr = sampleSizeVarModel?.current?.value?.toString();
   const sampleSizeVar = sampleSizeVarStr != null ? parseInt(sampleSizeVarStr, 10) : undefined;
 
