@@ -37,12 +37,12 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     values,
     spcOptions?.sampleSize ?? 1,
     spcOptions?.aggregation ?? 'mean',
-    spcOptions?.chartType ?? 'meanChart'
+    spcOptions?.chartType ?? 'timeseries'
   );
   characteristic.timeseries.time.values = calcTimeSampleSize(
     times,
     spcOptions?.sampleSize ?? 1,
-    spcOptions?.chartType ?? 'meanChart'
+    spcOptions?.chartType ?? 'timeseries'
   );
 
   //clear obsolate, computed values from config
@@ -132,9 +132,9 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
   applyNoAggParam('center_line_mr', calcClMr, 'mrChart');
   applyNoAggParam('ucl_mr', calcUclMr, 'mrChart');
   applyNoAggParam('lcl_mr', calcLclMr, 'mrChart', 0);
-  applyNoAggParam('center_line_x', calcClX, 'meanChart');
-  applyNoAggParam('ucl_x', calcUclX, 'meanChart');
-  applyNoAggParam('lcl_x', calcLclX, 'meanChart');
+  applyNoAggParam('center_line_x', calcClX, 'timeseries');
+  applyNoAggParam('ucl_x', calcUclX, 'timeseries');
+  applyNoAggParam('lcl_x', calcLclX, 'timeseries');
 
   return f;
 }

@@ -24,7 +24,7 @@ The S-bar chart is used to monitor the variability within your process by assess
 
 In statistical quality control, the individual/moving-range chart is a type of control chart used to monitor variables data from a business or industrial process for which it is impractical to use rational subgroups.
 
-<b>Chart types:</b> Mean chart (data without aggregation); MR chart (Moving-range chart)
+<b>Chart types:</b> Time series (data without aggregation); Moving-range (Moving-range chart)
 
 ## Control Limits Calculation
 
@@ -60,7 +60,7 @@ LCL: B3 * S
 
 ### Shewhart individuals control chart
 
-For <b>MR charts</b>, the control limits are calculated as follows:
+For <b>Moving-range charts</b>, the control limits are calculated as follows:
 
 UCL: D4 * MR-bar 
 
@@ -68,7 +68,7 @@ LCL: D3 * MR-bar
 
 _Where D4 and D3 is taken from the sample constants for n=2._
 
-For <b>Mean charts</b>, the control limits are calculated as follows:
+For <b>Time series charts</b>, the control limits are calculated as follows:
 
 UCL: X-bar + 2,66 * MR-bar
 

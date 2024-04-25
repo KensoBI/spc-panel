@@ -45,7 +45,7 @@ export function availableSpcParams(
   } else {
     if (sampleSize === 1 && chartType === 'mrChart') {
       params.push('lcl_mr', 'ucl_mr', 'center_line_mr');
-    } else if (sampleSize === 1 && chartType === 'meanChart') {
+    } else if (sampleSize === 1 && chartType === 'timeseries') {
       params.push('lcl_x', 'ucl_x', 'center_line_x');
     }
   }
@@ -67,7 +67,7 @@ export function availableSpcParamsWithData(
   } else {
     if (sampleSize === 1 && chartType === 'mrChart') {
       params.push('lcl_mr', 'ucl_mr', 'center_line_mr');
-    } else if (sampleSize === 1 && chartType === 'meanChart') {
+    } else if (sampleSize === 1 && chartType === 'timeseries') {
       params.push('lcl_x', 'ucl_x', 'center_line_x');
     }
   }

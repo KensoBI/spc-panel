@@ -14,7 +14,7 @@ export type LimitConfigItem = {
 
 export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
-export type ChartType = 'mrChart' | 'meanChart';
+export type ChartType = 'mrChart' | 'timeseries';
 
 export type DrawStyleType = 'bars' | 'lines' | 'points' | 'line';
 
@@ -66,7 +66,7 @@ export const defaultTimeseriesParams: TimeSeriesParams = {
 export const defaultSpcOptons: SpcOptions = {
   sampleSize: 1,
   aggregation: 'mean',
-  chartType: 'meanChart',
+  chartType: 'timeseries',
   nominal: undefined,
   lsl: undefined,
   usl: undefined,

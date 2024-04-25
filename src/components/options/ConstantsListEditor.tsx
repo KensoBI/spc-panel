@@ -25,13 +25,13 @@ export function ConstantsListEditor({ value, onChange, context }: Props) {
     if (hasCustomTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
       const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
-      const chartType = context.options?.spcOptions?.chartType ?? 'meanChart';
+      const chartType = context.options?.spcOptions?.chartType ?? 'timeseries';
       return availableSpcParamsWithData(sampleSize, aggregationType, characteristicKeys, chartType);
     }
     if (!hasTableData) {
       const sampleSize = context.options?.spcOptions?.sampleSize ?? 1;
       const aggregationType = context.options?.spcOptions?.aggregation ?? 'mean';
-      const chartType = context.options?.spcOptions?.chartType ?? 'meanChart';
+      const chartType = context.options?.spcOptions?.chartType ?? 'timeseries';
       return availableSpcParams(sampleSize, aggregationType, chartType);
     }
     return characteristicKeys;

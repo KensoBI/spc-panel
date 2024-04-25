@@ -18,8 +18,8 @@ const aggregationTypeOptions: Array<{ label: string; value: AggregationType }> =
   { label: 'Standard deviation', value: 'standardDeviation' },
 ];
 const chartTypeOptions: Array<{ label: string; value: ChartType }> = [
-  { label: 'Mean chart', value: 'meanChart' }, //default
-  { label: 'Moving-range chart', value: 'mrChart' },
+  { label: 'Time series', value: 'timeseries' }, //default
+  { label: 'Moving-range', value: 'mrChart' },
 ];
 const defaultAggregationType = aggregationTypeOptions.find((option) => option.value === defaultSpcOptons.aggregation);
 const defaultChartType = chartTypeOptions.find((option) => option.value === defaultSpcOptons.chartType);
