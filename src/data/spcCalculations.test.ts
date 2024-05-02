@@ -12,7 +12,6 @@ import {
   calculateGroupedStdDev,
   calcLclX,
   calcUclX,
-  calcClX,
   calcLclMr,
   calcUclMr,
   calcClMr,
@@ -207,13 +206,6 @@ describe('calcUcl-mean_chart', () => {
   it('should return the upper control limit of the array timeseries chart with SampleSize = 1', () => {
     const field = [1, 2, 3, 4, 5];
     expect(calcUclX(field)).toBe(5.659574468085107);
-  });
-});
-
-describe('calcCL-mean_chart', () => {
-  it('should return the center line of the array timeseries chart with SampleSize = 1', () => {
-    const field = [1, 2, 3, 4, 5];
-    expect(calcClX(field)).toBe(3);
   });
 });
 

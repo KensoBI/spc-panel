@@ -2,8 +2,6 @@ import { AggregationType, ConstantsConfig, MAX_DEFAULT_SAMPLE_SIZE, SpcOptions }
 import { Feature } from './types';
 import { cloneDeep } from 'lodash';
 import {
-  calcClMr,
-  calcClX,
   calcLcl,
   calcLclMr,
   calcLclX,
@@ -129,10 +127,8 @@ export function calcSpc(feature: Feature, spcOptions?: SpcOptions, constantsConf
     }
   };
 
-  applyNoAggParam('center_line_mr', calcClMr, 'mrChart');
   applyNoAggParam('ucl_mr', calcUclMr, 'mrChart');
   applyNoAggParam('lcl_mr', calcLclMr, 'mrChart', 0);
-  applyNoAggParam('center_line_x', calcClX, 'timeseries');
   applyNoAggParam('ucl_x', calcUclX, 'timeseries');
   applyNoAggParam('lcl_x', calcLclX, 'timeseries');
 

@@ -52,7 +52,7 @@ order by time asc
 
 SPC Panel, in addition to standard calculations, allows you to add additional constants values on the chart. These values can be selected from the database using a simple SQL query in **Table** format. For everything to work properly, the PostgreeSQL datasource should contain 2 separate queries, the chart should be in **Time series** format, and constants should be in **Table** format. 
 
-The following names are reserved for calculations in the panel and should be avoided when writing SQL queries: nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl, lcl_mr, ucl_mr, center_line_mr, lcl_x, ucl_x, center_line_x.
+The following names are reserved for calculations in the panel and should be avoided when writing SQL queries: nominal, lsl, usl, min, max, mean, range, lcl_Rbar, ucl_Rbar, lcl_Sbar, ucl_Sbar, lcl, ucl, lcl_mr, ucl_mr, lcl_x, ucl_x.
 
 **SQL query example:**
 ```

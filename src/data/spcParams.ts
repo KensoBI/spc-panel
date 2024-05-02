@@ -16,10 +16,8 @@ export const allSpcParamsDict = {
   ucl: 'UCL',
   lcl_mr: 'LCL - MR chart',
   ucl_mr: 'UCL - MR chart',
-  center_line_mr: 'Center Line - MR chart',
   lcl_x: 'LCL - X chart',
   ucl_x: 'UCL - X chart',
-  center_line_x: 'Center Line - X chart',
 };
 export type SpcParam = keyof typeof allSpcParamsDict;
 
@@ -44,9 +42,9 @@ export function availableSpcParams(
     }
   } else {
     if (sampleSize === 1 && chartType === 'mrChart') {
-      params.push('lcl_mr', 'ucl_mr', 'center_line_mr');
+      params.push('lcl_mr', 'ucl_mr');
     } else if (sampleSize === 1 && chartType === 'timeseries') {
-      params.push('lcl_x', 'ucl_x', 'center_line_x');
+      params.push('lcl_x', 'ucl_x');
     }
   }
   return params;
@@ -66,9 +64,9 @@ export function availableSpcParamsWithData(
     }
   } else {
     if (sampleSize === 1 && chartType === 'mrChart') {
-      params.push('lcl_mr', 'ucl_mr', 'center_line_mr');
+      params.push('lcl_mr', 'ucl_mr');
     } else if (sampleSize === 1 && chartType === 'timeseries') {
-      params.push('lcl_x', 'ucl_x', 'center_line_x');
+      params.push('lcl_x', 'ucl_x');
     }
   }
   const mergedArray = mergeArraysUniqueValues(params, characteristicKeys);

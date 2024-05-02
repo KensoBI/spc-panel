@@ -229,10 +229,6 @@ export function calcUclMr(values: number[]) {
   return calcClMr(values) * d4;
 }
 
-export function calcClX(values: number[]) {
-  return calcAvarageInRange(values, 0, values.length - 1);
-}
-
 export function calcLclX(values: number[]) {
   const d2 = getCalcConst(2, 'd2_xbar_range');
   return calcAvarageInRange(values, 0, values.length - 1) - (3 * calcMRforMean(values)) / d2;
