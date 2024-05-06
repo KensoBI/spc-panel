@@ -14,6 +14,8 @@ export type LimitConfigItem = {
 
 export type AggregationType = 'mean' | 'range' | 'standardDeviation';
 
+export type PresetChartType = 'xbarRChart' | 'RChart' | 'xbarSChart' | 'SChart' | 'xmr';
+
 export type ChartType = 'mrChart' | 'timeseries';
 
 export type DrawStyleType = 'bars' | 'lines' | 'points' | 'line';
@@ -50,6 +52,7 @@ export interface PanelOptions {
   constantsConfig?: ConstantsConfig;
   timeseriesParams?: TimeSeriesParams;
   spcOptions?: SpcOptions;
+  chartPreset?: PresetChartType;
 }
 
 export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
@@ -80,6 +83,7 @@ export const defaultPanelOptions: PanelOptions = {
   constantsConfig: undefined,
   timeseriesParams: defaultTimeseriesParams,
   spcOptions: defaultSpcOptons,
+  chartPreset: undefined,
 };
 
 export interface ChartPanelProps extends PanelProps<PanelOptions> {}
