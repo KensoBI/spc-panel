@@ -2,9 +2,9 @@ import { css } from '@emotion/css';
 import { StandardEditorProps, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, InlineField, Select } from '@grafana/ui';
 import React from 'react';
-import { SpcOptions, PanelOptions, PresetChartType } from 'types';
+import { SpcOptions, PanelOptions, PresetChartType, defaultConstantColor, ConstantConfigItem } from 'types';
 import { useParseSpcOptions } from './parseOptions';
-import { allSpcParamsDict } from 'data/spcParams';
+import { SpcParam, allSpcParamsDict } from 'data/spcParams';
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
 export function ChartPresets(props: Props) {
@@ -12,6 +12,21 @@ export function ChartPresets(props: Props) {
 
   const { value: options, isVar } = useParseSpcOptions(props.value);
   const onChange = props.onChange;
+
+  const defaultLineWidth = 2;
+  const defaultControlLimitColor = 'red';
+  const defaultMeanColor = 'blue';
+
+  const setSpcParam = (
+    name: SpcParam,
+    color: string = defaultConstantColor,
+    lineWidth: number = defaultLineWidth
+  ): ConstantConfigItem => ({
+    name,
+    color,
+    title: allSpcParamsDict[name],
+    lineWidth,
+  });
 
   const presetChartOptions: Array<{ label: string; value: PresetChartType }> = [
     { label: 'X-bar for R chart', value: 'xbarRChart' },
@@ -27,9 +42,9 @@ export function ChartPresets(props: Props) {
       aggregation: 'mean',
       constantsConfig: {
         items: [
-          { name: 'ucl_Rbar', color: 'red', title: allSpcParamsDict.ucl_Rbar, lineWidth: 2 },
-          { name: 'lcl_Rbar', color: 'red', title: allSpcParamsDict.lcl_Rbar, lineWidth: 2 },
-          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+          setSpcParam('ucl_Rbar', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('lcl_Rbar', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('mean', defaultMeanColor, defaultLineWidth),
         ],
       },
     },
@@ -38,9 +53,9 @@ export function ChartPresets(props: Props) {
       aggregation: 'range',
       constantsConfig: {
         items: [
-          { name: 'ucl', color: 'red', title: allSpcParamsDict.ucl, lineWidth: 2 },
-          { name: 'lcl', color: 'red', title: allSpcParamsDict.lcl, lineWidth: 2 },
-          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+          setSpcParam('ucl', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('lcl', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('mean', defaultMeanColor, defaultLineWidth),
         ],
       },
     },
@@ -49,9 +64,9 @@ export function ChartPresets(props: Props) {
       aggregation: 'mean',
       constantsConfig: {
         items: [
-          { name: 'ucl_Sbar', color: 'red', title: allSpcParamsDict.ucl_Sbar, lineWidth: 2 },
-          { name: 'lcl_Sbar', color: 'red', title: allSpcParamsDict.lcl_Sbar, lineWidth: 2 },
-          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+          setSpcParam('ucl_Sbar', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('lcl_Sbar', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('mean', defaultMeanColor, defaultLineWidth),
         ],
       },
     },
@@ -60,9 +75,9 @@ export function ChartPresets(props: Props) {
       aggregation: 'standardDeviation',
       constantsConfig: {
         items: [
-          { name: 'ucl', color: 'red', title: allSpcParamsDict.ucl, lineWidth: 2 },
-          { name: 'lcl', color: 'red', title: allSpcParamsDict.lcl, lineWidth: 2 },
-          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+          setSpcParam('ucl', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('lcl', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('mean', defaultMeanColor, defaultLineWidth),
         ],
       },
     },
@@ -72,9 +87,9 @@ export function ChartPresets(props: Props) {
       chartType: 'timeseries',
       constantsConfig: {
         items: [
-          { name: 'ucl_x', color: 'red', title: allSpcParamsDict.ucl_x, lineWidth: 2 },
-          { name: 'lcl_x', color: 'red', title: allSpcParamsDict.lcl_x, lineWidth: 2 },
-          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+          setSpcParam('ucl_x', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('lcl_x', defaultControlLimitColor, defaultLineWidth),
+          setSpcParam('mean', defaultMeanColor, defaultLineWidth),
         ],
       },
     },
@@ -88,8 +103,9 @@ export function ChartPresets(props: Props) {
             disabled={isVar}
             options={presetChartOptions}
             onChange={(e) => {
-              if (e.value !== undefined) {
-                const { sampleSize, aggregation, constantsConfig } = presetChartOptionsMap[e.value];
+              const selectedPreset = presetChartOptionsMap[e.value as PresetChartType];
+              if (selectedPreset) {
+                const { sampleSize, aggregation, constantsConfig } = selectedPreset;
                 onChange({ ...options, sampleSize, aggregation, constantsConfig });
               }
             }}

@@ -53,7 +53,6 @@ export interface PanelOptions {
   limitConfig?: LimitConfig;
   timeseriesParams?: TimeSeriesParams;
   spcOptions?: SpcOptions;
-  chartPreset?: PresetChartType;
 }
 
 export const defaultTimeseriesSettingsColor = 'rgb(31, 96, 196)';
@@ -84,7 +83,6 @@ export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
   timeseriesParams: defaultTimeseriesParams,
   spcOptions: defaultSpcOptons,
-  chartPreset: undefined,
 };
 
 export interface ChartPanelProps extends PanelProps<PanelOptions> {}
