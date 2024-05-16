@@ -30,11 +30,11 @@ export const plugin = new PanelPlugin<PanelOptions>(ChartPanel).setPanelOptions(
     showIf: (_, data) => parseData(data ?? []).hasTableData === false,
   });
   builder.addCustomEditor({
-    id: 'constantsConfig',
-    path: 'constantsConfig',
+    id: 'spcOptions.constantsConfig',
+    path: 'spcOptions.constantsConfig',
     name: 'Constants',
     description: 'Add constants for the chart',
-    defaultValue: defaultPanelOptions.constantsConfig,
+    defaultValue: defaultPanelOptions.spcOptions?.constantsConfig,
     editor: ConstantsListEditor,
     category: ['Chart'],
   });

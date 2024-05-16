@@ -1,7 +1,8 @@
 import { PanelProps } from '@grafana/data';
+import { SpcParam } from 'data/spcParams';
 
 export type ConstantConfigItem = {
-  name: string;
+  name: SpcParam | string;
   color: string;
   title: string;
   lineWidth: number;
@@ -27,6 +28,7 @@ export type SpcOptions = {
   nominal?: number;
   lsl?: number;
   usl?: number;
+  constantsConfig?: ConstantsConfig;
 };
 
 export type LimitConfig = {
@@ -49,7 +51,6 @@ export type TimeSeriesParams = {
 
 export interface PanelOptions {
   limitConfig?: LimitConfig;
-  constantsConfig?: ConstantsConfig;
   timeseriesParams?: TimeSeriesParams;
   spcOptions?: SpcOptions;
   chartPreset?: PresetChartType;
@@ -73,6 +74,7 @@ export const defaultSpcOptons: SpcOptions = {
   nominal: undefined,
   lsl: undefined,
   usl: undefined,
+  constantsConfig: undefined,
 };
 export const defaultConstantColor = '#37872d';
 
@@ -80,7 +82,6 @@ export const MAX_DEFAULT_SAMPLE_SIZE = 10;
 
 export const defaultPanelOptions: PanelOptions = {
   limitConfig: undefined,
-  constantsConfig: undefined,
   timeseriesParams: defaultTimeseriesParams,
   spcOptions: defaultSpcOptons,
   chartPreset: undefined,

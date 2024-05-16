@@ -4,6 +4,7 @@ import { useStyles2, InlineField, Select } from '@grafana/ui';
 import React from 'react';
 import { SpcOptions, PanelOptions, PresetChartType } from 'types';
 import { useParseSpcOptions } from './parseOptions';
+import { allSpcParamsDict } from 'data/spcParams';
 
 type Props = StandardEditorProps<SpcOptions, any, PanelOptions>;
 export function ChartPresets(props: Props) {
@@ -21,11 +22,62 @@ export function ChartPresets(props: Props) {
   ];
 
   const presetChartOptionsMap: Record<PresetChartType, SpcOptions> = {
-    xbarRChart: { sampleSize: 5, aggregation: 'mean' },
-    RChart: { sampleSize: 5, aggregation: 'range' },
-    xbarSChart: { sampleSize: 5, aggregation: 'mean' },
-    SChart: { sampleSize: 5, aggregation: 'standardDeviation' },
-    xmr: { sampleSize: 1, aggregation: 'mean', chartType: 'timeseries' },
+    xbarRChart: {
+      sampleSize: 5,
+      aggregation: 'mean',
+      constantsConfig: {
+        items: [
+          { name: 'ucl_Rbar', color: 'red', title: allSpcParamsDict.ucl_Rbar, lineWidth: 2 },
+          { name: 'lcl_Rbar', color: 'red', title: allSpcParamsDict.lcl_Rbar, lineWidth: 2 },
+          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+        ],
+      },
+    },
+    RChart: {
+      sampleSize: 5,
+      aggregation: 'range',
+      constantsConfig: {
+        items: [
+          { name: 'ucl', color: 'red', title: allSpcParamsDict.ucl, lineWidth: 2 },
+          { name: 'lcl', color: 'red', title: allSpcParamsDict.lcl, lineWidth: 2 },
+          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+        ],
+      },
+    },
+    xbarSChart: {
+      sampleSize: 5,
+      aggregation: 'mean',
+      constantsConfig: {
+        items: [
+          { name: 'ucl_Sbar', color: 'red', title: allSpcParamsDict.ucl_Sbar, lineWidth: 2 },
+          { name: 'lcl_Sbar', color: 'red', title: allSpcParamsDict.lcl_Sbar, lineWidth: 2 },
+          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+        ],
+      },
+    },
+    SChart: {
+      sampleSize: 5,
+      aggregation: 'standardDeviation',
+      constantsConfig: {
+        items: [
+          { name: 'ucl', color: 'red', title: allSpcParamsDict.ucl, lineWidth: 2 },
+          { name: 'lcl', color: 'red', title: allSpcParamsDict.lcl, lineWidth: 2 },
+          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+        ],
+      },
+    },
+    xmr: {
+      sampleSize: 1,
+      aggregation: 'mean',
+      chartType: 'timeseries',
+      constantsConfig: {
+        items: [
+          { name: 'ucl_x', color: 'red', title: allSpcParamsDict.ucl_x, lineWidth: 2 },
+          { name: 'lcl_x', color: 'red', title: allSpcParamsDict.lcl_x, lineWidth: 2 },
+          { name: 'mean', color: 'blue', title: allSpcParamsDict.mean, lineWidth: 2 },
+        ],
+      },
+    },
   };
 
   return (
@@ -37,8 +89,8 @@ export function ChartPresets(props: Props) {
             options={presetChartOptions}
             onChange={(e) => {
               if (e.value !== undefined) {
-                const { sampleSize, aggregation } = presetChartOptionsMap[e.value];
-                onChange({ ...options, sampleSize, aggregation });
+                const { sampleSize, aggregation, constantsConfig } = presetChartOptionsMap[e.value];
+                onChange({ ...options, sampleSize, aggregation, constantsConfig });
               }
             }}
             width={'auto'}
