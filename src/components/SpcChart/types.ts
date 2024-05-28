@@ -14,6 +14,4 @@ export const defaultTimeseriesSettings: TimeseriesSettings = {
   pointSize: 6,
   lineColor: defaultTimeseriesSettingsColor,
   showLegend: false,
-  decimals: 2,
 };
-

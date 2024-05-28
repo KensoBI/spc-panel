@@ -2,9 +2,8 @@ import React from 'react';
 import { TimeSeriesParams, PanelOptions, defaultTimeseriesSettingsColor, DrawStyleType } from 'types';
 import { GrafanaTheme2, StandardEditorProps } from '@grafana/data';
 import { css } from '@emotion/css';
-import { InlineField, InlineSwitch, Input, Select, useStyles2 } from '@grafana/ui';
+import { InlineField, InlineSwitch, Select, useStyles2 } from '@grafana/ui';
 import { InlineColorField } from 'components/InlineColorField';
-import { toNumber } from 'lodash';
 import { selectableZeroToTen, selectableHalfToTen } from './selectableValues';
 
 type Props = StandardEditorProps<TimeSeriesParams, any, PanelOptions>;
@@ -64,22 +63,6 @@ export function SimpleParamsEditor({ value, onChange }: Props) {
             value={value.showLegend}
             onChange={(e) => onChange({ ...value, showLegend: e.currentTarget.checked })}
           />
-          <InlineField label={'Decimals'} className={styles.noMargin}>
-            <Input
-              value={value.decimals ?? ''}
-              onChange={(e) => {
-                let number = toNumber(e.currentTarget.value);
-                const decimals =
-                  e.currentTarget.value === '' || isNaN(number) ? undefined : Math.min(Math.max(number, 0), 6);
-                onChange({ ...value, decimals });
-              }}
-              type="number"
-              min={0}
-              max={6}
-              onFocus={(e) => e.currentTarget.select()}
-              placeholder="Decimal places"
-            />
-          </InlineField>
           <InlineField label={'Graph style'} className={styles.noMargin}>
             <Select
               options={styleOptions}

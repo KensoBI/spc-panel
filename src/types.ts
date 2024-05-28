@@ -36,12 +36,15 @@ export type ConstantsConfig = {
 };
 
 export type TimeSeriesParams = {
+  displayName?: string;
+  min?: number;
+  max?: number;
+  decimals?: number;
   fill?: number;
   lineWidth?: number;
   pointSize?: number;
   lineColor?: string;
   showLegend?: boolean;
-  decimals?: number;
   drawStyle?: DrawStyleType;
 };
 
@@ -59,7 +62,6 @@ export const defaultTimeseriesParams: TimeSeriesParams = {
   pointSize: 6,
   lineColor: defaultTimeseriesSettingsColor,
   showLegend: true,
-  decimals: 2,
   drawStyle: 'line',
 };
 
