@@ -8,11 +8,19 @@ import { TimeSeriesComponent } from './SpcChart/TimeSeriesComponent';
 import { TimeseriesSettings, defaultTimeseriesSettings } from './SpcChart/types';
 import { calcSpc } from 'data/calcSpc';
 import { useParseOptions } from './options/parseOptions';
+import { Field, FieldConfig, FieldType } from '@grafana/data';
 
 export function ChartPanel(props: ChartPanelProps) {
   const { data, width, height } = props;
   const styles = useStyles2(getStyles);
   const { value: options } = useParseOptions(props.options);
+
+  const getValueFieldIndex = (fields: Field[]): number => (fields[0]?.type !== FieldType.time ? 0 : 1);
+
+  const fields = data.series?.[0]?.fields;
+  const valueFieldIndex = fields ? getValueFieldIndex(fields) : null;
+  const fieldConfig: FieldConfig | undefined =
+    fields && valueFieldIndex !== null ? fields[valueFieldIndex].config : undefined;
 
   const { features, hasTableData, hasCustomTableData } = React.useMemo(() => parseData(data.series), [data.series]);
 
@@ -93,7 +101,12 @@ export function ChartPanel(props: ChartPanelProps) {
         )}
       >
         {selectedFeature && selectedCharacteristic && (
-          <TimeSeriesComponent feature={selectedFeature} characteristic={selectedCharacteristic} settings={settings} />
+          <TimeSeriesComponent
+            feature={selectedFeature}
+            characteristic={selectedCharacteristic}
+            settings={settings}
+            fieldConfig={fieldConfig}
+          />
         )}
       </div>
     </PanelPropsProvider>

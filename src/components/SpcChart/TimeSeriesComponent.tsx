@@ -1,4 +1,4 @@
-import { GrafanaTheme2 } from '@grafana/data';
+import { FieldConfig, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { SpcChart } from './SpcChart';
@@ -13,9 +13,10 @@ type Props = {
   feature: Feature;
   characteristic: Characteristic;
   settings?: TimeseriesSettings;
+  fieldConfig?: FieldConfig;
 };
 
-export function TimeSeriesComponent({ characteristic, settings }: Props) {
+export function TimeSeriesComponent({ characteristic, settings, fieldConfig }: Props) {
   const styles = useStyles2(getStyles);
 
   const settingsWithDefaults = React.useMemo(() => defaults(settings, defaultTimeseriesSettings), [settings]);
@@ -28,11 +29,11 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
   const fill = settingsWithDefaults.fill!;
   const lineColor = settingsWithDefaults.lineColor as string;
   const showLegend = settingsWithDefaults.showLegend;
-  const decimals = settingsWithDefaults.decimals;
+  const decimals = fieldConfig?.decimals;
   const drawStyle = settingsWithDefaults.drawStyle;
-  const max = settingsWithDefaults.max;
-  const min = settingsWithDefaults.min;
-  const displayName = settingsWithDefaults.displayName;
+  const max = fieldConfig?.max;
+  const min = fieldConfig?.min;
+  const displayName = fieldConfig?.displayName;
 
   const limits = React.useMemo(
     () => ({
@@ -122,7 +123,7 @@ export function TimeSeriesComponent({ characteristic, settings }: Props) {
           height={height}
           lineColor={lineColor}
           showLegend={!!showLegend}
-          decimals={decimals ?? 3}
+          decimals={decimals}
           max={max}
           min={min}
           displayName={displayName}

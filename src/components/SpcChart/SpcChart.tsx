@@ -62,9 +62,9 @@ type Props = {
   lineColor: string;
   showLegend: boolean;
   displayName: string | undefined;
-  decimals: number;
-  max: number | undefined;
-  min: number | undefined;
+  decimals: number | null | undefined;
+  max: number | null | undefined;
+  min: number | null | undefined;
   onSeriesColorChange: (label: string, color: string) => void;
   drawStyle: DrawStyleType;
 };
