@@ -6,6 +6,7 @@ import { ConstantsListEditor } from 'components/options/ConstantsListEditor';
 import { SimpleParamsEditor } from 'components/options/SimpleParamsEditor';
 import { SpcOptionEditor } from 'components/options/SpcOptionEditor';
 import { parseData } from 'data/parseData';
+import { ChartPresets } from 'components/options/ChartPresets';
 
 export const plugin = new PanelPlugin<PanelOptions>(ChartPanel)
   .useFieldConfig({

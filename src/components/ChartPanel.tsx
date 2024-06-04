@@ -30,7 +30,7 @@ export function ChartPanel(props: ChartPanelProps) {
     }
     let selectedFeature = features[0];
     if (!hasTableData) {
-      selectedFeature = calcSpc(selectedFeature, options.spcOptions, options.constantsConfig);
+      selectedFeature = calcSpc(selectedFeature, options.spcOptions, options.spcOptions?.constantsConfig);
     }
     const keys = Object.keys(selectedFeature.characteristics);
     if (keys.length === 0) {
@@ -38,7 +38,7 @@ export function ChartPanel(props: ChartPanelProps) {
     }
     const selectedCharacteristic = selectedFeature.characteristics[keys[0]];
     return [selectedFeature, selectedCharacteristic];
-  }, [features, hasTableData, options.constantsConfig, options.spcOptions]);
+  }, [features, hasTableData, options.spcOptions]);
 
   const context = usePanelContext();
   const onInstanceStateChange = context.onInstanceStateChange;
@@ -75,8 +75,8 @@ export function ChartPanel(props: ChartPanelProps) {
         });
       }
     }
-    if (options?.constantsConfig && options.constantsConfig.items.length > 0) {
-      settings.constantsConfig.items.push(...options.constantsConfig.items);
+    if (options?.spcOptions?.constantsConfig && options.spcOptions.constantsConfig.items.length > 0) {
+      settings.constantsConfig.items.push(...options.spcOptions.constantsConfig.items);
     }
     return settings;
   }, [options]);
