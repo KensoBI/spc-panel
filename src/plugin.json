@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "panel",
-  "name": "SPC Panel",
+  "name": "SPC Chart",
   "id": "kensobi-spc-panel",
   "info": {
     "keywords": ["panel", "spc", "chart", "kensobi"],
