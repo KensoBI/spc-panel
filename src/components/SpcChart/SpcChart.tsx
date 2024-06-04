@@ -61,13 +61,20 @@ type Props = {
   height: number;
   lineColor: string;
   showLegend: boolean;
-  decimals: number;
+  displayName: string | undefined;
+  decimals: number | null | undefined;
+  max: number | null | undefined;
+  min: number | null | undefined;
   onSeriesColorChange: (label: string, color: string) => void;
   drawStyle: DrawStyleType;
 };
 
 export function SpcChart(props: Props) {
   const {
+    displayName,
+    max,
+    min,
+    decimals,
     timeField,
     valueField,
     limits,
@@ -80,7 +87,6 @@ export function SpcChart(props: Props) {
     height,
     lineColor,
     showLegend,
-    decimals,
     onSeriesColorChange,
     drawStyle,
   } = props;
@@ -107,6 +113,8 @@ export function SpcChart(props: Props) {
           custom: {
             lineWidth: lineWidth,
           },
+          min: min ?? min,
+          max: max ?? max,
         },
 
         type: FieldType.number,
@@ -177,6 +185,7 @@ export function SpcChart(props: Props) {
 
     const custom: GraphFieldConfig = {
       ...(valField.config?.custom ?? {}),
+      displayName: displayName,
       gradientMode: GraphGradientMode.Opacity,
       lineWidth: lineWidth,
       lineInterpolation: LineInterpolation.Smooth,
@@ -188,8 +197,14 @@ export function SpcChart(props: Props) {
 
     valField.config = {
       thresholds: hasTresholds ? thresholds : undefined,
+      min: min,
+      max: max,
       custom,
-      displayName: valField.labels?.control ? valField.labels?.control + ' sample' : TIMESERIES_SAMPLE_LABEL,
+      displayName: valField.labels?.control
+        ? valField.labels?.control + ' sample'
+        : displayName
+        ? displayName
+        : TIMESERIES_SAMPLE_LABEL,
       color: {
         mode: FieldColorModeId.Fixed,
         fixedColor: lineColor,
@@ -218,18 +233,21 @@ export function SpcChart(props: Props) {
 
     return [df];
   }, [
-    constants,
-    dataFrameName,
-    decimals,
-    fill,
-    limits,
-    lineColor,
-    lineWidth,
-    pointSize,
-    theme,
     timeField,
     valueField,
+    constants,
+    limits,
+    displayName,
+    max,
+    min,
+    lineWidth,
     drawStyle,
+    pointSize,
+    fill,
+    lineColor,
+    dataFrameName,
+    theme,
+    decimals,
   ]);
 
   const tweakAxis = React.useCallback(
