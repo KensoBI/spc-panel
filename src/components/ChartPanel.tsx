@@ -15,7 +15,10 @@ export function ChartPanel(props: ChartPanelProps) {
   const styles = useStyles2(getStyles);
   const { value: options } = useParseOptions(props.options);
 
-  const getValueFieldIndex = (fields: Field[]): number => (fields[0]?.type !== FieldType.time ? 0 : 1);
+  const getValueFieldIndex = (fields: Field[]): number | null => {
+    const index = fields.findIndex((field) => field.type === FieldType.number);
+    return index !== -1 ? index : null;
+  };
 
   const fields = data.series?.[0]?.fields;
   const valueFieldIndex = fields ? getValueFieldIndex(fields) : null;

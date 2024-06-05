@@ -24,6 +24,16 @@ export const plugin = new PanelPlugin<PanelOptions>(ChartPanel)
     builder.addCustomEditor({
       id: 'spcOptions',
       path: 'spcOptions',
+      name: 'Chart preset',
+      description: 'Select chart type to get sample settings.',
+      defaultValue: defaultPanelOptions.spcOptions,
+      editor: ChartPresets,
+      category: ['Chart'],
+      showIf: (_, data) => parseData(data ?? []).hasTableData === false,
+    });
+    builder.addCustomEditor({
+      id: 'spcOptions',
+      path: 'spcOptions',
       name: 'SPC options',
       description: 'Select options for SPC chart. You can enter a custom sample size value by typing a number.',
       defaultValue: defaultPanelOptions.spcOptions,
@@ -32,11 +42,11 @@ export const plugin = new PanelPlugin<PanelOptions>(ChartPanel)
       showIf: (_, data) => parseData(data ?? []).hasTableData === false,
     });
     builder.addCustomEditor({
-      id: 'constantsConfig',
-      path: 'constantsConfig',
+      id: 'spcOptions.constantsConfig',
+      path: 'spcOptions.constantsConfig',
       name: 'Constants',
       description: 'Add constants for the chart',
-      defaultValue: defaultPanelOptions.constantsConfig,
+      defaultValue: defaultPanelOptions.spcOptions?.constantsConfig,
       editor: ConstantsListEditor,
       category: ['Chart'],
     });
